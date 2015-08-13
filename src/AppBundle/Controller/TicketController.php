@@ -71,14 +71,6 @@ class TicketController extends Controller
         }
 
         $search = $this->get('infinity.search')
-            ->addButton(array(
-                'label' => 'Novo',
-                'icon' => 'add',
-                'type' => 'fab',
-                'action_type' => 'route',
-                'action' => 'ticket_new',
-                )
-            )
             ->addColumn(array('name' => 'number', 'label' => '#', 'type' => 'number', 'width' => '7%'))
             ->addColumn(array('name' => 'customer', 'label' => 'Cliente', 'type' => 'string', 'width' => '20%', 'non_numeric' => true))
             ->addColumn(array('name' => 'status', 'label' => 'Status', 'type' => 'string', 'width' => '10%', 'non_numeric' => true, 'translated' => true))
@@ -93,6 +85,16 @@ class TicketController extends Controller
                 )
             ))
             ->setTranslatePrefix('ticket');
+
+            if (!$user->isAdmin())
+                $search->addButton(array(
+                    'label' => 'Novo',
+                    'icon' => 'add',
+                    'type' => 'fab',
+                    'action_type' => 'route',
+                    'action' => 'ticket_new',
+                    )
+                );
 
         $result = $query->getQuery()->getResult();
 
@@ -114,6 +116,7 @@ class TicketController extends Controller
         $entity = new Ticket();
         $em = $this->getDoctrine()->getManager();
         $user = $this->get('security.context')->getToken()->getUser();
+
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
 
@@ -241,6 +244,11 @@ class TicketController extends Controller
      */
     public function newAction()
     {
+        $user = $this->get('security.context')->getToken()->getUser();
+        
+        if ($user->isAdmin())
+            return $this->redirect($this->generateUrl('ticket'));
+
         $entity = new Ticket();
         $form   = $this->createCreateForm($entity);
 
