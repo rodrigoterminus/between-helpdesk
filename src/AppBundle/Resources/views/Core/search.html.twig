@@ -93,111 +93,125 @@
         {% endif %}
     </div>
 
-    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-        <thead>
-            <tr>
+    
+        {% for row in result %}
+            {% set index = loop.index %}
+            
+            <div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-phone">
+            <div class="mdl-card mdl-shadow--2dp">
                 {% for column in search.columns %}
-                    <th style="width: {{ column.width }};" class="{% if (column['non_numeric'] is defined and column['non_numeric'] == true) or column['type'] == 'actions' %} mdl-data-table__cell--non-numeric{% endif %}">{{ column.label }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in result %}
-                {% set index = loop.index %}
+                    {% if loop.first %}
+                        <div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text">
+                    {% elseif loop.last or column.type == 'actions' %}
+                        </div>
+                    {% endif %}        
 
-                <tr>
-                    {% for column in search.columns %}
-                        <td class="{% if (column['non_numeric'] is defined and column['non_numeric'] == true) or column['type'] == 'actions' %} mdl-data-table__cell--non-numeric{% endif %}">
-                            {% if column.muted is defined and column.muted != false %}<span class="muted">{% endif %}
-                                
-                                {# Action columns #}
-                                {% if column.action is defined %}
-                                    {% if column.action.type == 'route' %}
-                                        {% set arguments = '' %}
 
-                                        {% for argument, value in column.action.arguments %}
+                            {# Action columns #}
+                            {% if column.action is defined %}
+                                {% if column.action.type == 'route' %}
+                                    {% set arguments = '' %}
+
+                                    {% for argument, value in column.action.arguments %}
+                                        {# Get the row property #}
+                                        {% if ':' in value %}
+                                            {% set value = attribute(row, value|slice(1)) %}
+                                        {% endif %}
+
+                                        {% set arguments = arguments ~ '&' ~ argument ~ '=' ~ value %}
+                                    {% endfor %}
+                                    
+                                    {% set action = path(column.action.route_name, column.action.arguments) %}
+                                {% endif %}
+
+                                <a href="{{ arguments == '' ? action : action ~ '?' ~ arguments|slice(1) }}">{{ attribute(row, column.name) }}</a>
+
+                            {# Commom columns #}
+                            {% elseif column.type == 'actions' %}
+                                <div class="mdl-card__menu">
+                                {% for action in column.actions %}
+
+                                    {% if action.type == 'route' %}
+                                        {% for argument, value in action.arguments %}
                                             {# Get the row property #}
                                             {% if ':' in value %}
                                                 {% set value = attribute(row, value|slice(1)) %}
                                             {% endif %}
-
-                                            {% set arguments = arguments ~ '&' ~ argument ~ '=' ~ value %}
-                                        {% endfor %}
-                                        
-                                        {% set action = path(column.action.route_name, column.action.arguments) %}
-                                    {% endif %}
-
-                                    <a href="{{ arguments == '' ? action : action ~ '?' ~ arguments|slice(1) }}">{{ attribute(row, column.name) }}</a>
-
-                                {# Commom columns #}
-                                {% elseif column.type == 'actions' %}
-                                    {% for action in column.actions %}
-                                        {% if action.type == 'route' %}
-
-                                            {% for argument, value in action.arguments %}
-                                                {# Get the row property #}
-                                                {% if ':' in value %}
-                                                    {% set value = attribute(row, value|slice(1)) %}
-                                                {% endif %}
-                                                
-                                                {% if argument == 'number' %}
-                                                    {% set action = action|merge({'arguments': {number: value}}) %}
-                                                {% else %}
-                                                    {% set action = action|merge({'arguments': {id: value}}) %}
-                                                {% endif %}
-                                            {% endfor %}
                                             
-                                            {% set action_command = path(action.route_name, action.arguments) %}
-                                        {% endif %}
-
-                                        <a id="list-action-{{ index }}-{{ loop.index }}" href="{{ action_command }}"><i class="material-icons">{{ action.icon }}</i></a>
-
-                                        <div class="mdl-tooltip" for="list-action-{{ index }}-{{ loop.index }}">{{ action.label }}</div>
-                                    {% endfor %}
-                                {% else %}
-                                    {# Get column final attribute #}
-                                    {% set layers = column.name|split('.') %}
-                                    {% set layer  = row %}
-
-                                    {% for attr in layers %}
-                                        {% set layer = attribute(layer, attr) %}                                                        
-                                    {% endfor %}
-
-                                    {# Field types #}
-                                    {% if column.type == 'array' %}
-                                        {% for item in layer %}
-                                            {% if column.translated is defined and column.translated == true %}
-                                                {{ [search.translate_prefix, '.', column.name, '.', item]|join|trans }}        
+                                            {% if argument == 'number' %}
+                                                {% set action = action|merge({'arguments': {number: value}}) %}
                                             {% else %}
-                                                {{ item }}
+                                                {% set action = action|merge({'arguments': {id: value}}) %}
                                             {% endif %}
                                         {% endfor %}
-                                    {% elseif column.translated is defined and column.translated == true %}
-                                        {{ [search.translate_prefix, '.', column.name, '.', layer]|join|trans }}
-                                    {% elseif column.type == 'date' %}
-                                        {{ layer.date|date('d/m/Y') }}
-                                    {% elseif column.type == 'datetime' and layer != null %}
-                                        {# {{ dump(layer) }} #}
-                                        {{ layer.date|date('d/m/Y H:i:s') }}
-                                    {% elseif column.type == 'currency' %}
-                                        {{ layer|number_format(2, ',', '.') }}
-                                    {% else %}
-                                        {{ layer }}
+                                        
+                                        {% set action_command = path(action.route_name, action.arguments) %}
                                     {% endif %}
+
+                                    <a id="list-action-{{ index }}-{{ loop.index }}" href="{{ action_command }}" class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect mdl-color-text--amber-900"><i class="material-icons">{{ action.icon }}</i></a>
+
+                                    <div class="mdl-tooltip" for="list-action-{{ index }}-{{ loop.index }}">{{ action.label }}</div>
+                                {% endfor %}
+                                </div>
+                            {% else %}
+
+                                {# Get column final attribute #}
+                                {% set layers = column.name|split('.') %}
+                                {% set layer  = row %}
+
+                                {% for attr in layers %}
+                                    {% set layer = attribute(layer, attr) %}                                                        
+                                {% endfor %}
+                                
+                                {% if layer != '' %}
+
+                                {% if loop.first == false %}
+                                <div class="mdl-textfield mdl-js-textfield">
+                                    <span class="fake-label">{{ column.label }}</span>
+                                    <span class="fake-input">
                                 {% endif %}
-                            {% if column.muted is defined and column.muted != false %}</span>{% endif %}
-                        </td>
-                    {% endfor %}
 
-                </tr>
-            {% else %}
-                <tr>
-                    <td class="v-align-middle" colspan="{{ search.columns|length }}" style="text-align: center">Sua busca não retornou resultados.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
+                                {# Field types #}
+                                {% if column.type == 'array' %}
+                                    {% for item in layer %}
+                                        {% if column.translated is defined and column.translated == true %}
+                                            {{ [search.translate_prefix, '.', column.name, '.', item]|join|trans }}        
+                                        {% else %}
+                                            {{ item }}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% elseif column.translated is defined and column.translated == true %}
+                                    {{ [search.translate_prefix, '.', column.name, '.', layer]|join|trans }}
+                                {% elseif column.type == 'date' %}
+                                    {{ layer.date|date('d/m/Y') }}
+                                {% elseif column.type == 'datetime' and layer != null %}
+                                    {# {{ dump(layer) }} #}
+                                    {{ layer.date|date('d/m/Y H:i:s') }}
+                                {% elseif column.type == 'currency' %}
+                                    {{ layer|number_format(2, ',', '.') }}
+                                {% else %}
+                                    {{ layer }}
+                                {% endif %}
+                                
+                                {% if loop.first == false %}
+                                    </span>
+                                </div>
+                                {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        
+                    {% if loop.first %}
+                        </h2></div>
+                        <div class="mdl-card__supporting-text">
+                    {% endif %}    
+                {% endfor %}
 
-        {% if search.totalizer is defined and result|length > 0 %}
+            </div>
+            </div>
+        {% endfor %}
+
+        {# {% if search.totalizer is defined and result|length > 0 %}
             <tfoot>
                 <tr>
                     {% for column in search.columns %}
@@ -205,7 +219,6 @@
                             {% if attribute(search.totalizer, column.name) is defined %}
                                 {% set value = attribute(search.totalizer, column.name) %}
 
-                                {# Field types #}
                                 {% if column.type == 'currency' %}
                                     {{ value|number_format(2, ',', '.') }}
                                 {% else %}
@@ -218,8 +231,7 @@
                     {% endfor %}
                 </tr>
             </tfoot>
-        {% endif %}
-    </table>
+        {% endif %} #}
           
 {% endblock %}
 
