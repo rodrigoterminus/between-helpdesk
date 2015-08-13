@@ -1,0 +1,28 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+        <thead>
+            <tr>
+                {# <th width="5%">Id</th> #}
+                <th class="mdl-data-table__cell--non-numeric">Nome</th>
+                <th width="3%" class="mdl-data-table__cell--non-numeric">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+        {# {% for row in result %} #}
+            {% include 'AppBundle:Category:index-loop.html.twig' with {'result': result, 'parent': null, 'level': 0} only %}
+        {# {% else %}
+            <tr>
+                <td colspan="2" style="text-align: center;">Nenhuma categoria cadastrada</td>
+            </tr>
+        {% endfor %} #}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block fab_action %}
+    {% set fab = { 'icon': 'add', 'action_type': 'route', 'action': 'category_new' } %}
+
+    {% include 'AppBundle:Core:fab.html.twig' with { 'fab': fab } %}
+{% endblock %}

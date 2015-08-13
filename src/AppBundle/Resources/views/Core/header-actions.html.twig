@@ -1,0 +1,27 @@
+{% if buttons is defined %}
+	{% for button in buttons %}
+		<a id="header-button-{{ loop.index }}"
+		
+		{% if button.action is defined %}
+			{% if button.action_type == 'route' %}
+				href="{{ path(button.action) }}" 
+			{% elseif button.action_type == 'javascript' %}
+				href="javascript: {{ button.action }}" 
+			{% endif %}
+		{% endif %}	
+
+		{% if button.attr is defined %}
+			{% for attr, value in button.attr %}
+				{{ attr }}="{{ value }}" 
+			{% endfor %}
+		{% endif %}
+		
+		class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon"><i class="material-icons">{{ button.icon }}</i></a>
+	{% endfor %}
+
+	{% for button in buttons %}
+		{% if button.label is defined %}
+			<div class="mdl-tooltip" for="header-button-{{ loop.index }}">{{ button.label }}</div>
+		{% endif %}
+	{% endfor %}
+{% endif %}

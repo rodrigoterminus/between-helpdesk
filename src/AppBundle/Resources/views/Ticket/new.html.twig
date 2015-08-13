@@ -1,0 +1,113 @@
+{% extends '::base.html.twig' %}
+
+{% if '_edit' in app.request.get('_route') %}
+	{% set form = edit_form %}
+{% endif %}
+
+{% block body -%}
+	{{ form_start(form) }}
+	
+		<div class="mdl-cell mdl-cell--12-col">
+
+			<div class="mdl-card mdl-shadow--2dp">
+				<div class="mdl-card__title">
+		        	<h2 class="mdl-card__title-text">Informações básicas</h2>
+		        </div>
+				<div class="mdl-card__supporting-text">
+			    	{# {{ dump(form) }} #}
+			    	<div class="mdl-grid">
+			    		<div class="mdl-cell mdl-cell--12-col">
+							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+							    {{ form_widget(form.subject, { 'attr': { 'class': 'mdl-textfield__input' }}) }}
+							    {{ form_label(form.subject, null, { 'label_attr': { 'class': 'mdl-textfield__label', 'for': form.subject.vars.id } }) }}
+							</div>
+			    		</div>
+			    	</div>
+
+			    	<div class="mdl-grid">
+			    		<div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-phone">
+							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+							    {{ form_label(form.category) }}
+							    {{ form_widget(form.category, { 'attr': { 'class': 'mdl-textfield__input' }}) }}
+							    <span class="mdl-switch__label"></span>
+							</div>
+			    		</div>
+
+			    		<div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-phone">
+							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+							    {{ form_label(form.priority) }}
+							    {{ form_widget(form.priority, { 'attr': { 'class': 'mdl-textfield__input' }}) }}
+							    <span class="mdl-switch__label"></span>
+							</div>
+			    		</div>
+
+			    		<div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-phone">
+							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+							    {{ form_label(form.project) }}
+							    {{ form_widget(form.project, { 'attr': { 'class': 'mdl-textfield__input' }}) }}
+							    <span class="mdl-switch__label"></span>
+							</div>
+			    		</div>
+			    	</div>
+
+				</div>
+			</div>
+
+		</div>
+
+		<div class="mdl-cell mdl-cell--12-col">
+
+			<div class="mdl-card mdl-shadow--2dp">
+				<div class="mdl-card__title">
+		        	<h2 class="mdl-card__title-text">Detalhamento do chamado</h2>
+		        </div>
+				<div class="mdl-card__supporting-text npv">
+			    	{# {{ dump(form) }} #}
+			    	<div class="mdl-grid npv">
+			    		<div class="mdl-cell mdl-cell--12-col">
+			    			{% for entry in form.entries %}
+								<div class="mdl-textfield mdl-js-textfield">
+									{{ form_widget(entry.text, { 'attr': { 'class': 'mdl-textfield__input', 'rows': 10 }}) }}
+									{{ form_label(entry.text, null, { 'label_attr': { 'class': 'mdl-textfield__label', 'for': entry.text.vars.id } }) }}
+								</div>
+			    			{% endfor %}
+			    		</div>
+			    	</div>
+
+				</div>
+			</div>
+
+		</div>
+    
+	{# {{ dump(app.request.attributes) }} #}
+	<div style="display: none;">
+		{{ form_rest(form) }}
+	</div>
+
+	{{ form_end(form) }}
+{% endblock %}
+
+{#{% block fab_action %}
+ 	{% set fab = { 'icon': 'save', 'action_type': 'javascript', 'action': 'between.formSubmit()' } %}
+
+	{% include 'AppBundle:Core:fab.html.twig' with { 'fab': fab } %}
+{% endblock %} #}
+
+{% block header_actions %}
+	{% set buttons = [] %}
+	{% set buttons = buttons|merge([{ 'icon': 'save', 'action_type': 'javascript', 'action': 'between.formSubmit("' ~ form.vars.name ~ '")', 'label': 'Salvar' }]) %}
+
+	{# {% if '_edit' in app.request.get('_route') %}
+		{% set buttons = buttons|merge([{ 'icon': 'delete', 'action_type': 'javascript', 'action': 'between.formSubmit("' ~ delete_form.vars.name ~ '")', 'label': 'Excluir' }]) %}
+	{% endif %} #}
+
+	{% include 'AppBundle:Core:header-actions.html.twig' with { 'buttons': buttons } %}
+{% endblock %}
+
+{% block scripts %}
+	{% set route = app.request.get('_route')|split('_') %}
+
+	<script>
+		between.backButton('{{ route.0 }}');
+	</script>
+{% endblock %}

@@ -1,0 +1,16 @@
+/web/bundles/
+/web/assets/img/logos/*
+!/web/assets/img/logos/.gitkeep
+/app/bootstrap.php.cache
+/app/cache/*
+/app/config/parameters.yml
+/app/logs/*
+!app/cache/.gitkeep
+!app/logs/.gitkeep
+/build/
+/vendor/
+/bin/
+/composer.phar
+*.sublime-project
+*.sublime-workspace
+composer.lock

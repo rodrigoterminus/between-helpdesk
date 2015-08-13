@@ -1,0 +1,8 @@
+<tr>
+    <td class="mdl-data-table__cell--non-numeric">{{ level }} - {{ row.name }} - Chilren: {{ row.children }} - Parent: {{ row.parent }}</td>
+    <td class="mdl-data-table__cell--non-numeric">
+        <a id="list-action-1" href="{{ path('category_edit', { 'id': row.id }) }}"><i class="material-icons">edit</i></a>
+
+        <div class="mdl-tooltip" for="list-action-1">Editar</div>
+    </td>
+</tr>

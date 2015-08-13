@@ -1,0 +1,130 @@
+AppBundle\Entity\Ticket:
+    type: entity
+    table: ticket
+    indexes:
+        fk_tickets_user_idx:
+            columns:
+                - created_by
+        fk_tickets_user1_idx:
+            columns:
+                - attendant_id
+        fk_tickets_project1_idx:
+            columns:
+                - project_id
+        fk_tickets_customer1_idx:
+            columns:
+                - customer_id
+        fk_tickets_category1_idx:
+            columns:
+                - category_id
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        number:
+            type: string
+            nullable: false
+            length: 14
+            fixed: false
+            comment: ''
+        subject:
+            type: string
+            nullable: false
+            length: 100
+            fixed: false
+            comment: ''
+        status:
+            type: string
+            nullable: false
+            length: null
+            fixed: false
+            comment: ''
+            default: created
+        priority:
+            type: string
+            nullable: true
+            length: null
+            fixed: false
+            comment: ''
+        createdAt:
+            type: datetime
+            nullable: false
+            comment: ''
+            column: created_at
+        finishedAt:
+            type: datetime
+            nullable: true
+            comment: ''
+            column: finished_at
+        modifiedAt:
+            type: datetime
+            nullable: true
+            comment: ''
+            column: modified_at
+    manyToOne:
+        createdBy:
+            targetEntity: User
+            cascade: {  }
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                created_by:
+                    referencedColumnName: id
+            orphanRemoval: false
+        finishedBy:
+            targetEntity: User
+            cascade: {  }
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                finished_by:
+                    referencedColumnName: id
+            orphanRemoval: false
+        attendant:
+            targetEntity: User
+            cascade: {  }
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                attendant_id:
+                    referencedColumnName: id
+            orphanRemoval: false
+        project:
+            targetEntity: Project
+            cascade: {  }
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                project_id:
+                    referencedColumnName: id
+            orphanRemoval: false
+        customer:
+            targetEntity: Customer
+            cascade: {  }
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                customer_id:
+                    referencedColumnName: id
+            orphanRemoval: false
+        category:
+            targetEntity: Category
+            cascade: {  }
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                category_id:
+                    referencedColumnName: id
+            orphanRemoval: false
+    oneToMany:
+        entries:
+            targetEntity: Entry
+            cascade: ['persist']
+            mappedBy: ticket
+    lifecycleCallbacks: {  }

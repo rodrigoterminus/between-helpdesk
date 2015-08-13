@@ -1,0 +1,65 @@
+a { color: #FF6F00; }
+form { width: 100%; }
+select { height: 27px; }
+
+#floating-actions {
+  position: fixed;
+  display: block;
+  right: -10px;
+  bottom: -10px;
+  margin-right: 40px;
+  margin-bottom: 40px;
+  z-index: 3;
+  text-align: center;
+}
+
+#floating-actions ul { padding: 0; margin: 0; list-style: none; min-width: 0; }
+#floating-actions ul li { padding: 0 8px 15px 0; margin: 0; }
+#floating-actions .mdl-menu__outline { background: transparent; box-shadow: none; }
+
+#header-actions .mdl-button { margin-left: 10px; }
+
+.mdl-data-table { width: 100%; }
+
+.mdl-layout--fixed-drawer>.mdl-layout__header .mdl-layout__header-row { padding-left: 52px; }
+
+.demo-layout .demo-navigation .mdl-navigation__link:hover { background-color: #E0E0E0; }
+.demo-layout .mdl-layout__header .mdl-layout__drawer-button { color: white; }
+
+.demo-drawer-header { background: url('../images/img-1.png'); left top no-repeat transparent; }
+
+/* Text fields */
+.mdl-textfield { width: 100%; }
+.mdl-textfield__error ul,
+.mdl-textfield__error li { padding: 0; margin: 0; list-style: none; }
+
+.fake-label { font-size: 12px; margin-top: -16px; margin-bottom: -2px; display: block; width: 100%; }
+.fake-field { padding: 4px 0; display: inline-block;; }
+
+/* Cards */
+.mdl-card { width: 100%; }
+.mdl-card__supporting-text hr { margin: 1em -16px; }
+
+.text-content { display: inline-block; float: left; }
+.icon-text-content { margin-right: 16px; float: left; }
+
+/* FOSUser */
+body.fosuser { background: url('../images/gplaypattern.png') left top repeat transparent; position: relative; }
+body.fosuser .mdl-card { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+.mdl-menu a { text-decoration: none; }
+
+/* Generic */
+#btn-send-message { position: absolute; right: 6px; bottom: 32px; z-index: 3; }
+
+.nm { margin: 0; }
+.nmv { margin-top: 0; margin-bottom: 0; }
+.nmh { margin-left: 0; margin-right: 0; }
+.nmt { margin-top: 0; }
+.nmb { margin-bottom: 0; }
+
+.np { padding: 0; }
+.npv { padding-top: 0; padding-bottom: 0; }
+.nph { padding-left: 0; padding-right: 0; }
+.npt { padding-top: 0; }
+.npb { padding-bottom: 0; }

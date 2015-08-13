@@ -1,0 +1,64 @@
+AppBundle\Entity\Activity:
+    type: entity
+    table: activity
+    indexes:
+        fk_activity_user1_idx:
+            columns:
+                - user_id
+        fk_activity_ticket1_idx:
+            columns:
+                - ticket_id
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        type:
+            type: string
+            nullable: false
+            length: 45
+            fixed: false
+            comment: ''
+        description:
+            type: text
+            nullable: false
+            length: null
+            fixed: false
+            comment: ''
+        old:
+            type: text
+            nullable: true
+            length: null
+            fixed: false
+            comment: ''
+        new:
+            type: text
+            nullable: true
+            length: null
+            fixed: false
+            comment: ''
+    manyToOne:
+        user:
+            targetEntity: User
+            cascade: {  }
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                user_id:
+                    referencedColumnName: id
+            orphanRemoval: false
+        ticket:
+            targetEntity: Ticket
+            cascade: {  }
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                ticket_id:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

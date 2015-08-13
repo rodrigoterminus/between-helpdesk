@@ -1,0 +1,22 @@
+{% set title = 'Minha conta' %}
+
+{% extends '::base.html.twig' %}
+
+{% block body %}
+	<div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-phone">
+
+		<div class="mdl-card mdl-shadow--4dp">
+	        <div class="mdl-card__supporting-text">
+				<p><b>Nome</b><br>{{ user.name }}</p>
+				<hr>
+				<p><b>Email</b><br>{{ user.email }}</p>
+				<hr>
+				<b>Último acesso</b><br>{{ user.lastLogin.date|date('d/m/Y H:i:s') }}</p>
+	        </div>
+	        <div class="mdl-card__actions mdl-card--border">
+	          <a href="{{ path('fos_user_change_password') }}" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Alterar minha senha</a>
+	        </div>
+	    </div>
+
+    </div>
+{% endblock %}

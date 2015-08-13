@@ -1,0 +1,96 @@
+{% extends '::base.html.twig' %}
+
+{% if '_edit' in app.request.get('_route') %}
+	{% set form = edit_form %}
+{% endif %}
+
+{% block body -%}
+	{{ form_start(form) }}
+	
+		<div class="mdl-cell mdl-cell--4-col">
+
+			<div class="mdl-card mdl-shadow--2dp">
+				<div class="mdl-card__supporting-text">
+			    	{# {{ dump(form) }} #}
+			    	<div class="demo-grid-ruler mdl-grid">
+					
+						{% for fieldName, field in form.children %}
+							{# {{ dump(field.vars.block_prefixes) }} #}
+
+							<div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-phone">
+
+							{% if fieldName != '_token' %}
+								{% if field.vars.block_prefixes.1 == 'checkbox' %}
+									{{ form_label(field) }}
+									<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="{{ field.vars.id }}">
+										{{ form_widget(field, { 'attr': { 'class': 'mdl-switch__input' }}) }}
+										<span class="mdl-switch__label"></span>
+									</label>
+
+								{% elseif field.vars.block_prefixes.1 == 'choice' or field.vars.block_prefixes.1 == 'collection' %}
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label textfield-demo">
+										{{ form_label(field) }}
+									    {{ form_widget(field, { 'attr': { 'class': 'mdl-textfield__input' }}) }}
+									    <span class="mdl-switch__label"></span>
+									</div>
+
+								{% elseif field.vars.block_prefixes.0 == 'button' %}
+									<div style="display: none;">{{ form_widget(field) }}</div>
+
+								{% else %}
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label textfield-demo">
+									    {{ form_widget(field, { 'attr': { 'class': 'mdl-textfield__input' }}) }}
+									    <label class="mdl-textfield__label" for="{{ field.vars.id }}">{{ form_label(field) }}</label>
+									</div>
+								{% endif %}
+							{% endif %}
+
+							</div>
+
+						{% endfor %}
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+    
+	{# {{ dump(app.request.attributes) }} #}
+	<div style="display: none;">
+		{{ form_rest(form) }}
+	</div>
+
+	{{ form_end(form) }}
+
+	{% if '_edit' in app.request.get('_route') %}
+		<div style="display: none;">{{ form(delete_form) }}</div>
+	{% endif %}	
+{% endblock %}
+
+{#{% block fab_action %}
+ 	{% set fab = { 'icon': 'save', 'action_type': 'javascript', 'action': 'between.formSubmit()' } %}
+
+	{% include 'AppBundle:Core:fab.html.twig' with { 'fab': fab } %}
+{% endblock %} #}
+
+{% block header_actions %}
+	{% set buttons = [] %}
+	{% set buttons = buttons|merge([{ 'icon': 'save', 'action_type': 'javascript', 'action': 'between.formSubmit("' ~ form.vars.name ~ '")', 'label': 'Salvar' }]) %}
+
+	{# {% if '_edit' in app.request.get('_route') %}
+		{% set buttons = buttons|merge([{ 'icon': 'delete', 'action_type': 'javascript', 'action': 'between.formSubmit("' ~ delete_form.vars.name ~ '")', 'label': 'Excluir' }]) %}
+	{% endif %} #}
+
+	{% include 'AppBundle:Core:header-actions.html.twig' with { 'buttons': buttons } %}
+{% endblock %}
+
+{% block scripts %}
+	{% set route = app.request.get('_route')|split('_') %}
+	{% set routeJs = 'assets/js/' ~ route.0 ~ '.js' %}
+
+	<script src="{{ asset(routeJs) }}"></script>
+	<script>
+		between.backButton('{{ route.0 }}');
+		{{ route.0 ~ '.init();' }}
+	</script>
+{% endblock %}

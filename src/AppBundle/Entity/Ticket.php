@@ -1,0 +1,449 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Ticket
+ */
+class Ticket
+{
+    /**
+     * @var integer
+     */
+    private $id;
+
+    /**
+     * @var string
+     */
+    private $status;
+
+    /**
+     * @var string
+     */
+    private $priority;
+
+    /**
+     * @var \DateTime
+     */
+    private $createdAt;
+
+    /**
+     * @var \DateTime
+     */
+    private $modifiedAt;
+
+    /**
+     * @var \AppBundle\Entity\User
+     */
+    private $createdBy;
+
+    /**
+     * @var \AppBundle\Entity\User
+     */
+    private $attendant;
+
+    /**
+     * @var \AppBundle\Entity\Project
+     */
+    private $project;
+
+    /**
+     * @var \AppBundle\Entity\Customer
+     */
+    private $customer;
+
+    /**
+     * @var \AppBundle\Entity\Category
+     */
+    private $category;
+
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set status
+     *
+     * @param string $status
+     * @return Ticket
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return string 
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Set priority
+     *
+     * @param string $priority
+     * @return Ticket
+     */
+    public function setPriority($priority)
+    {
+        $this->priority = $priority;
+
+        return $this;
+    }
+
+    /**
+     * Get priority
+     *
+     * @return string 
+     */
+    public function getPriority()
+    {
+        return $this->priority;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Ticket
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime 
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set modifiedAt
+     *
+     * @param \DateTime $modifiedAt
+     * @return Ticket
+     */
+    public function setModifiedAt($modifiedAt)
+    {
+        $this->modifiedAt = $modifiedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get modifiedAt
+     *
+     * @return \DateTime 
+     */
+    public function getModifiedAt()
+    {
+        return $this->modifiedAt;
+    }
+
+    /**
+     * Set createdBy
+     *
+     * @param \AppBundle\Entity\User $createdBy
+     * @return Ticket
+     */
+    public function setCreatedBy(\AppBundle\Entity\User $createdBy = null)
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    /**
+     * Get createdBy
+     *
+     * @return \AppBundle\Entity\User 
+     */
+    public function getCreatedBy()
+    {
+        return $this->createdBy;
+    }
+
+    /**
+     * Set attendant
+     *
+     * @param \AppBundle\Entity\User $attendant
+     * @return Ticket
+     */
+    public function setAttendant(\AppBundle\Entity\User $attendant = null)
+    {
+        $this->attendant = $attendant;
+
+        return $this;
+    }
+
+    /**
+     * Get attendant
+     *
+     * @return \AppBundle\Entity\User 
+     */
+    public function getAttendant()
+    {
+        return $this->attendant;
+    }
+
+    /**
+     * Set project
+     *
+     * @param \AppBundle\Entity\Project $project
+     * @return Ticket
+     */
+    public function setProject(\AppBundle\Entity\Project $project = null)
+    {
+        $this->project = $project;
+
+        return $this;
+    }
+
+    /**
+     * Get project
+     *
+     * @return \AppBundle\Entity\Project 
+     */
+    public function getProject()
+    {
+        return $this->project;
+    }
+
+    /**
+     * Set customer
+     *
+     * @param \AppBundle\Entity\Customer $customer
+     * @return Ticket
+     */
+    public function setCustomer(\AppBundle\Entity\Customer $customer = null)
+    {
+        $this->customer = $customer;
+
+        return $this;
+    }
+
+    /**
+     * Get customer
+     *
+     * @return \AppBundle\Entity\Customer 
+     */
+    public function getCustomer()
+    {
+        return $this->customer;
+    }
+
+    /**
+     * Set category
+     *
+     * @param \AppBundle\Entity\Category $category
+     * @return Ticket
+     */
+    public function setCategory(\AppBundle\Entity\Category $category = null)
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * Get category
+     *
+     * @return \AppBundle\Entity\Category 
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
+    /**
+     * @var string
+     */
+    private $subject;
+
+
+    /**
+     * Set subject
+     *
+     * @param string $subject
+     * @return Ticket
+     */
+    public function setSubject($subject)
+    {
+        $this->subject = $subject;
+
+        return $this;
+    }
+
+    /**
+     * Get subject
+     *
+     * @return string 
+     */
+    public function getSubject()
+    {
+        return $this->subject;
+    }
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $entries;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->entries = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add entries
+     *
+     * @param \AppBundle\Entity\Entry $entries
+     * @return Ticket
+     */
+    public function addEntry(\AppBundle\Entity\Entry $entries)
+    {
+        $this->entries[] = $entries;
+
+        return $this;
+    }
+
+    /**
+     * Remove entries
+     *
+     * @param \AppBundle\Entity\Entry $entries
+     */
+    public function removeEntry(\AppBundle\Entity\Entry $entries)
+    {
+        $this->entries->removeElement($entries);
+    }
+
+    /**
+     * Get entries
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getEntries()
+    {
+        return $this->entries;
+    }
+
+    /**
+     * Set entries
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function setEntries($entries)
+    {
+        $this->entries = $entries;
+
+        return $this;
+    }
+
+    /**
+     * @var string
+     */
+    private $number;
+
+
+    /**
+     * Set number
+     *
+     * @param string $number
+     * @return Ticket
+     */
+    public function setNumber($number)
+    {
+        $this->number = $number;
+
+        return $this;
+    }
+
+    /**
+     * Get number
+     *
+     * @return string 
+     */
+    public function getNumber()
+    {
+        return $this->number;
+    }
+    /**
+     * @var \DateTime
+     */
+    private $finishedAt;
+
+
+    /**
+     * Set finishedAt
+     *
+     * @param \DateTime $finishedAt
+     * @return Ticket
+     */
+    public function setFinishedAt($finishedAt)
+    {
+        $this->finishedAt = $finishedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get finishedAt
+     *
+     * @return \DateTime 
+     */
+    public function getFinishedAt()
+    {
+        return $this->finishedAt;
+    }
+    /**
+     * @var \AppBundle\Entity\User
+     */
+    private $finishedBy;
+
+
+    /**
+     * Set finishedBy
+     *
+     * @param \AppBundle\Entity\User $finishedBy
+     * @return Ticket
+     */
+    public function setFinishedBy(\AppBundle\Entity\User $finishedBy = null)
+    {
+        $this->finishedBy = $finishedBy;
+
+        return $this;
+    }
+
+    /**
+     * Get finishedBy
+     *
+     * @return \AppBundle\Entity\User 
+     */
+    public function getFinishedBy()
+    {
+        return $this->finishedBy;
+    }
+}

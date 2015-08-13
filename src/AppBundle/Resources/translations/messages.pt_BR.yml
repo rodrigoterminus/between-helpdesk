@@ -1,0 +1,19 @@
+customer.activated.: Não
+customer.activated.0: Não
+customer.activated.1: Sim
+
+user.enabled.: Não
+user.enabled.0: Não
+user.enabled.1: Sim
+
+user.roles.ROLE_ADMIN: Atendente
+user.roles.ROLE_DEFAULT: Cliente
+
+ticket.priority.low: Baixa
+ticket.priority.medium: Média
+ticket.priority.high: Alta
+
+ticket.status.created: Aguardando atendimento
+ticket.status.running: Em atendimento
+ticket.status.waiting: Aguardando cliente
+ticket.status.finished: Finalizado

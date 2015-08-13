@@ -1,0 +1,243 @@
+{% extends '::base.html.twig' %}
+
+{% set form = edit_form %}
+
+{% block body -%}
+	{{ form_start(form) }}
+	
+		<div class="mdl-cell mdl-cell--12-col">
+
+			<div class="mdl-card mdl-shadow--2dp">
+				<div class="mdl-card__title">
+		        	<h2 class="mdl-card__title-text">Informações básicas</h2>
+		        </div>
+				<div class="mdl-card__supporting-text npt">
+			    	{# {{ dump(form) }} #}
+			    	<div class="mdl-grid">
+			    		<div class="mdl-cell mdl-cell--12-col">
+			    			<div class="mdl-textfield mdl-js-textfield">
+							    <span class="fake-label">Assunto</span>
+							    <span class="fake-field">{{ entity.subject }}</span>
+							</div>
+			    		</div>
+
+			    		<div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
+			    			<div class="mdl-textfield mdl-js-textfield">
+								<span class="fake-label">Cliente</span>
+							    <span class="fake-field">{{ entity.customer.name }}</span>
+						    </div>
+			    		</div>
+
+			    		<div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
+			    			<div class="mdl-textfield mdl-js-textfield">
+								<span class="fake-label">Criado por</span>
+							    <span class="fake-field">{% if entity.createdBy.id == app.user.id %}Você{% else %}{{ entity.createdBy.name }}{% endif %}</span>
+						    </div>
+			    		</div>
+
+			    		<div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
+			    			<div class="mdl-textfield mdl-js-textfield">
+								<span class="fake-label">Criado em</span>
+							    <span class="fake-field">{{ entity.createdAt|date('d/m/Y H:i:s') }}</span>
+						    </div>
+			    		</div>
+
+			    		<div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
+			    			<div class="mdl-textfield mdl-js-textfield">
+								<span class="fake-label">Atendente</span>
+							    {% if entity.attendant == null %}
+							    	<span class="fake-field"><i>Aguardando atendimento</i></span>
+							    {% else %}
+							    	<span class="fake-field">{{ entity.attendant.name }}</span>
+							    {% endif %}
+						    </div>
+			    		</div>
+
+			    		<div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
+			    			<div class="mdl-textfield mdl-js-textfield">
+								<span class="fake-label">Status</span>
+							    <span class="fake-field">{{ ('ticket.status.' ~ entity.status)|trans }}</span>
+							</div>
+			    		</div>
+			    	
+						{% if app.user.isAdmin() %}
+				    		<div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
+								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+								    {{ form_label(form.category, null, { 'label_attr': { 'class': 'fake-label' } }) }}
+								    {{ form_widget(form.category, { 'attr': { 'class': 'mdl-textfield__input' }}) }}
+								    <span class="mdl-switch__label"></span>
+								</div>
+				    		</div>
+
+				    		<div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
+								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+								    {{ form_label(form.priority, null, { 'label_attr': { 'class': 'fake-label' } }) }}
+								    {{ form_widget(form.priority, { 'attr': { 'class': 'mdl-textfield__input' }}) }}
+								    <span class="mdl-switch__label"></span>
+								</div>
+				    		</div>
+
+				    		<div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
+								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+								    {{ form_label(form.project, null, { 'label_attr': { 'class': 'fake-label' } }) }}
+								    {{ form_widget(form.project, { 'attr': { 'class': 'mdl-textfield__input' }}) }}
+								    <span class="mdl-switch__label"></span>
+								</div>
+				    		</div>
+				    	{% else %}
+				    		<div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
+				    			<div class="mdl-textfield mdl-js-textfield">
+									<span class="fake-label">Categoria</span>
+							    	<span class="fake-field">{{ entity.category.name }}</span>
+						    	</div>
+				    		</div>
+
+				    		<div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
+				    			<div class="mdl-textfield mdl-js-textfield">
+									<span class="fake-label">Prioridade</span>
+							    	<span class="fake-field">{{ ('ticket.priority.' ~ entity.priority)|trans }}</span>
+						    	</div>
+				    		</div>
+
+				    		<div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
+				    			<div class="mdl-textfield mdl-js-textfield">
+									<span class="fake-label">Projeto</span>
+									{% if entity.project %}
+										<span class="fake-field">{{ entity.project.name }}</span>
+									{% else %}
+										<span class="fake-field"><i>Nenhum</i></span>
+									{% endif %}
+								</div>
+				    		</div>
+						{% endif %}
+			    	</div>
+
+				</div>
+			</div>
+
+		</div>
+
+		<div class="mdl-cell mdl-cell--12-col">
+
+			<div class="mdl-card mdl-shadow--2dp">
+				<div class="mdl-card__title" style="margin-bottom: -12px;">
+		        	<h2 class="mdl-card__title-text">Detalhamento do chamado</h2>
+		        </div>
+				
+		        {% for entry in entity.entries if entry.id != null %}
+					<hr>
+					<div class="mdl-card__supporting-text mdl-card--border npv">
+				    	<div class="mdl-grid no-padding-v">
+				    		<div class="mdl-cell mdl-cell--12-col">
+								{% if (entry.origin == 'customer' and app.user.isAdmin()) or (entry.origin == 'admin' and app.user.isAdmin() == false) %}
+									<i class="material-icons icon-text-content">account_box</i>
+								{% endif %}				    			
+
+				    			<div class="text-content">
+									{{ entry.text|nl2br }}
+									
+									<br><br>
+									Postado por <b>{% if entry.user.id == app.user.id %}você{% else %}{{ entry.user.name }}{% endif %}</b><br>
+									<i>Em {{ entry.createdAt|date('d/m/Y H:i:s') }}</i>
+								</div>
+				    		</div>
+				    	</div>
+					</div>
+		        {% endfor %}
+
+				{% if entity.finishedAt == null %}
+	    			{% for entry in form.entries %}
+						{% if loop.last %}
+							<hr>
+							<div class="mdl-card__supporting-text mdl-card--border npv">
+						    	<div class="mdl-grid">
+						    		<div class="mdl-cell mdl-cell--12-col" style="position: relative;">
+										<div class="mdl-textfield mdl-js-textfield" style="margin-top: -30px;">
+											{{ form_widget(entry.text, { 'attr': { 'class': 'mdl-textfield__input', 'rows': 10 }}) }}
+											{{ form_label(entry.text, null, { 'label_attr': { 'class': 'mdl-textfield__label', 'for': entry.text.vars.id } }) }}
+										</div>
+										
+										{# {% if 'ROLE_DEFAULT' in app.user.roles %}
+											<button id="btn-send-message" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-color--amber-900 mdl-color-text--white">
+												<i class="material-icons">send</i>
+											</button>
+										{% endif %} #}
+						    		</div>
+						    	</div>
+							</div>
+						{% endif %}
+	    			{% endfor %}
+	    		{% else %}
+	    			<hr>
+					<div class="mdl-card__supporting-text mdl-card--border npv">
+				    	<div class="mdl-grid no-padding-v">
+				    		<div class="mdl-cell mdl-cell--12-col nmt">
+				    			<i class="material-icons icon-text-content">check_circle</i>
+				    			<div class="text-content">
+									Chamado finalizado por <b>{% if entity.finishedBy.id == app.user.id %}você{% else %}{{ entity.finishedBy.name }}{% endif %}</b><br>
+									<i>Em {{ entity.finishedAt|date('d/m/Y H:i:s') }}</i>				    				
+				    			</div>
+				    		</div>
+				    	</div>
+					</div>
+    			{% endif %}
+
+			</div>
+
+		</div>
+    
+	{# {{ dump(app.request.attributes) }} #}
+	<div style="display: none;">
+		{{ form_rest(form) }}
+	</div>
+
+	{{ form_end(form) }}
+{% endblock %}
+
+{% block fab_action %}
+	{% if entity.status != 'finished' or app.user.isAdmin() %}
+	 	{% set fab = {'icon': 'more_vert', 'label': 'Mais ações'} %}
+
+	    {% set buttons = [] %}
+
+	    {% if entity.status != 'finished' %}
+	    	{% set buttons = buttons|merge([{'icon': 'done', 'label': 'Finalizar chamado', 'action_type': 'javascript', 'action': 'ticket.finish()'}]) %}
+	    {% elseif app.user.isAdmin() %}
+	    	{% set buttons = buttons|merge([{'icon': 'lock_open', 'label': 'Reabrir chamado', 'action_type': 'javascript', 'action': 'ticket.reopen()'}]) %}
+	    {% endif %}
+
+		{% if entity.status != 'finished' and app.user.isAdmin() %}
+			{% if entity.attendant != null and entity.attendant.id == app.user.id %}
+				{% set buttons = buttons|merge([{'icon': 'forward', 'label': 'Transferir'}]) %}
+			{% else %}
+				{% set buttons = buttons|merge([{'icon': 'announcement', 'label': 'Assumir chamado'}]) %}
+			{% endif %}
+		{% endif %}
+		
+		{% if entity.status != 'finished' %}
+	    	{# {% set buttons = buttons|merge([{'icon': 'attach_file', 'action_type': 'route', 'action': 'customer_new', 'label': 'Anexar arquivos'}]) %} #}
+	    {% endif %}
+
+	    {% include 'AppBundle:Core:fab.html.twig' with { 'fab': fab, 'buttons': buttons } %}
+	{% endif %}
+{% endblock %} 
+
+{% block header_actions %}
+	{% if entity.status != 'finished' %}
+		{% set buttons = [] %}
+		{% set buttons = buttons|merge([{ 'icon': 'save', 'action_type': 'javascript', 'action': 'between.formSubmit("' ~ form.vars.name ~ '")', 'label': 'Salvar' }]) %}
+
+		{% include 'AppBundle:Core:header-actions.html.twig' with { 'buttons': buttons } %}
+	{% endif %}
+{% endblock %}
+
+{% block scripts %}
+	<script src="{{ asset('assets/js/ticket.js') }}"></script>
+
+	{% set route = app.request.get('_route')|split('_') %}
+
+	<script>
+		between.backButton('{{ route.0 }}');
+		ticket.init();
+	</script>
+{% endblock %}

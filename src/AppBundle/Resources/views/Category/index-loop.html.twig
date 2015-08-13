@@ -1,0 +1,27 @@
+{% if id is defined %}
+	{% for row in result if row.parent == id %}
+		{% include 'AppBundle:Category:index-row.html.twig' with {'row': row, 'level': level} %}
+
+		{{1}}
+	{% endfor %}
+{% else %}
+	{% for row in result %}
+		{% include 'AppBundle:Category:index-row.html.twig' with {'row': row, 'level': level} %}
+
+		{% set result = result|merge() %}
+
+		{% if row.children > 0 %}	
+			{# {% if parent != null and parent == row.id %} #}
+				{% set level = level + 1 %}
+
+				{% include 'AppBundle:Category:index-loop.html.twig' with {'result': result, 'id': row.id, 'level': level} only %}
+
+				{# {{4}} #}
+			{# {% endif %} #}
+
+			{{3}}
+		{% endif %}
+
+		{{2}}
+	{% endfor %}
+{% endif %}

@@ -1,0 +1,43 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+        <thead>
+            <tr>
+                {# <th width="5%">Id</th> #}
+                <th class="mdl-data-table__cell--non-numeric">Name</th>
+                <th width="10%" class="mdl-data-table__cell--non-numeric">Activated</th>
+                <th width="5%" class="mdl-data-table__cell--non-numeric">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for entity in entities %}
+            <tr>
+                {# <td><a href="{{ path('customer_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td> #}
+                <td class="mdl-data-table__cell--non-numeric">{{ entity.name }}</td>
+                <td class="mdl-data-table__cell--non-numeric">{{ entity.activated }}</td>
+                <td class="mdl-data-table__cell--non-numeric">
+                    {# <a href="{{ path('customer_show', { 'id': entity.id }) }}"><i class="material-icons">visibility</i></a> #}
+                    <a id="list-action-1" href="{{ path('customer_edit', { 'id': entity.id }) }}"><i class="material-icons">edit</i></a>
+
+                    <div class="mdl-tooltip" for="list-action-1">Editar</div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block fab_action %}
+    {# {% set fab = {'icon': 'more_vert'} %}
+
+    {% set buttons = [] %}
+    {% set buttons = buttons|merge([{'icon': 'search', 'label': 'Pesquisar'}]) %}
+    {% set buttons = buttons|merge([{'icon': 'add', 'action_type': 'route', 'action': 'customer_new', 'label': 'Novo cliente'}]) %}
+
+    {% include 'AppBundle:Core:fab.html.twig' with { 'fab': fab, 'buttons': buttons } %} #}
+
+    {% set fab = { 'icon': 'add', 'action_type': 'route', 'action': 'customer_new' } %}
+
+    {% include 'AppBundle:Core:fab.html.twig' with { 'fab': fab } %}
+{% endblock %}
