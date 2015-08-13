@@ -28,6 +28,17 @@ select { height: 27px; }
 
 .demo-drawer-header { background: url('../images/img-1.png'); left top no-repeat transparent; }
 
+/*.demo-content { position: relative; }*/
+
+/* Search */
+.no-result { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #757575; min-width: 240px; } 
+
+@media screen and (min-width: 1025px) {
+	.no-result {
+	    margin-left: 120px;
+	}
+}
+
 /* Text fields */
 .mdl-textfield { width: 100%; }
 .mdl-textfield__error ul,
@@ -37,7 +48,7 @@ select { height: 27px; }
 .fake-field { padding: 4px 0; display: inline-block;; }
 
 /* Cards */
-.mdl-card { width: 100%; }
+.mdl-card { width: 100%; min-height: 0; }
 .mdl-card__supporting-text hr { margin: 1em -16px; }
 
 .text-content { display: inline-block; float: left; }
