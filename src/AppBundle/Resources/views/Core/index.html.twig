@@ -1,11 +1,33 @@
 {% extends '::base.html.twig' %}
 
-{# {% block header_actions %}
-	<button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="hdrbtn">
-		<i class="material-icons">more_vert</i>
-	</button>
-	<ul class="mdl-menu mdl-js-menu mdl-js-ripple-effect mdl-menu--bottom-right" for="hdrbtn">
-		<a href="{{ path('fos_user_change_password') }}"><li class="mdl-menu__item">Alterar senha</li></a>
-		<a href="{{ path('fos_user_profile_show') }}"><li class="mdl-menu__item">Minha conta</li></a>
-	</ul>
-{% endblock %} #}
+{% block body %}
+	<div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-phone">
+		<div class="mdl-card mdl-shadow--2dp">
+			<div class="mdl-card__title">
+	        	<h2 class="mdl-card__title-text">Seja bem vindo ao Between!</h2>
+	        </div>	        
+
+			{% if app.user.isAdmin() %}
+				<div class="mdl-card__supporting-text">
+					Between é a forma mais ágil, simples e bonita de conectar seus clientes à sua empresa.
+					<br>
+					<br>
+					Quer ver seus chamados? Simples, é só clicar no botão abaixo.
+		        </div>
+		        <div class="mdl-card__actions mdl-card--border">
+		        	<a href="{{ path('ticket') }}" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Visualizar chamados</a>
+			{% else %}
+				<div class="mdl-card__supporting-text">
+					Between é a forma mais ágil, simples e bonita de criar e gerenciar suas solicitações ao seu parceiro.
+					<br>
+					<br>
+					Precisando abrir um chamado? Simples, é só clicar no botão abaixo.
+		        </div>
+		        <div class="mdl-card__actions mdl-card--border">
+		        	<a href="{{ path('ticket_new') }}" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Abrir um novo chamado</a>
+			{% endif %}
+				
+	        </div>
+        </div>
+	</div>
+{% endblock %}
