@@ -60,7 +60,7 @@
 							</div>
 			    		</div>
 			    	
-						{% if app.user.isAdmin() %}
+						{% if app.user.isAdmin() and entity.status != 'finished' %}
 				    		<div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
 								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 								    {{ form_label(form.category, null, { 'label_attr': { 'class': 'fake-label' } }) }}

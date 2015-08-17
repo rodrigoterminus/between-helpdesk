@@ -25,7 +25,21 @@
 			    	</div>
 
 			    	<div class="mdl-grid">
-			    		<div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-phone">
+						<div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
+							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+								{% if app.user.isAdmin() %}
+									{{ form_label(form.customer) }}
+								    {{ form_widget(form.customer, { 'attr': { 'class': 'mdl-textfield__input' }}) }}
+								    <span class="mdl-switch__label"></span>
+								{% else %}
+									<span class="fake-label">Cliente</span>
+							    	<span class="fake-field">{{ app.user.customer.name }}</span>
+								{% endif %}
+							    
+							</div>
+			    		</div>
+
+			    		<div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
 							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 							    {{ form_label(form.category) }}
 							    {{ form_widget(form.category, { 'attr': { 'class': 'mdl-textfield__input' }}) }}
@@ -33,7 +47,7 @@
 							</div>
 			    		</div>
 
-			    		<div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-phone">
+			    		<div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
 							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 							    {{ form_label(form.priority) }}
 							    {{ form_widget(form.priority, { 'attr': { 'class': 'mdl-textfield__input' }}) }}
@@ -41,7 +55,7 @@
 							</div>
 			    		</div>
 
-			    		<div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-phone">
+			    		<div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
 							<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 							    {{ form_label(form.project) }}
 							    {{ form_widget(form.project, { 'attr': { 'class': 'mdl-textfield__input' }}) }}
@@ -68,7 +82,7 @@
 			    			{% for entry in form.entries %}
 								<div class="mdl-textfield mdl-js-textfield">
 									{{ form_widget(entry.text, { 'attr': { 'class': 'mdl-textfield__input', 'rows': 10 }}) }}
-									{{ form_label(entry.text, null, { 'label_attr': { 'class': 'mdl-textfield__label', 'for': entry.text.vars.id } }) }}
+									<label for="{{ entry.text.vars.id }}" class="mdl-textfield__label">Informe o problema ou solicitação</label>
 								</div>
 			    			{% endfor %}
 			    		</div>
@@ -105,9 +119,12 @@
 {% endblock %}
 
 {% block scripts %}
+	<script src="{{ asset('assets/js/ticket.js') }}"></script>
+	
 	{% set route = app.request.get('_route')|split('_') %}
 
 	<script>
 		between.backButton('{{ route.0 }}');
+		ticket.init();
 	</script>
 {% endblock %}

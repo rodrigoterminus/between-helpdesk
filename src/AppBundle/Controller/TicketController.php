@@ -71,6 +71,14 @@ class TicketController extends Controller
         }
 
         $search = $this->get('infinity.search')
+            ->addButton(array(
+                'label' => 'Novo',
+                'icon' => 'add',
+                'type' => 'fab',
+                'action_type' => 'route',
+                'action' => 'ticket_new',
+                )
+            )
             ->addColumn(array('name' => 'number', 'label' => '#', 'type' => 'number', 'width' => '7%'))
             ->addColumn(array('name' => 'customer', 'label' => 'Cliente', 'type' => 'string', 'width' => '20%', 'non_numeric' => true))
             ->addColumn(array('name' => 'status', 'label' => 'Status', 'type' => 'string', 'width' => '10%', 'non_numeric' => true, 'translated' => true))
@@ -78,23 +86,23 @@ class TicketController extends Controller
             // ->addColumn(array('name' => 'project', 'label' => 'Projeto', 'type' => 'string', 'width' => '10%', 'non_numeric' => true))
             // ->addColumn(array('name' => 'createdBy', 'label' => 'Usuário', 'type' => 'string', 'width' => '10%', 'non_numeric' => true))
             ->addColumn(array('name' => 'attendant', 'label' => 'Atendente', 'type' => 'string', 'width' => '10%', 'non_numeric' => true))
-            ->addColumn(array('name' => 'createdAt', 'label' => 'Criação', 'type' => 'datetime', 'width' => '10%', 'non_numeric' => true))
+            ->addColumn(array('name' => 'createdAt', 'label' => 'Criado em', 'type' => 'datetime', 'width' => '10%', 'non_numeric' => true))
             // ->addColumn(array('name' => 'modifiedAt', 'label' => 'Modificação', 'type' => 'datetime', 'width' => '10%', 'non_numeric' => true))
             ->addColumn(array('name' => 'actions', 'label' => 'Ações', 'type' => 'actions', 'width' => '3%', 'actions' => array(
-                    array('icon' => 'edit', 'label' => 'Editar', 'type' => 'route', 'route_name' => 'ticket_edit', 'arguments' => array('number' => ':number')),
+                    array('icon' => 'visibility', 'label' => 'Visualizar', 'type' => 'route', 'route_name' => 'ticket_edit', 'arguments' => array('number' => ':number')),
                 )
             ))
             ->setTranslatePrefix('ticket');
 
-            if (!$user->isAdmin())
-                $search->addButton(array(
-                    'label' => 'Novo',
-                    'icon' => 'add',
-                    'type' => 'fab',
-                    'action_type' => 'route',
-                    'action' => 'ticket_new',
-                    )
-                );
+            // if (!$user->isAdmin())
+            //     $search->addButton(array(
+            //         'label' => 'Novo',
+            //         'icon' => 'add',
+            //         'type' => 'fab',
+            //         'action_type' => 'route',
+            //         'action' => 'ticket_new',
+            //         )
+            //     );
 
         $result = $query->getQuery()->getResult();
 
@@ -145,11 +153,13 @@ class TicketController extends Controller
             $entity
                 ->setNumber($number)
                 ->setCreatedBy($user)
-                ->setCustomer($user->getCustomer())
                 ->setCreatedAt(new \DateTime('now'))
                 ->setStatus('created')
                 ->setEntries($entries)
                 ;
+
+            if (!$user->isAdmin())
+                $entity->setCustomer($user->getCustomer());
 
             // var_dump($entity); die;
 
@@ -180,12 +190,6 @@ class TicketController extends Controller
         $entry = new Entry();
         $entity->getEntries()->add($entry);
 
-        $projectRepository = $this->getDoctrine()
-            ->getRepository('AppBundle:Project');
-        $projectQuery = $projectRepository->createQueryBuilder('p')
-                        ->where("p.customer = ". $user->getCustomer()->getId())
-                        ->orderBy("p.name", 'ASC');
-
         $form = $this->createForm(new TicketType($user), $entity, array(
             'action' => $this->generateUrl('ticket_create'),
             'method' => 'POST',
@@ -202,24 +206,6 @@ class TicketController extends Controller
                 ),
                 'empty_value' => 'Selecione',
             ))
-            ->add('project', 'entity', array(
-                'label' => 'Projeto',
-                'class' => 'AppBundle:Project',
-                'query_builder' => $projectQuery,
-                'property' => 'name',
-                'empty_value' => 'Selecione',
-                'required' => false,
-            ))
-            // ->add('customer', 'entity', array(
-            //     'label' => 'Cliente',
-            //     'class' => 'AppBundle:Customer',
-            //     'query_builder' => function(EntityRepository $er) {
-            //         return $er->createQueryBuilder('c')
-            //             ->where("c.activated = 1");
-            //         },
-            //     'property' => 'name',
-            //     'empty_value' => 'Selecione',
-            // ))
             ->add('category', 'entity', array(
                 'label' => 'Categoria',
                 'class' => 'AppBundle:Category',
@@ -230,7 +216,46 @@ class TicketController extends Controller
                 'property' => 'name',
                 'empty_value' => 'Selecione',
             ))
+            
             ->add('submit', 'submit', array('label' => 'Create'));
+
+            if ($user->isAdmin()) 
+            {
+                $form->add('customer', 'entity', array(
+                        'label' => 'Cliente',
+                        'class' => 'AppBundle:Customer',
+                        'query_builder' => function(EntityRepository $er) {
+                            return $er->createQueryBuilder('c')
+                                ->where("c.activated = 1");
+                            },
+                        'property' => 'name',
+                        'empty_value' => 'Selecione',
+                    ))
+                    ->add('project', 'entity', array(
+                        'label' => 'Projeto',
+                        'class' => 'AppBundle:Project',
+                        'property' => 'name',
+                        'empty_value' => 'Selecione',
+                        'required' => false,
+                    ));
+            }
+            else
+            {
+                $projectRepository = $this->getDoctrine()
+                    ->getRepository('AppBundle:Project');
+                $projectQuery = $projectRepository->createQueryBuilder('p')
+                                ->where("p.customer = ". $user->getCustomer()->getId())
+                                ->orderBy("p.name", 'ASC');
+
+                $form->add('project', 'entity', array(
+                    'label' => 'Projeto',
+                    'class' => 'AppBundle:Project',
+                    'query_builder' => $projectQuery,
+                    'property' => 'name',
+                    'empty_value' => 'Selecione',
+                    'required' => false,
+                ));
+            }
 
         return $form;
     }
@@ -246,8 +271,8 @@ class TicketController extends Controller
     {
         $user = $this->get('security.context')->getToken()->getUser();
         
-        if ($user->isAdmin())
-            return $this->redirect($this->generateUrl('ticket'));
+        // if ($user->isAdmin())
+        //     return $this->redirect($this->generateUrl('ticket'));
 
         $entity = new Ticket();
         $form   = $this->createCreateForm($entity);
@@ -348,7 +373,7 @@ class TicketController extends Controller
             'method' => 'PUT',
         ));
 
-        if ($user->isAdmin()) {
+        if ($user->isAdmin() && $entity->getStatus() != 'finished') {
             $projectRepository = $this->getDoctrine()
                 ->getRepository('AppBundle:Project');
             $projectQuery = $projectRepository->createQueryBuilder('p')
