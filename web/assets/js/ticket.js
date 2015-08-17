@@ -1,7 +1,9 @@
 var ticket = {
 	init: function() {
 		$(document).ready(function() {
-
+			$('#appbundle_ticket_customer').on('change', function (){
+				between.loadSelectbox($('#appbundle_ticket_project'), 'project_json', { customer: $(this).val() });
+			});
 		})
 	},
 	finish: function() {
