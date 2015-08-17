@@ -11,6 +11,7 @@ use AppBundle\Entity\Project;
 use AppBundle\Form\ProjectType;
 
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Project controller.
@@ -149,23 +150,23 @@ class ProjectController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function showAction($id)
-    {
-        $em = $this->getDoctrine()->getManager();
+    // public function showAction($id)
+    // {
+    //     $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('AppBundle:Project')->find($id);
+    //     $entity = $em->getRepository('AppBundle:Project')->find($id);
 
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Project entity.');
-        }
+    //     if (!$entity) {
+    //         throw $this->createNotFoundException('Unable to find Project entity.');
+    //     }
 
-        $deleteForm = $this->createDeleteForm($id);
+    //     $deleteForm = $this->createDeleteForm($id);
 
-        return array(
-            'entity'      => $entity,
-            'delete_form' => $deleteForm->createView(),
-        );
-    }
+    //     return array(
+    //         'entity'      => $entity,
+    //         'delete_form' => $deleteForm->createView(),
+    //     );
+    // }
 
     /**
      * Displays a form to edit an existing Project entity.
@@ -287,5 +288,53 @@ class ProjectController extends Controller
             ->add('submit', 'submit', array('label' => 'Delete'))
             ->getForm()
         ;
+    }
+
+    /**
+     * @Route("/json", name="project_json", options={"expose"=true})
+     * @Template()
+     */
+    public function jsonAction(Request $request){
+        $response = array();
+        $repository = $this->getDoctrine()
+            ->getRepository('AppBundle:Project');
+        $qb = $repository->createQueryBuilder('p');
+        
+        if(array_key_exists('id', $request->query))
+        {
+            $projects = $qb->where(
+                $qb->expr()->eq('p.id', ':id')
+            )
+            ->setParameter('id', $request->query->get('id'));
+        }
+        else
+        {
+            foreach ($request->query as $key => $value) {
+                $projects = $qb->where(
+                    $qb->expr()->eq('p.'. $key, $value)
+                );
+            }
+
+            // $projects = $qb->where(
+            //     $qb->expr()->eq('p.deleted', 0),
+            //     $qb->expr()->eq('p.enabled', 1)
+            // );
+        }
+        
+        // if (array_key_exists('page_limit', $_GET))
+        //     $projects = $projects->setMaxResults((int)$_GET['page_limit']);
+
+        $projects = $projects
+            ->getQuery()
+            ->getResult();
+
+        foreach($projects as $project){
+            $response[] = array(
+                'id' => $project->getId(),
+                'text' => $project->getName(),
+            );
+        }
+
+        return new JsonResponse($response);
     }
 }
