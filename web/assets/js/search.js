@@ -3,8 +3,6 @@ var search = {
 		// $('.demo-content').masonry({
 		//   itemSelector: '.mdl-cell'
 		// });
-
-		var listView = new infinity.ListView($('.demo-content'));
 	},
 
 	toggleSearch: function () {

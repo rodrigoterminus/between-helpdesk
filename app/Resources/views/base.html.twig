@@ -59,6 +59,11 @@
 
           {% block body %}{% endblock %}
 
+          <div id="div-toast" class="mdl-js-snackbar mdl-snackbar">
+            <div class="mdl-snackbar__text"></div>
+            <button type="button" class="mdl-snackbar__action"></button>
+          </div>
+
         </div>
       </main>
     </div>
@@ -67,6 +72,15 @@
     {% block modals %}{% endblock %}
     
     {% include '::foot.html.twig' %}
+
+    {# MESSAGES #}
+    {% if app.session.flashbag|length > 0 %}
+      {% for type, flashMessage in app.session.flashbag %}
+        {% for message in flashMessage %}                  
+            <script type="text/javascript">between.messages.push({'message' : '{{ message }}'});</script>                  
+        {% endfor %}
+      {% endfor %}
+    {% endif %}
 
     {% block scripts %}{% endblock %}
 

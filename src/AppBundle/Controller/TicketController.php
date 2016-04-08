@@ -203,12 +203,20 @@ class TicketController extends Controller
             }
 
             $result = $query->getQuery()->getResult();
-
-            $search->totalizer($result);
             // echo $query->getQuery()->getDql(); die;
 
-            if(count($result) == 1)
+            if(count($result) == 1) {
                 return $this->redirect($this->generateUrl('ticket_edit', array('number' => $result[0]['number'])));
+            }
+            else {
+                $search->totalizer($result);
+
+                $this->get('session')->getFlashBag()
+                    ->add(
+                        'success',
+                        count($result) .' resultados encontrados.'
+                    );
+            }
         }
         else {
             $query = $qb
