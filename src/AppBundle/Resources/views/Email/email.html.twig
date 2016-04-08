@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 	<head>
+  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  	<title>{% if title is defined %}{{ title }}{% endif %}</title>
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	</head>
+	<body style="color: #333; font-family: Arial, sans-serif; font-size: 12px; line-height: 20px; margin: 0px;">
+		<table align="center" border="0" cellpadding="5" cellspacing="0" width="100%">
+			<tr>
+				<td bgcolor="#F1F1F1" align="center" style="border-bottom: 10px solid #FF9F34;">
+					<img src="http://sintramov.infntus.com/images/logo_site.png" alt="SINTRAMOV-CT" />
+				</td>
+			</tr>
+			<tr>
+				<td bgcolor="#ffffff" align="center">
+					<div style="width: 600px; text-align: left;">
+						{% if title is defined %}
+							<center><h2 style="color: #666; font-weight: 400;">{{ title }}</h2></center>
+						{% endif %}
+
+						{% block body %}{% endblock %}
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td bgcolor="#555555" align="center" style="color: #BDBDBD; font-size: 10px;line-height: 14px; padding: 15px 0;">					
+					<b><a href="{{ path('index') }}" style="color: #BDBDBD; text-decoration: none;">SINTRAMOV-CT</a></b><br />
+					<span>Rodovia Br 381, Km 02, Bairro Bandeirantes, Contagem - Minas Gerais | (31) 3362-6081 </span><br />
+					<p>Este é um email automático. Caso tenha alguma dúvida, por favor, entre contato conosco através <a href="{{ path('celetistas_faleconosco') }}" style="color: #BDBDBD;">deste link</a>.</p>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>
+

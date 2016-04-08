@@ -6,18 +6,24 @@ var between = {
 	},
 
 	backButton: function(route) {
-		setTimeout(function(){
-			$menuButton = $('.mdl-layout__drawer-button');
+		$(document).ready(function () {
+			var setButton = setInterval(function() {
+				var $menuButton = $('.mdl-layout__drawer-button');
 
-			$backButton = $('<div/>')
-				.addClass('mdl-layout__drawer-button')
-				.on('click', function() { window.location = Routing.generate(route); })
-				.html('<i class="material-icons">arrow_back</i>');
+				if ($menuButton.length > 0) {
+					var $backButton = $('<div/>')
+						.addClass('mdl-layout__drawer-button back-button')
+						.on('click', function() { window.location = Routing.generate(route); })
+						.html('<i class="material-icons">arrow_back</i>');
+					
+					$menuButton
+						.after($backButton)
+						.remove();
 
-			$menuButton
-				.after($backButton)
-				.remove();
-		}, 500);
+					clearInterval(setButton);
+				}				
+			}, 500);
+		});
 	},
 
 	formSubmit: function(name) {

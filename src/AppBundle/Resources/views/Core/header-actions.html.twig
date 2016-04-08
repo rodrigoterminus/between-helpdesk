@@ -1,6 +1,12 @@
 {% if buttons is defined %}
 	{% for button in buttons %}
-		<a id="header-button-{{ loop.index }}"
+		<a 
+
+		{% if button.id is defined %}
+			id="{{ button.id }}"
+		{% else %}
+			id="header-button-{{ loop.index }}"
+		{% endif %}
 		
 		{% if button.action is defined %}
 			{% if button.action_type == 'route' %}

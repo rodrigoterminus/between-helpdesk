@@ -1,42 +1,46 @@
 {% extends "FOSUserBundle::layout.html.twig" %}
 
-{% block body %}
-    <div class="mdl-card mdl-shadow--4dp" style="width: 330px;">
-      <form action="{{ path("fos_user_security_check") }}" method="post">
-        <div class="mdl-card__title mdl-color--amber-400">
-          <h2 class="mdl-card__title-text mdl-color-text--white">Between</h2>
-        </div>
-        <div class="mdl-card__supporting-text">Seja bem vindo ao Between!</div>
+{% block fos_user_content %}
+  <div class="mdl-card mdl-shadow--4dp" style="width: 330px;">
+    <form action="{{ path("fos_user_security_check") }}" method="post">
+      <div class="mdl-card__title mdl-color--amber-400">
+        <h2 class="mdl-card__title-text mdl-color-text--white">
+          <img src="{{ asset('assets/images/logo.png') }}" alt="Between" width="48" height="48" style="vertical-align:middle; margin-right: 10px;">
+          <span style="line-height: 48px">Between</span>
+        </h2>
+      </div>
+      <div class="mdl-card__supporting-text">Seja bem vindo ao Between!</div>
 
-        {% if error %}
-          <div class="mdl-card__supporting-text">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-        {% endif %}
+      {% if error %}
+        <div class="mdl-card__supporting-text">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+      {% endif %}
 
-        <div class="mdl-card__supporting-text">
+      <div class="mdl-card__supporting-text">
+        
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
           
-            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label textfield-demo">
+            <input type="text" id="username" name="_username" value="{{ last_username }}" required="required" class="mdl-textfield__input" />
+            <label class="mdl-textfield__label" for="username">Usuário</label>
+          </div>
+
+          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label textfield-demo">
+            <input type="password" id="password" name="_password" required="required" class="mdl-textfield__input" />
+            <label class="mdl-textfield__label" for="password">Senha</label>
+          </div>
             
-            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label textfield-demo">
-              <input type="text" id="username" name="_username" value="{{ last_username }}" required="required" class="mdl-textfield__input" />
-              <label class="mdl-textfield__label" for="username">Usuário</label>
-            </div>
+          {# <div class="form-group">
+            <input type="checkbox" id="remember_me" name="_remember_me" value="on" />
+            <label for="remember_me">Mantenha-me conectado</label>
+          </div> #}
 
-            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label textfield-demo">
-              <input type="password" id="password" name="_password" required="required" class="mdl-textfield__input" />
-              <label class="mdl-textfield__label" for="password">Senha</label>
-            </div>
-              
-            {# <div class="form-group">
-              <input type="checkbox" id="remember_me" name="_remember_me" value="on" />
-              <label for="remember_me">Mantenha-me conectado</label>
-            </div> #}
+          
+      </div>
 
-            
-        </div>
-
-        <div class="mdl-card__actions mdl-card--border">
-          <input type="submit" id="_submit" name="_submit" value="Entrar" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" />
-        </div>
-      </form>
-    </div>
+      <div class="mdl-card__actions mdl-card--border">
+        <a href="{{ path('fos_user_resetting_request') }}" class="mdl-button mdl-js-button mdl-button--primary mdl-color-text--amber-400">Esqueci minha senha</a>
+        <input type="submit" id="_submit" name="_submit" value="Entrar" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-color--amber-400" style="float: right;" />
+      </div>
+    </form>
+  </div>
 {% endblock %}
