@@ -28,8 +28,6 @@
             <input type="password" id="password" name="_password" required="required" class="mdl-textfield__input" />
             <label class="mdl-textfield__label" for="password">Senha</label>
           </div>
-
-          <a href="{{ path('fos_user_resetting_request') }}">Esqueci minha senha</a>
             
           {# <div class="form-group">
             <input type="checkbox" id="remember_me" name="_remember_me" value="on" />
@@ -39,8 +37,9 @@
           
       </div>
 
-      <div class="mdl-card__actions mdl-card--border" style="text-align: right;">
-        <input type="submit" id="_submit" name="_submit" value="Entrar" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" />
+      <div class="mdl-card__actions mdl-card--border">
+        <a href="{{ path('fos_user_resetting_request') }}" class="mdl-button mdl-js-button mdl-button--primary mdl-color-text--amber-400">Esqueci minha senha</a>
+        <input type="submit" id="_submit" name="_submit" value="Entrar" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-color--amber-400" style="float: right;" />
       </div>
     </form>
   </div>
