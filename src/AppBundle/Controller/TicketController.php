@@ -11,6 +11,10 @@ use AppBundle\Entity\Ticket;
 use AppBundle\Entity\Entry;
 use AppBundle\Form\TicketType;
 
+use Symfony\Component\Form\Extension\Core\TypeTextType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -27,7 +31,7 @@ class TicketController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         // $em = $this->getDoctrine()->getManager();
 
@@ -94,15 +98,126 @@ class TicketController extends Controller
             ))
             ->setTranslatePrefix('ticket');
 
-            // if (!$user->isAdmin())
-            //     $search->addButton(array(
-            //         'label' => 'Novo',
-            //         'icon' => 'add',
-            //         'type' => 'fab',
-            //         'action_type' => 'route',
-            //         'action' => 'ticket_new',
-            //         )
-            //     );
+        // Form
+        $form = $this->createFormBuilder(null, array('csrf_protection' => false))
+            ->setMethod('GET')
+            ->add('number', 'text', array('label' => 'Número', 'required' => false, 'attr' => array('data-col' => 'mdl-cell--12-col-desktop mdl-cell--12-col-phone') ));
+
+        if ($user->isAdmin()) {
+            $form
+                ->add('attendant', EntityType::class, array(
+                    'label' => 'Atendente',
+                    'class' => 'AppBundle:User',
+                    'query_builder' => function(EntityRepository $er) {
+                        return $er->createQueryBuilder('u')
+                            ->where("u.roles LIKE '%ROLE_ADMIN%'")
+                            ->orderBy('u.name', 'ASC');
+                        },
+                    'property' => 'name',
+                    'placeholder' => 'Selecione uma opção',
+                    'required' => false,
+                    'attr' => array('data-col' => 'mdl-cell--12-col-desktop mdl-cell--12-col-phone')
+                    )
+                );
+        }
+
+        $form
+            ->add('status', ChoiceType::class, array(
+                'label' => 'Status',
+                'choices'  => array('' => 'Selecione', 'created' => 'Aguardando atendimento', 'running' => 'Em atendimento', 'finished' => 'Finalizado'),
+                'required' => false,
+                'attr' => array('data-col' => 'mdl-cell--6-col-desktop mdl-cell--12-col-phone')
+                )
+            )
+            ->add('project', EntityType::class, array(
+                'label' => 'Projeto',
+                'class' => 'AppBundle:Project',
+                'query_builder' => function(EntityRepository $er) use ($user) {
+                        // var_dump($user); die;
+                        $return = $er->createQueryBuilder('p')
+                            // ->where("p.deleted = 0")
+                            ->orderBy('p.name', 'ASC');
+
+                        return $return;
+                    },
+                'property' => 'name',
+                'placeholder' => 'Selecione uma opção',
+                'required' => false,
+                'attr' => array('data-col' => 'mdl-cell--6-col-desktop mdl-cell--12-col-phone')
+                )
+            )
+            ->add('date_initial', 'date', array(
+                'label' => 'Data inicial', 
+                'widget' => 'single_text', 
+                'required' => false,
+                'attr' => array('data-col' => 'mdl-cell--6-col-desktop mdl-cell--12-col-phone')
+                )
+            )
+            ->add('date_final', 'date', array(
+                'label' => 'Data final', 
+                'widget' => 'single_text', 
+                'required' => false,
+                'attr' => array('data-col' => 'mdl-cell--6-col-desktop mdl-cell--12-col-phone')
+                )
+            )
+            ->add('submit', 'submit', array('label' => 'Pesquisar'));
+
+        $form = $form
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $data = $form->getData();
+            $search->setFormData($data);
+
+            // Number
+            if(isset($data['number'])){
+                $query = $qb
+                    ->andWhere($qb->expr()->like('T.number', $qb->expr()->literal('%'. $data['number'] .'%')));
+            }
+
+            // Attendant
+            if(isset($data['attendant'])){
+                $query = $qb
+                    ->andWhere(
+                        $qb->expr()->eq('t.attendant', ':attendant')
+                    )
+                ->setParameter('attendant', $data['attendant']->getId());
+            }
+
+            // Initial date
+            if(isset($data['date_initial'])){
+                $query = $qb->andWhere(
+                    $qb->expr()->gte('t.createdAt', ':date_initial')
+                )
+                ->setParameter('date_initial', $data['date_initial']->format('Y-m-d') .' 00:00:00');
+            }
+
+            // Final date
+            if(isset($data['date_final'])){
+                $query = $qb->andWhere(
+                    $qb->expr()->lte('t.createdAt', ':date_final')
+                )
+                ->setParameter('date_final', $data['date_final']->format('Y-m-d') .' 23:59:59');
+            }
+
+            $result = $query->getQuery()->getResult();
+
+            $search->totalizer($result);
+            // echo $query->getQuery()->getDql(); die;
+
+            if(count($result) == 1)
+                return $this->redirect($this->generateUrl('ticket_edit', array('number' => $result[0]['number'])));
+        }
+        else {
+            $query = $qb
+                ->andWhere("t.status != 'finished'")
+                ->orWhere("t.finishedAt BETWEEN :date AND CURRENT_DATE()")
+                ->setParameter(':date', new \DateTime('-1 days'));
+
+            $result = $query->getQuery()->getResult();
+        }
 
         $result = $query->getQuery()->getResult();
 
@@ -110,6 +225,7 @@ class TicketController extends Controller
             'title' => 'Chamados',
             'search' => $search,
             'result' => $result,
+            'form' => $form->createView(),
         ));  
     }
     /**

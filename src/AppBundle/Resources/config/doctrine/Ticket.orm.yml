@@ -45,6 +45,7 @@ AppBundle\Entity\Ticket:
             length: null
             fixed: false
             comment: ''
+            columnDefinition: ENUM('created','running','finished')
             default: created
         priority:
             type: string

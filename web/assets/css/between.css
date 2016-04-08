@@ -1,14 +1,35 @@
 a { color: #FF6F00; }
 form { width: 100%; }
 select { height: 27px; }
+body { overflow: hidden; }
+
+header.mdl-layout__header {
+  transition: background-color 0.3s ease-in;
+  -ms-transition: background-color 0.3s ease-in;
+  -moz-transition: background-color 0.3s ease-in;
+  -webkit-transition: background-color 0.3s ease-in;
+}
+
+@media (min-width: 1025px){
+  header.mdl-layout__header .back-button {
+    left: 230px;
+  }
+}
+
+@media (max-width: 1024px){
+  #floating-actions {
+    margin-right: 20px !important;
+    margin-bottom: 20px !important;
+  }
+}
 
 #floating-actions {
   position: fixed;
   display: block;
-  right: -10px;
-  bottom: -10px;
-  margin-right: 40px;
-  margin-bottom: 40px;
+  right: 0;
+  bottom: 0;
+  margin-right: 30px;
+  margin-bottom: 30px;
   z-index: 3;
   text-align: center;
 }
@@ -26,7 +47,7 @@ select { height: 27px; }
 .demo-layout .demo-navigation .mdl-navigation__link:hover { background-color: #E0E0E0; }
 .demo-layout .mdl-layout__header .mdl-layout__drawer-button { color: white; }
 
-.demo-drawer-header { background: url('../images/img-1.png'); left top no-repeat transparent; }
+.demo-drawer-header { background: url('../images/menu-cover.png'); left top no-repeat transparent; }
 
 /*.demo-content { position: relative; }*/
 
@@ -59,6 +80,47 @@ body.fosuser { background: url('../images/gplaypattern.png') left top repeat tra
 body.fosuser .mdl-card { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
 .mdl-menu a { text-decoration: none; }
+
+/* overlay */
+.btw-overlay {   
+  display: none;  
+  position: fixed;
+  padding: 66px 10px 10px 10px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255,255,255,0.9);
+  overflow-y: auto;
+  z-index: 9999; 
+}
+
+@media (min-width: 1025px){
+  .btw-overlay {
+    left: 240px;
+  }
+}
+
+/* Search On Screen */
+.search-on-screen { 
+  background-color: white !important; 
+  transition: background-color 0.3s ease-in;
+  -ms-transition: background-color 0.3s ease-in;
+  -moz-transition: background-color 0.3s ease-in;
+  -webkit-transition: background-color 0.3s ease-in;
+}
+.search-on-screen input {
+  background-color: transparent;
+  margin-right: 50px;
+  border: none;
+  width: 100%;
+  line-height: 50px;
+  font-size: 24px;
+}
+.search-on-screen input:focus { outline: none; }
+.search-on-screen .back-button {
+  color: rgba(0,0,0,0.6) !important;
+}
 
 /* Generic */
 #btn-send-message { position: absolute; right: 6px; bottom: 32px; z-index: 3; }

@@ -26,10 +26,13 @@
   overflow: visible;
   height: 0;
   width: 0;
+  visibility: hidden;
   z-index: -1;
 
-  &.is-visible {
+  &.is-visible,
+  &.is-animating {
     z-index: 999;
+    visibility: visible;
   }
 }
 
@@ -148,7 +151,11 @@
     border: 0;
   }
 
-  &[disabled] {
+  &--full-bleed-divider {
+    border-bottom: 1px solid $default-item-divider-color;
+  }
+
+  &[disabled], &[data-mdl-disabled] {
     color: $disabled-item-text-color;
     background-color: transparent;
     cursor: auto;
