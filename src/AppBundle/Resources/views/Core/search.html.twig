@@ -224,7 +224,7 @@
 
     {% if form is defined %}
         <div id="search-overlay" class="btw-overlay">
-            {{ form_start(form) }}
+            {{ form_start(form, {'attr': {'id': 'form-search'}}) }}
                 <div class="mdl-grid">
                     {% for name, field in form.children if field.vars.block_prefixes.0 == 'form' %}
                     

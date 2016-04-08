@@ -3,6 +3,15 @@ var search = {
 		// $('.demo-content').masonry({
 		//   itemSelector: '.mdl-cell'
 		// });
+
+		$('#form-search').on('submit', function(event) {
+			// event.preventDefault();
+			var $submit = $(this).find('button[type="submit"]');
+			
+			$submit
+				.attr('disabled', 'disabled')
+				.text('Pesquisando...');
+		});
 	},
 
 	toggleSearch: function () {

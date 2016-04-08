@@ -389,7 +389,7 @@ class TicketController extends Controller
      *
      * @Route("/new", name="ticket_new")
      * @Method("GET")
-     * @Template("")
+     * @Template()
      */
     public function newAction()
     {

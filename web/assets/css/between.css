@@ -1,7 +1,7 @@
 a { color: #FF6F00; }
 form { width: 100%; }
 select { height: 27px; }
-body { overflow: hidden; }
+body { overflow: hidden; background-color: #f5f5f5 !important; }
 
 header.mdl-layout__header {
   transition: background-color 0.3s ease-in;
@@ -53,12 +53,6 @@ header.mdl-layout__header {
 
 /* Search */
 .no-result { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #757575; min-width: 240px; } 
-
-@media screen and (min-width: 1025px) {
-	.no-result {
-	    margin-left: 120px;
-	}
-}
 
 /* Text fields */
 .mdl-textfield { width: 100%; }
