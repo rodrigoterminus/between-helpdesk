@@ -105,6 +105,22 @@ class TicketController extends Controller
 
         if ($user->isAdmin()) {
             $form
+                ->add('customer', EntityType::class, array(
+                    'label' => 'Cliente',
+                    'class' => 'AppBundle:Customer',
+                    'query_builder' => function(EntityRepository $er) {
+                            $return = $er->createQueryBuilder('p')
+                                // ->where("p.deleted = 0")
+                                ->orderBy('p.name', 'ASC');
+
+                            return $return;
+                        },
+                    'property' => 'name',
+                    'placeholder' => 'Selecione uma opção',
+                    'required' => false,
+                    'attr' => array('data-col' => 'mdl-cell--6-col-desktop mdl-cell--6-col-phone')
+                    )
+                )
                 ->add('attendant', EntityType::class, array(
                     'label' => 'Atendente',
                     'class' => 'AppBundle:User',
@@ -116,7 +132,7 @@ class TicketController extends Controller
                     'property' => 'name',
                     'placeholder' => 'Selecione uma opção',
                     'required' => false,
-                    'attr' => array('data-col' => 'mdl-cell--12-col-desktop mdl-cell--12-col-phone')
+                    'attr' => array('data-col' => 'mdl-cell--6-col-desktop mdl-cell--6-col-phone')
                     )
                 );
         }
@@ -177,6 +193,15 @@ class TicketController extends Controller
                     ->andWhere($qb->expr()->like('T.number', $qb->expr()->literal('%'. $data['number'] .'%')));
             }
 
+            // Customer
+            if(isset($data['customer'])){
+                $query = $qb
+                    ->andWhere(
+                        $qb->expr()->eq('t.customer', ':customer')
+                    )
+                ->setParameter('customer', $data['customer']->getId());
+            }
+            
             // Attendant
             if(isset($data['attendant'])){
                 $query = $qb
@@ -275,7 +300,7 @@ class TicketController extends Controller
             }
 
             $entity
-                ->setNumber($number)
+//                ->setNumber($number)
                 ->setCreatedBy($user)
                 ->setCreatedAt(new \DateTime('now'))
                 ->setStatus('created')
@@ -290,6 +315,7 @@ class TicketController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
+            $em->refresh($entity);
 
             return $this->redirect($this->generateUrl('ticket_edit', array('number' => $entity->getNumber())));
         }
