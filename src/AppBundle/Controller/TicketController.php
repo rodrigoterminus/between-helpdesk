@@ -488,12 +488,21 @@ class TicketController extends Controller
 
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($entity->getId());
+        
+        $qb = $em->getRepository('AppBundle:User')->createQueryBuilder('user');
+        $queryUsers = $qb->select()
+            ->where("user.id != ". $this->get('security.context')->getToken()->getUser()->getId())
+            ->andWhere("user.roles LIKE '%_ADMIN%'")
+            ->andWhere("user.enabled = 1")
+            ->orderBy('user.name', 'ASC');
+        $users = $queryUsers->getQuery()->getResult();
 
         return array(
-            'title'       => '#'. $entity->getNumber(),
-            'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
+            'title' => '#'. $entity->getNumber(),
+            'entity' => $entity,
+            'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'users' => $users,
         );
     }
 
@@ -681,6 +690,42 @@ class TicketController extends Controller
         $em->flush();
 
         return $this->redirect($this->generateUrl('ticket_edit', array('number' => $entity->getNumber())));
+    }
+    
+    /**
+     * Transfer ticket to another user.
+     *
+     * @Route("/{number}/transfer/{userId}", name="ticket_transfer", options={"expose":true})
+     * @Method("GET")
+     */
+    public function transferAction(Request $request, $number, $userId)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $user = $this->get('security.context')->getToken()->getUser();
+
+        $entity = $em->getRepository('AppBundle:Ticket')->findOneBy(array('number' => $number));
+        
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find Ticket entity.');
+        } else if ($user->isAdmin() === false) {
+            throw $this->createAccessDeniedException('You don\'t have permission to do this.');
+        } else {
+            $attendant = $em->getRepository('AppBundle:User')->find($userId);
+            
+            if (!$attendant) {
+                throw $this->createNotFoundException('Attendant not found.');
+            }
+            
+            $entity
+                ->setAttendant($attendant)
+                ->setStatus('running')
+                ;
+
+            $em->persist($entity);
+            $em->flush();
+            
+            return $this->redirect($this->generateUrl('ticket_edit', array('number' => $entity->getNumber())));
+        }
     }
 
     /**

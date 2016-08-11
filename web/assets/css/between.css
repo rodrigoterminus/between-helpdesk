@@ -23,6 +23,8 @@ header.mdl-layout__header {
   }
 }
 
+.ticket-footer { opacity: 0.7; margin-top: 20px; }
+
 #floating-actions {
   position: fixed;
   display: block;
@@ -47,7 +49,7 @@ header.mdl-layout__header {
 .demo-layout .demo-navigation .mdl-navigation__link:hover { background-color: #E0E0E0; }
 .demo-layout .mdl-layout__header .mdl-layout__drawer-button { color: white; }
 
-.demo-drawer-header { background: url('../images/menu-cover.png'); left top no-repeat transparent; }
+.demo-drawer-header { background: url('../images/menu-cover.png') left top no-repeat transparent; }
 
 /*.demo-content { position: relative; }*/
 
@@ -115,6 +117,10 @@ body.fosuser .mdl-card { position: absolute; top: 50%; left: 50%; transform: tra
 .search-on-screen .back-button {
   color: rgba(0,0,0,0.6) !important;
 }
+
+/* Dialog */
+.mdl-dialog__title { font-size: 1.5rem !important; }
+.mdl-dialog__content > .mdl-grid { margin: 0 !important; padding: 0 !important; }
 
 /* Generic */
 #btn-send-message { position: absolute; right: 6px; bottom: 32px; z-index: 3; }
