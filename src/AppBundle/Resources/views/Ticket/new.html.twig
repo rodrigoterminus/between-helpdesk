@@ -93,7 +93,6 @@
 
     </div>
 
-    {# {{ dump(app.request.attributes) }} #}
     <div style="display: none;">
         {{ form_rest(form) }}
     </div>
@@ -101,11 +100,11 @@
     {{ form_end(form) }}
 {% endblock %}
 
-{#{% block fab_action %}
-        {% set fab = { 'icon': 'save', 'action_type': 'javascript', 'action': 'between.formSubmit()' } %}
+{% block fab_action %}
+        {% set fab = { icon: 'attach_file', label: 'Anexar arquivos', action_type: 'javascript', action: '$(\'input[type=file]\').trigger(\'click\')' } %}
 
         {% include 'AppBundle:Core:fab.html.twig' with { 'fab': fab } %}
-{% endblock %} #}
+{% endblock %} 
 
 {% block header_actions %}
     {% set buttons = [] %}

@@ -146,4 +146,72 @@ class User extends BaseUser
         else
             return false;
     }
+    /**
+     * @var string
+     */
+    private $preferences;
+
+
+    /**
+     * Set preferences
+     *
+     * @param string $preferences
+     * @return User
+     */
+    public function setPreferences($preferences)
+    {
+        $this->preferences = $preferences;
+
+        return $this;
+    }
+
+    /**
+     * Get preferences
+     *
+     * @return string 
+     */
+    public function getPreferences()
+    {
+        return $this->preferences;
+    }
+    
+    /**
+     * Get a preferences object
+     * 
+     * @return object
+     */
+    public function getPreferencesObject()
+    {
+        return json_decode($this->preferences);
+    }
+    
+    /**
+     * Get a user preference
+     * 
+     * @param $preferencePath
+     * 
+     * @return boolean
+     */
+    public function getPreference($preferencePath, $nullWhenNotFound = false)
+    {
+        $preferences = $this->getPreferencesObject();
+        
+        $pathArray = explode('.', $preferencePath);
+        $path = $preferences;
+        
+        foreach ($pathArray as $value) {
+            if (isset($path->$value)) {
+                $path = $path->$value;
+            } else {
+                if ($nullWhenNotFound === true) {
+                    return null;
+                } else {
+                    return false;
+                }
+                
+            }
+        }
+        
+        return $path;
+    }
 }

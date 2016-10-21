@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -317,5 +318,22 @@ class UserController extends Controller
             ->add('submit', 'submit', array('label' => 'Delete'))
             ->getForm()
         ;
+    }
+    
+    /**
+     * Updates user's preferences.
+     *
+     * @Route("/preferences", name="user_preferences", options={"expose":true})
+     * @Method("POST")
+     */
+    public function preferencesAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $user = $this->get('security.context')->getToken()->getUser();
+        
+        $user->setPreferences($request->request->get('preferences'));
+        $em->persist($user);
+        $em->flush();
+        
+        return new JsonResponse($user->getPreferencesObject());
     }
 }

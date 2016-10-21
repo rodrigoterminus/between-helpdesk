@@ -1,0 +1,23 @@
+{% extends "InfinityCoreBundle:Print:print.html.twig" %}
+
+{% block content %}
+    <div class="overlay"></div>
+
+    <div id="report-content"></div>        
+    <div id="clone"  style="display:none"></div>
+    <div id="bridge" style="display:none"></div>
+    <div id="header" style="display:none">
+        <div class="name"></div>
+        <div class="options"></div>            
+    </div>
+    <div id="footer" style="display:none">
+        <div class="timestamp"><b>Infinity</b> - {{ 'now'|date('d/m/Y H:i:s') }}</div>
+        <div class="page-number"></div>            
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        printer.getContent();
+    </script>
+{% endblock %}

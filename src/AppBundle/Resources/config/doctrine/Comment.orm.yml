@@ -1,14 +1,11 @@
-AppBundle\Entity\Entry:
+AppBundle\Entity\Comment:
     type: entity
-    table: entry
+    table: comment
     indexes:
-        fk_entry_createdby1_idx:
+        fk_comment_createdby1_idx:
             columns:
                 - created_by
-        fk_entry_directedto1_idx:
-            columns:
-                - directed_to
-        fk_entry_tickets1_idx:
+        fk_comment_ticket1_idx:
             columns:
                 - ticket_id
     id:
@@ -23,26 +20,7 @@ AppBundle\Entity\Entry:
     fields:
         text:
             type: text
-            nullable: true
-            length: null
-            fixed: false
-            comment: ''
-        action:
-            type: string
             nullable: false
-            length: 100
-            fixed: false
-            comment: ''
-            options: { default: 'post' }
-        files:
-            type: text
-            nullable: true
-            length: null
-            fixed: false
-            comment: ''
-        origin:
-            type: text
-            nullable: true
             length: null
             fixed: false
             comment: ''
@@ -59,16 +37,6 @@ AppBundle\Entity\Entry:
             inversedBy: null
             joinColumns:
                 created_by:
-                    referencedColumnName: id
-            orphanRemoval: false
-        directedTo:
-            targetEntity: User
-            nullable: true
-            cascade: {  }
-            mappedBy: null
-            inversedBy: null
-            joinColumns:
-                directed_to:
                     referencedColumnName: id
             orphanRemoval: false
         ticket:

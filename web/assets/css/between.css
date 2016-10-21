@@ -23,7 +23,35 @@ header.mdl-layout__header {
   }
 }
 
-.ticket-footer { opacity: 0.7; margin-top: 20px; }
+.ticket-footer { color: rgba(0,0,0,.35); margin-top: 20px; }
+.ticket-entry-files { margin: 10px 0 0 0; padding: 0; }
+.ticket-entry-files > li { 
+    position: relative;
+    width: 180px; height: 116px; display: inline-block; margin: 14px 16px 0 0;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    vertical-align: top;
+}
+.ticket-entry-files > li:last-child { margin-right: 0; }
+.ticket-entry-files > li > img { width: 100%; height: 100%; object-position: center; object-fit: none; }
+.ticket-file-label { padding: 6px; width: auto; height: 100%; color: transparent; transition: all 0.5s; }
+.ticket-file-label:hover { 
+    background-color: rgba(255,255,255,0.7); 
+    color: black; 
+    transition: all 0.5s;
+}
+.ticket-file-name { width: 100%; word-wrap:break-word; line-height: 100%; }
+.ticket-file-buttons { position: absolute; bottom: 0px; width: auto; right: 0; padding: 6px; }
+.ticket-file-buttons > .mdl-button { margin-left: 4px; }
+
+#ticket-watchers > span { vertical-align: middle; }
+.ticket-watcher:after { content: ',' }
+.ticket-watcher:last-child:after { content: '' }
+
+.mdl-card__title > .mdl-button--fab { margin: 0; }
+.mdl-card__title-icon-fab > .mdl-button--fab { margin-right: 12px; }
+.mdl-card__title-icon-fab > .mdl-card__title-text { line-height: 40px; }
 
 #floating-actions {
   position: fixed;
@@ -68,8 +96,17 @@ header.mdl-layout__header {
 .mdl-card { width: 100%; min-height: 0; }
 .mdl-card__supporting-text hr { margin: 1em -16px; }
 
-.text-content { display: inline-block; float: left; }
-.icon-text-content { margin-right: 16px; float: left; }
+.ticket-entries > .mdl-cell { white-space: nowrap; }
+.text-content { display: inline-block; /*float: left;*/ white-space: normal; }
+.icon-text-content { margin-right: 16px; /*float: left;*/ display: inline-block; vertical-align: top; }
+
+#comments .mdl-cell { white-space: nowrap; }
+#comments > .mdl-card__supporting-text:last-child { margin-bottom: 16px; }
+.comment-text { white-space: normal; }
+.comment-content { display: inline-block; }
+.comment-header { margin: 5px 0 12px 0; }
+
+.mdl-badge[data-badge]:after { background-color: #ff6f00; }
 
 /* FOSUser */
 body.fosuser { background: url('../images/gplaypattern.png') left top repeat transparent; position: relative; }

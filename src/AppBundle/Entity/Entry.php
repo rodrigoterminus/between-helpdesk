@@ -25,14 +25,24 @@ class Entry
     private $files;
 
     /**
-     * @var \AppBundle\Entity\User
-     */
-    private $user;
-
-    /**
      * @var \AppBundle\Entity\Ticket
      */
     private $ticket;
+    
+    /**
+     * @var string
+     */
+    private $action = 'post';
+
+    /**
+     * @var \AppBundle\Entity\User
+     */
+    private $createdBy;
+
+    /**
+     * @var \AppBundle\Entity\User
+     */
+    private $directedTo;
 
 
     /**
@@ -90,28 +100,15 @@ class Entry
     {
         return $this->files;
     }
-
+    
     /**
-     * Set user
-     *
-     * @param \AppBundle\Entity\User $user
-     * @return Entry
+     * Get files object
+     * 
+     * @return object
      */
-    public function setUser(\AppBundle\Entity\User $user = null)
+    public function getFilesObject()
     {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    /**
-     * Get user
-     *
-     * @return \AppBundle\Entity\User 
-     */
-    public function getUser()
-    {
-        return $this->user;
+        return json_decode($this->files);
     }
 
     /**
@@ -219,5 +216,74 @@ class Entry
     public function getOrigin()
     {
         return $this->origin;
+    }
+    
+    /**
+     * Set action
+     *
+     * @param string $action
+     * @return Entry
+     */
+    public function setAction($action)
+    {
+        $this->action = $action;
+
+        return $this;
+    }
+
+    /**
+     * Get action
+     *
+     * @return string 
+     */
+    public function getAction()
+    {
+        return $this->action;
+    }
+
+    /**
+     * Set createdBy
+     *
+     * @param \AppBundle\Entity\User $createdBy
+     * @return Entry
+     */
+    public function setCreatedBy(\AppBundle\Entity\User $createdBy = null)
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    /**
+     * Get createdBy
+     *
+     * @return \AppBundle\Entity\User 
+     */
+    public function getCreatedBy()
+    {
+        return $this->createdBy;
+    }
+
+    /**
+     * Set directedTo
+     *
+     * @param \AppBundle\Entity\User $directedTo
+     * @return Entry
+     */
+    public function setDirectedTo(\AppBundle\Entity\User $directedTo = null)
+    {
+        $this->directedTo = $directedTo;
+
+        return $this;
+    }
+
+    /**
+     * Get directedTo
+     *
+     * @return \AppBundle\Entity\User 
+     */
+    public function getDirectedTo()
+    {
+        return $this->directedTo;
     }
 }

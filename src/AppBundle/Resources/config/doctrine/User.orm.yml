@@ -21,6 +21,12 @@ AppBundle\Entity\User:
             length: 255
             fixed: false
             comment: ''
+        preferences:
+            type: text
+            nullable: true
+            length: null
+            fixed: false
+            comment: ''
     manyToOne:
         customer:
             targetEntity: Customer

@@ -10,3 +10,7 @@ services:
 
     infinity.search:
         class: AppBundle\Utils\Search
+        
+    app.mailer:
+        class: AppBundle\Utils\Mailer
+        arguments: ["@service_container"]

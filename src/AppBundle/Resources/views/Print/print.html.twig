@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+<meta charset="utf-8" />
+<title>Impressão</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <!-- BEGIN CORE CSS FRAMEWORK -->
+        <link href="{{ asset('assets/plugins/boostrapv3/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('assets/plugins/boostrapv3/css/bootstrap-theme.min.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('assets/plugins/font-awesome/css/font-awesome.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('assets/css/animate.min.css') }}" rel="stylesheet" type="text/css"/>
+        <!-- END CORE CSS FRAMEWORK -->
+
+        <!-- BEGIN CSS TEMPLATE -->
+        <link href="{{ asset('assets/css/themes/coporate/style.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('assets/css/themes/coporate/responsive.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('assets/css/custom-icon-set.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('assets/css/magic_space.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('assets/css/infinity.css') }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ asset('assets/css/infinity.print.css') }}" rel="stylesheet" type="text/css"/>
+        <!-- END CSS TEMPLATE -->
+
+        <style media="print">
+            @page port {size: portrait;}
+        </style>
+</head>
+<!-- END HEAD -->
+<!-- BEGIN BODY -->
+<body class="print">
+    <div id="div-orientation" class="alert alert-info">
+        <button type="button" class="btn btn-success" title="Retrato" onclick="printer.changeOrientation('portrait')"><i class="fa fa-arrows-v"></i></button>
+        <button type="button" class="btn btn-success" title="Paisagem" onclick="printer.changeOrientation('landscape')"><i class="fa fa-arrows-h"></i></button>
+        <button type="button" class="btn btn-info" title="Imprimir" onclick="window.print()"><i class="fa fa-print"></i></button>
+    </div>
+    
+    {% block content %}{% endblock %}
+
+    <script src="{{ asset('assets/plugins/jquery-1.8.3.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/plugins/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/js/infinity/core/print.js') }}" type="text/javascript"></script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

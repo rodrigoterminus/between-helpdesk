@@ -1,0 +1,25 @@
+<table cellspacing="20" style="margin-top: 20px; width: 100%; border: 1px solid #f2f2f2; box-shadow: 1px 1px 4px rgba(0,0,0,0.3); font-family: 'Roboto', 'Helvetica', sans-serif; color: rgba(0,0,0,.54);">
+    <tr>
+        <td colspan="3" style="font-size: 18px;"><b>#{{ ticket.number }}</b></td>
+    </tr>
+    <tr>
+        <td>
+            <span style="font-size: 12px;">Cliente</span><br>
+            <span style="font-size: 16px;">{{ ticket.customer.name }}</span>
+        </td>
+        <td>
+            <span style="font-size: 12px;">Status</span><br>
+            <span style="font-size: 16px;">{{ ('ticket.status.' ~ ticket.status)|trans }}</span>
+        </td>
+        <td>
+            <span style="font-size: 12px;">Prioridade</span><br>
+            <span style="font-size: 16px;">{{ ('ticket.priority.' ~ ticket.priority)|trans }}</span>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            <span style="font-size: 12px;">Assunto</span><br>
+            <span style="font-size: 16px;">{{ ticket.subject }}</span>
+        </td>
+    </tr>
+</table>

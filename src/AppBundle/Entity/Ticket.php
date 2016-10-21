@@ -58,6 +58,11 @@ class Ticket
      * @var \AppBundle\Entity\Category
      */
     private $category;
+    
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $watchers;
 
 
     /**
@@ -445,5 +450,104 @@ class Ticket
     public function getFinishedBy()
     {
         return $this->finishedBy;
+    }
+    
+    /**
+     * Add watchers
+     *
+     * @param \AppBundle\Entity\User $watchers
+     * @return Ticket
+     */
+    public function addWatcher(\AppBundle\Entity\User $watchers)
+    {
+        $this->watchers[] = $watchers;
+
+        return $this;
+    }
+
+    /**
+     * Remove watchers
+     *
+     * @param \AppBundle\Entity\User $watchers
+     */
+    public function removeWatcher(\AppBundle\Entity\User $watchers)
+    {
+        $this->watchers->removeElement($watchers);
+    }
+
+    /**
+     * Get watchers
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getWatchers()
+    {
+        return $this->watchers;
+    }
+    /**
+     * @var string
+     */
+    private $files;
+
+
+    /**
+     * Set files
+     *
+     * @param string $files
+     * @return Ticket
+     */
+    public function setFiles($files)
+    {
+        $this->files = $files;
+
+        return $this;
+    }
+
+    /**
+     * Get files
+     *
+     * @return string 
+     */
+    public function getFiles()
+    {
+        return $this->files;
+    }
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $comments;
+
+
+    /**
+     * Add comments
+     *
+     * @param \AppBundle\Entity\Comment $comments
+     * @return Ticket
+     */
+    public function addComment(\AppBundle\Entity\Comment $comments)
+    {
+        $this->comments[] = $comments;
+
+        return $this;
+    }
+
+    /**
+     * Remove comments
+     *
+     * @param \AppBundle\Entity\Comment $comments
+     */
+    public function removeComment(\AppBundle\Entity\Comment $comments)
+    {
+        $this->comments->removeElement($comments);
+    }
+
+    /**
+     * Get comments
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getComments()
+    {
+        return $this->comments;
     }
 }

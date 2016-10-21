@@ -90,6 +90,16 @@ class Entry
     {
         return $this->files;
     }
+    
+    /**
+     * Get files object
+     * 
+     * @return object
+     */
+    public function getFilesObject()
+    {
+        return json_decode($this->files);
+    }
 
     /**
      * Set user
@@ -191,5 +201,33 @@ class Entry
     public function getFrom()
     {
         return $this->from;
+    }
+    /**
+     * @var string
+     */
+    private $origin;
+
+
+    /**
+     * Set origin
+     *
+     * @param string $origin
+     * @return Entry
+     */
+    public function setOrigin($origin)
+    {
+        $this->origin = $origin;
+
+        return $this;
+    }
+
+    /**
+     * Get origin
+     *
+     * @return string 
+     */
+    public function getOrigin()
+    {
+        return $this->origin;
     }
 }

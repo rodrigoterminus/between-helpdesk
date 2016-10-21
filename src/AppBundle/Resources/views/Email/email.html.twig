@@ -1,36 +1,41 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
- 	<head>
-  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  	<title>{% if title is defined %}{{ title }}{% endif %}</title>
-  	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	</head>
-	<body style="color: #333; font-family: Arial, sans-serif; font-size: 12px; line-height: 20px; margin: 0px;">
-		<table align="center" border="0" cellpadding="5" cellspacing="0" width="100%">
-			<tr>
-				<td bgcolor="#F1F1F1" align="center" style="border-bottom: 10px solid #FF9F34;">
-					<img src="http://helpdesk.wbwinfo.com.br/assets/images/logo.png" alt="Between" width="48" height="48" style="vertical-align:middle; margin-right: 10px;">
-	        {# <span style="line-height: 48px">Between</span> #}
-				</td>
-			</tr>
-			<tr>
-				<td bgcolor="#ffffff" align="center">
-					<div style="width: 600px; text-align: left;">
-						{% if title is defined %}
-							<center><h2 style="color: #666; font-weight: 400;">{{ title }}</h2></center>
-						{% endif %}
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>{% if title is defined %}{{ title }}{% endif %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <style>
+            body { color: #757575 !important; }
+            a { color: #424242; text-decoration: none; font-weight: 600; }
+        </style>
+    </head>
+    <body style="color: #333; font-family: Arial, sans-serif; font-size: 12px; line-height: 20px; margin: 0px;">
+        <table align="center" border="0" cellpadding="5" cellspacing="0" width="100%" style="border: 1px solid #f2f2f2;">
+            <tr>
+                <td bgcolor="#F9F9F9" align="center" style="border-bottom: 10px solid #FF9F34;">
+                    <img src="http://helpdesk.wbwinfo.com.br/assets/images/logo.png" alt="Between" width="48" height="48" style="vertical-align:middle; margin-right: 10px;">
+                        {# <span style="line-height: 48px">Between</span> #}
+                </td>
+            </tr>
+            <tr>
+                <td bgcolor="#ffffff" align="center" style="padding: 4px 20px;">
+                    <div style="width: 600px; text-align: left;">
+                        {% if title is defined %}
+                            <center><h2 style="color: #666; font-weight: 400;">{{ title }}</h2></center>
+                        {% endif %}
 
-						{% block body %}{% endblock %}
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td bgcolor="#555555" align="center" style="color: #BDBDBD; font-size: 10px;line-height: 14px; padding: 15px 0;">					
-					<b><a href="{{ path(app.request.attributes.get('_route')) }}" style="color: #BDBDBD; text-decoration: none;">Between</a></b><br />
-					<p>Este é um email automático. Gentileza não responder.</p>
-				</td>
-			</tr>
-		</table>
-	</body>
+                    {% block body %}{% endblock %}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td bgcolor="#555555" align="center" style="color: #BDBDBD; font-size: 10px;line-height: 14px; padding: 15px 0;">					
+                <b><a href="{{ absolute_url(path('index')) }}" style="color: #BDBDBD; text-decoration: none;">Between</a></b><br />
+                Você pode alterar quando quer ser notificado através <a href="{{ absolute_url(path('fos_user_profile_show')) }}">deste link</a>.
+                <p>Este é um email automático. Gentileza não responder.</p>
+            </td>
+        </tr>
+    </table>
+</body>
 </html>
 

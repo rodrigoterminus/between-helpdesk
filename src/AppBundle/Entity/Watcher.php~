@@ -1,0 +1,68 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Watcher
+ */
+class Watcher
+{
+    /**
+     * @var \AppBundle\Entity\User
+     */
+    private $user;
+
+    /**
+     * @var \AppBundle\Entity\Ticket
+     */
+    private $ticket;
+
+
+    /**
+     * Set user
+     *
+     * @param \AppBundle\Entity\User $user
+     * @return Watcher
+     */
+    public function setUser(\AppBundle\Entity\User $user = null)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \AppBundle\Entity\User 
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * Set ticket
+     *
+     * @param \AppBundle\Entity\Ticket $ticket
+     * @return Watcher
+     */
+    public function setTicket(\AppBundle\Entity\Ticket $ticket = null)
+    {
+        $this->ticket = $ticket;
+
+        return $this;
+    }
+
+    /**
+     * Get ticket
+     *
+     * @return \AppBundle\Entity\Ticket 
+     */
+    public function getTicket()
+    {
+        return $this->ticket;
+    }
+}

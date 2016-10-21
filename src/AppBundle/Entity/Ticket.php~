@@ -58,6 +58,11 @@ class Ticket
      * @var \AppBundle\Entity\Category
      */
     private $category;
+    
+    /**
+     * @var \Doctrine\Common\Collections\Collection
+     */
+    private $watchers;
 
 
     /**
@@ -417,5 +422,94 @@ class Ticket
     public function getFinishedAt()
     {
         return $this->finishedAt;
+    }
+    /**
+     * @var \AppBundle\Entity\User
+     */
+    private $finishedBy;
+
+
+    /**
+     * Set finishedBy
+     *
+     * @param \AppBundle\Entity\User $finishedBy
+     * @return Ticket
+     */
+    public function setFinishedBy(\AppBundle\Entity\User $finishedBy = null)
+    {
+        $this->finishedBy = $finishedBy;
+
+        return $this;
+    }
+
+    /**
+     * Get finishedBy
+     *
+     * @return \AppBundle\Entity\User 
+     */
+    public function getFinishedBy()
+    {
+        return $this->finishedBy;
+    }
+    
+    /**
+     * Add watchers
+     *
+     * @param \AppBundle\Entity\User $watchers
+     * @return Ticket
+     */
+    public function addWatcher(\AppBundle\Entity\User $watchers)
+    {
+        $this->watchers[] = $watchers;
+
+        return $this;
+    }
+
+    /**
+     * Remove watchers
+     *
+     * @param \AppBundle\Entity\User $watchers
+     */
+    public function removeWatcher(\AppBundle\Entity\User $watchers)
+    {
+        $this->watchers->removeElement($watchers);
+    }
+
+    /**
+     * Get watchers
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getWatchers()
+    {
+        return $this->watchers;
+    }
+    /**
+     * @var string
+     */
+    private $files;
+
+
+    /**
+     * Set files
+     *
+     * @param string $files
+     * @return Ticket
+     */
+    public function setFiles($files)
+    {
+        $this->files = $files;
+
+        return $this;
+    }
+
+    /**
+     * Get files
+     *
+     * @return string 
+     */
+    public function getFiles()
+    {
+        return $this->files;
     }
 }

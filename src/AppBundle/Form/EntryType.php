@@ -5,6 +5,8 @@ namespace AppBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 class EntryType extends AbstractType
 {
@@ -23,12 +25,19 @@ class EntryType extends AbstractType
             ->add('files', 'hidden')
         ;
 
-        if ($this->user->isAdmin())
+        if ($this->user->isAdmin()) {
             $builder
-                ->add('text', 'textarea', array('label' => 'Digite uma mensagem ao cliente', 'required' => false));
-        else
+                ->add('text', TextareaType::class, array('label' => 'Digite uma mensagem ao cliente', 'required' => false));
+        } else {
             $builder
-                ->add('text', 'textarea', array('label' => 'Descreva sua solicitação ou problema'));
+                ->add('text', TextareaType::class, array('label' => 'Descreva sua solicitação ou problema', 'required' => false));
+        }
+        
+        $builder->add('uploads', FileType::class, array(
+            'multiple' => true,
+            'required' => false,
+            'mapped' => false,
+        ));
     }
     
     /**

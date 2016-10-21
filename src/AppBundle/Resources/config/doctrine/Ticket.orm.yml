@@ -53,6 +53,12 @@ AppBundle\Entity\Ticket:
             length: null
             fixed: false
             comment: ''
+        files:
+            type: text
+            nullable: true
+            length: null
+            fixed: false
+            comment: ''
         createdAt:
             type: datetime
             nullable: false
@@ -128,4 +134,19 @@ AppBundle\Entity\Ticket:
             targetEntity: Entry
             cascade: ['persist']
             mappedBy: ticket
+        comments:
+            targetEntity: Comment
+            cascade: ['persist']
+            mappedBy: ticket
+    manyToMany:
+        watchers:
+            targetEntity: User
+            joinTable:
+                name: watcher
+                joinColumns:
+                    user_id:
+                        referencedColumnName: id
+                inverseJoinColumns:
+                    ticket_id:
+                        referencedColumnName: id
     lifecycleCallbacks: {  }

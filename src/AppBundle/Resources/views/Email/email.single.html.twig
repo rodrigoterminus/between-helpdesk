@@ -1,0 +1,11 @@
+{% extends "AppBundle:Email:email.html.twig" %}
+
+{% block body %}
+    {{ content|raw }}
+    
+    {% if ticket is defined %}
+        {% include 'AppBundle:Email:ticket.html.twig' %}
+    {% endif %}
+    
+    {% include 'AppBundle:Email:signature.html.twig' %}
+{% endblock %}

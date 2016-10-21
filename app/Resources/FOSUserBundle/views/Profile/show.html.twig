@@ -3,20 +3,78 @@
 {% extends '::base.html.twig' %}
 
 {% block body %}
-	<div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-phone">
+    <div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-phone">
 
-		<div class="mdl-card mdl-shadow--4dp">
-	        <div class="mdl-card__supporting-text">
-				<p><b>Nome</b><br>{{ user.name }}</p>
-				<hr>
-				<p><b>Email</b><br>{{ user.email }}</p>
-				<hr>
-				<b>Último acesso</b><br>{{ user.lastLogin.date|date('d/m/Y H:i:s') }}</p>
-	        </div>
-	        <div class="mdl-card__actions mdl-card--border">
-	          <a href="{{ path('fos_user_change_password') }}" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Alterar minha senha</a>
-	        </div>
-	    </div>
+        <div class="mdl-card mdl-shadow--4dp">
+            <div class="mdl-card__supporting-text">
+                <p><b>Nome</b><br>{{ user.name }}</p>
+                <hr>
+                <p><b>Email</b><br>{{ user.email }}</p>
+                <hr>
+                <b>Último acesso</b><br>{{ user.lastLogin.date|date('d/m/Y H:i:s') }}</p>
+            </div>
+            <div class="mdl-card__actions mdl-card--border">
+                <a href="{{ path('fos_user_change_password') }}" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Alterar minha senha</a>
+            </div>
+        </div>
 
     </div>
+                
+    <div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-phone">
+
+        <div class="mdl-card mdl-shadow--4dp">
+            <div class="mdl-card__title">
+                <h2 class="mdl-card__title-text">Notificações por email</h2>
+            </div>
+            <div id="notifications" class="mdl-card__supporting-text">
+                {% set preferences = user.getPreferencesObject() %}
+                
+                {% if user.isAdmin() %}
+                    <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-watcher">
+                        <input type="checkbox" id="checkbox-watcher" class="mdl-checkbox__input" 
+                            {% if preferences.notifications.email.watcher is not defined or preferences.notifications.email.watcher == true %}checked{% endif %}>
+                        <span class="mdl-checkbox__label">Alterações em chamados assistidos</span>
+                    </label>
+                    
+                    <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-transfer">
+                        <input type="checkbox" id="checkbox-transfer" class="mdl-checkbox__input" 
+                            {% if preferences.notifications.email.transfer is not defined or preferences.notifications.email.transfer == true %}checked{% endif %}>
+                        <span class="mdl-checkbox__label">Transferências de chamado para mim</span>
+                    </label>
+                        
+                    <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-comment">
+                        <input type="checkbox" id="checkbox-comment" class="mdl-checkbox__input" 
+                            {% if preferences.notifications.email.comment is not defined or preferences.notifications.email.comment == true %}checked{% endif %}>
+                        <span class="mdl-checkbox__label">Comentários nos meus chamados</span>
+                    </label>
+                {% endif %}
+                
+                <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-entry">
+                    <input type="checkbox" id="checkbox-entry" class="mdl-checkbox__input" 
+                        {% if preferences.notifications.email.entry is not defined or preferences.notifications.email.entry == true %}checked{% endif %}>
+                    <span class="mdl-checkbox__label">Postagens nos meus chamados</span>
+                </label>
+                
+                <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-finish">
+                    <input type="checkbox" id="checkbox-finish" class="mdl-checkbox__input" 
+                        {% if preferences.notifications.email.finish is not defined or preferences.notifications.email.finish == true %}checked{% endif %}>
+                    <span class="mdl-checkbox__label">Finalizações dos meus chamados</span>
+                </label>
+                
+                <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-reopen">
+                    <input type="checkbox" id="checkbox-reopen" class="mdl-checkbox__input" 
+                        {% if preferences.notifications.email.reopen is not defined or preferences.notifications.email.reopen == true %}checked{% endif %}>
+                    <span class="mdl-checkbox__label">Reabertura dos meus chamados</span>
+                </label>
+            </div>
+            <div class="mdl-card__actions mdl-card--border">
+                <a href="javascript: user.preferences()" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Salvar</a>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ asset('assets/js/user.js') }}"></script>
 {% endblock %}
