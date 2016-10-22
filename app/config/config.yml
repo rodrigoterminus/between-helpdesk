@@ -99,3 +99,9 @@ fos_user:
                 sender_name:    %contact_name%
 
 white_october_breadcrumbs: ~
+
+knp_snappy:
+    pdf:
+        enabled: true
+        binary: "\"C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe\""
+        options: []

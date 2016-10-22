@@ -3,7 +3,11 @@ var search = {
         // $('.demo-content').masonry({
         //   itemSelector: '.mdl-cell'
         // });
-
+        
+        $('.btn-export').on('click', function() {
+            exporter.get($(this).data('format'));
+        });
+        
         $('#form-search').on('submit', function (event) {
             // event.preventDefault();
             var $submit = $(this).find('button[type="submit"]');

@@ -1,0 +1,29 @@
+body { font-family: Roboto,Helvetica,Arial,sans-serif; color: rgba(0,0,0,.8); margin: 0; padding: 0; }
+
+table { width: 100%; border-spacing: 0; font-size: 12px; }
+table th,
+table td { padding: 2px 4px; margin: 0; vertical-align: top; }
+
+a { text-decoration: none; font-weight: 600; }
+a:visited { text-decoration: none; color: initial; }
+
+ul { margin: 0; padding: 0; list-style: none; }
+ul li { margin: 0; }
+
+header { margin-bottom: 18px; }
+header h2 { margin: 0 0 18px 0; }
+header table { font-size: 12px; }
+header .criteria {  }
+header .info { text-align: right; }
+
+footer { border-top: 1px solid rgba(0,0,0,.3); margin-top: 18px; font-size: 12px; }
+footer h3 { margin: 6px 0; }
+footer td { vertical-align: middle; }
+footer .link { text-align: right; }
+footer .logo { color: rgba(0,0,0,0.7); }
+footer img { vertical-align: middle; margin-right: 6px; }
+
+table.results { font-size: 12px; }
+table.results th { text-align: left; border-bottom: 1px solid black; }
+table.results tbody td { border-bottom: 1px solid #EEEEEE; }
+
