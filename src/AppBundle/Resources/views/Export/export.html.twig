@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Between - {{ data.title }}</title>
+        
+        {% if css is defined %}
+            <style type="text/css">
+                {{ css }}
+            </style>
+        {% endif %}
+    </head>
+    <body>
+        <header>
+            <h2>{{ data.title }}</h2>
+            
+            <table>
+                <tbody>
+                    <tr>
+                        <td class="criteria">
+                            <ul>
+                            {% for criteria in data.criteria %}
+                                <li><b>{{ criteria.label }}:</b> {{ criteria.value }}</li>
+                            {% endfor %}                                
+                            </ul>
+                        </td>
+                        <td class="info">
+                            <ul>
+                                <li><b>{{ data.results|length }} resultados</b></li>
+                                <li>Em {{ 'now'|date('d/m/Y') }} as {{ 'now'|date('H:i:s') }} </li>
+                                <li>Gerado por <b>{{ app.user.name }}</b></li>                                
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </header>
+        
+        {# Results #}
+        <table class="results">
+            <thead>
+                {% for column in data.columns %}
+                    <th>{{ column }}</th>
+                {% endfor %}
+            </thead>
+            <tbody>
+                {% for result in data.results %}
+                    <tr>
+                        {% for value in result %}
+                            <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+            
+        {# Footer #}
+        <footer>
+            <table border="0">
+                <tbody>
+                    <tr>
+                        <td class="logo">
+                            <h3><img src="{{ logo }}" height="24" />Between</h3>
+                        </td>
+                        <td class="link">
+                            <span>Para acessar este resultado, <a href="{{ data.url }}" target="_blank">clique aqui</a>.</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </footer>
+    </body>
+</html>
