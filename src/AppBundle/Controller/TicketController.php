@@ -554,50 +554,6 @@ class TicketController extends Controller {
         );
     }
 
-    /**
-     * Associate a user to a ticket
-     *
-     * @Route("/{number}/watcher", name="ticket_watcher", options={"expose"=true})
-     * @Method("GET")
-     * @Template()
-     */
-    public function watcherAction(Request $request, $number) {
-        $response = [];
-        $em = $this->getDoctrine()->getManager();
-        $ticket = $em->getRepository('AppBundle:Ticket')->findOneBy(array('number' => $number));
-        $user = $this->get('security.context')->getToken()->getUser();
-
-        if (!$ticket) {
-            throw $this->createNotFoundException('Unable to find Ticket entity.');
-        } else {
-            $subscribed = null;
-
-            foreach ($ticket->getWatchers() as $watcher) {
-                if ($user->getId() === $watcher->getId()) {
-                    $ticket->removeWatcher($user);
-                    $subscribed = false;
-                    break;
-                }
-            }
-
-            if ($subscribed === null) {
-                $ticket->addWatcher($user);
-                $subscribed = true;
-            }
-
-            $em->persist($ticket);
-            $em->flush();
-        }
-
-        return new JsonResponse([
-            'subscribed' => $subscribed,
-            'user' => [
-                'id' => $user->getId(),
-                'name' => $user->getName(),
-            ]
-        ]);
-    }
-
     private function isAllowed($ticket) {
         $user = $this->get('security.context')->getToken()->getUser();
 
@@ -709,7 +665,7 @@ class TicketController extends Controller {
             
             foreach ($ticket->getEntries() as $entry) {
                 if ($counter === $length) {
-                    if ($entry->getText() != null) {
+                    if ($entry->getText() !== null) {
                         $entry = $this->fillEntry($entry, $ticket);
                         $entries->add($entry);
                         
@@ -727,9 +683,23 @@ class TicketController extends Controller {
                 ->setModifiedAt(new \DateTime('now'))
                 ->setEntries($entries);
             
-//            foreach ($ticket->getWatchers() as $watcher)
-//                dump($watcher); 
-//            die;
+            // Add user as watcher if it has posted and it is not related to the ticket
+            if ($newPost === true) {
+                $setWatcher = false;
+                
+                // Customer and not the creator
+                if (!$ticket->getCreatedBy()->isAdmin() && $ticket->getCreatedBy() !== $user) {
+                    $setWatcher = true;
+                } 
+                // Attendant but not the responsible for the ticket
+                elseif ($ticket->getCreatedBy()->isAdmin() && $ticket->getAttendant() !== $user) {
+                    $setWatcher = true;
+                }
+                
+                if ($setWatcher === true && $ticket->getWatchers()->contains($user) === false) {
+                    $ticket->addWatcher($user);
+                }
+            }
             
             $em->persist($ticket);
             $em->flush();
@@ -762,6 +732,50 @@ class TicketController extends Controller {
             ->setOrigin($orign);
 
         return $entry;
+    }
+    
+    /**
+     * Associate a user to a ticket
+     *
+     * @Route("/{number}/watcher", name="ticket_watcher", options={"expose"=true})
+     * @Method("GET")
+     * @Template()
+     */
+    public function watcherAction(Request $request, $number) {
+        $response = [];
+        $em = $this->getDoctrine()->getManager();
+        $ticket = $em->getRepository('AppBundle:Ticket')->findOneBy(array('number' => $number));
+        $user = $this->get('security.context')->getToken()->getUser();
+
+        if (!$ticket) {
+            throw $this->createNotFoundException('Unable to find Ticket entity.');
+        } else {
+            $subscribed = null;
+
+            foreach ($ticket->getWatchers() as $watcher) {
+                if ($user->getId() === $watcher->getId()) {
+                    $ticket->removeWatcher($user);
+                    $subscribed = false;
+                    break;
+                }
+            }
+
+            if ($subscribed === null) {
+                $ticket->addWatcher($user);
+                $subscribed = true;
+            }
+
+            $em->persist($ticket);
+            $em->flush();
+        }
+
+        return new JsonResponse([
+            'subscribed' => $subscribed,
+            'user' => [
+                'id' => $user->getId(),
+                'name' => $user->getName(),
+            ]
+        ]);
     }
 
     /**
