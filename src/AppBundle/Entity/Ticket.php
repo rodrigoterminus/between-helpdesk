@@ -63,7 +63,11 @@ class Ticket
      * @var \Doctrine\Common\Collections\Collection
      */
     private $watchers;
-
+    
+    /**
+     * @var \AppBundle\Entity\Rating
+     */
+    private $rating;
 
     /**
      * Get id
@@ -549,5 +553,28 @@ class Ticket
     public function getComments()
     {
         return $this->comments;
+    }
+
+    /**
+     * Set rating
+     *
+     * @param \AppBundle\Entity\Rating $rating
+     * @return Ticket
+     */
+    public function setRating(\AppBundle\Entity\Rating $rating = null)
+    {
+        $this->rating = $rating;
+
+        return $this;
+    }
+
+    /**
+     * Get rating
+     *
+     * @return \AppBundle\Entity\Rating 
+     */
+    public function getRating()
+    {
+        return $this->rating;
     }
 }

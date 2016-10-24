@@ -50,7 +50,7 @@ header.mdl-layout__header {
 .ticket-watcher:after { content: ',' }
 .ticket-watcher:last-child:after { content: '' }
 
-.ticket-statistics { width: auto; }
+.ticket-statistics { }
 .ticket-statistics * { vertical-align: middle; }
 
 .ticket-interval { width: auto; padding: 10px 14px; position: absolute; border: 1px solid #ccc; 
@@ -60,7 +60,26 @@ header.mdl-layout__header {
     background-color: white; 
     white-space: nowrap;
     border-radius: 2px;
+    font-size: 80%;
 }
+
+/* Rating */
+.rating-stars { list-style: none; margin: 0; padding: 0; }
+.rating-stars > li { list-style: none; margin: 0; padding: 0; display: inline-block }
+.rating-star.fulfilled i { color: #FFC107; }
+
+.rating-thumbs { display: inline-block; }
+.rating-thumbs.choosen[data-value=true] i { color: #4CAF50; }
+.rating-thumbs.choosen[data-value=false] i { color: #F44336; }
+
+.rating-card { padding-bottom: 7px; }
+.rating-card > * { /*display: inline-block;*/ }
+.rating-card .rating-stars { float: right; }
+
+.rating-comment-footer { display: block; margin-top: 12px; font-weight: 300; color: rgba(255,255,255,0.7);  }
+
+#dialog-rating p { margin-bottom: 6px; text-align: left; }
+#dialog-rating .mdl-dialog__content .mdl-cell { margin: 8px 0 12px 0; width: 100%; text-align: center; }
 
 .mdl-card__title > .mdl-button--fab { margin: 0; }
 .mdl-card__title-icon-fab > .mdl-button--fab { margin-right: 12px; }

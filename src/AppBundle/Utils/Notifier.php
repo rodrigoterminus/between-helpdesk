@@ -110,7 +110,11 @@ class Notifier
 
         // Notify users
         foreach ($users as $user) {
-            $this->add($user, $notification);
+            if ($user !== null) {
+                $this->add($user, $notification);
+            } else {
+                $users->removeElement($user);
+            }
         }
 
         $this->em->flush();

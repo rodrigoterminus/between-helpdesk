@@ -49,3 +49,9 @@ swiftmailer:
     transport: gmail
     username:  rodrigo@wbwinfo.com.br
     password:  wbwinfo*1
+    
+knp_snappy:
+    pdf:
+        enabled: true
+        binary: "\"C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe\""
+        options: []
