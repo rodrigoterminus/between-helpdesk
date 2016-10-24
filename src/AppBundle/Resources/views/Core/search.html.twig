@@ -16,13 +16,13 @@
     
     <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="btn-export">
         <li class="mdl-menu__item btn-export" data-format="html">HTML</li>
-        <li class="mdl-menu__item btn-export" data-format="pdf">PDF</li>
+{#        <li class="mdl-menu__item btn-export" data-format="pdf">PDF</li>#}
         <li class="mdl-menu__item btn-export" data-format="csv">CSV</li>
     </ul>
 {% endblock %}
 
 {% block body -%}
-
+    
     {% if search.data|length > 0 %}
         <div class="mdl-cell mdl-cell--12-col">
             <div class="mdl-card mdl-shadow--2dp search-criteria">
@@ -72,7 +72,7 @@
         {% set index = loop.index %}
         
         <div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-phone">
-            <div class="mdl-card mdl-shadow--2dp">
+            <div id="search-card-{{ row.id }}" data-id="{{ row.id }}" class="search-card mdl-card mdl-shadow--2dp">
                 {% for column in search.columns %}
                     {% if loop.first %}
                         <div class="mdl-card__title">
@@ -263,5 +263,24 @@
 
     <script>
         search.init();
+        
+        try {
+            search.result = JSON.parse('{{ search.toJSON()|raw }}');
+        } catch (e) {
+            console.error('Impossible to parse JSON result')
+        }
+
     </script>
+    
+    {% if app.request.get('_route') == 'ticket' %}
+        <script src="{{ asset('assets/js/ticket.js') }}"></script>
+        
+        <script>
+            {% if app.user.isAdmin() %}
+                ticket.showCardsRatings();
+            {% else %}
+                ticket.showRatingInvitations();
+            {% endif %}
+        </script>
+    {% endif %}
 {% endblock %}

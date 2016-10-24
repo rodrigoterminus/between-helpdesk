@@ -132,23 +132,61 @@
                         {% endfor %}
                     </div>
                     <div class="mdl-tooltip mdl-tooltip--top" for="icon-watchers">Observadores</div>
+                    
+                    {% if app.user.isAdmin() and statistics|length > 0 %} 
+                        {#<div class="mdl-card__supporting-text ticket-statistics">
+                            <div class="mdl-grid">#}
+                                {% if statistics.wait is defined %}
+                                    <div class="mdl-cell mdl-cell--6-col mdl-cell--12-col-phone ticket-statistics">
+                                        <i class="material-icons">schedule</i>&nbsp;
+                                        <b>Tempo de espera:</b>&nbsp;{{ statistics.wait }}
+                                    </div>
+                                {% endif %}
+
+                                {% if statistics.service is defined %}
+                                    <div class="mdl-cell mdl-cell--6-col mdl-cell--12-col-phone ticket-statistics">
+                                        <i class="material-icons">restore</i>&nbsp;
+                                        <b>Tempo de atendimento:</b>&nbsp;{{ statistics.service }}
+                                    </div>
+                                {% endif %}
+                            {#</div>
+                        </div>#}
+                    {% endif %}
                 </div>
             </div>
             
-            {% if app.user.isAdmin() and statistics|length > 0 %} 
-                <div class="mdl-card__supporting-text ticket-statistics mdl-color--blue-grey-50">
+            {% set stars = ['Péssimo','Ruim','Regular','Bom','Excelente'] %}
+            
+            {% if app.user.isAdmin() and entity.rating != null %}
+                {% if entity.rating.solved %}
+                    {% set color = 'green' %}
+                    {% set icon = 'thumb_up' %}
+                {% else %}
+                    {% set color = 'red' %}
+                    {% set icon = 'thumb_down' %}
+                {% endif %}
+
+                <div class="rating-card mdl-card__supporting-text mdl-card--border mdl-color--{{ color }}-400 mdl-color-text--white">
                     <div class="mdl-grid">
-                        {% if statistics.wait is defined %}
-                            <div class="mdl-cell mdl-cell--6-col mdl-cell--12-col-phone">
-                                <i class="material-icons">schedule</i>&nbsp;
-                                <b>Tempo de espera:</b>&nbsp;{{ statistics.wait }}
-                            </div>
-                        {% endif %}
-                        
-                        {% if statistics.service is defined %}
-                            <div class="mdl-cell mdl-cell--6-col mdl-cell--12-col-phone">
-                                <i class="material-icons">restore</i>&nbsp;
-                                <b>Tempo de atendimento:</b>&nbsp;{{ statistics.service }}
+                        <div class="rating-icons mdl-cell mdl-cell--12-col">
+                            <i class="material-icons">{{ icon }}</i>
+
+                            <ul class="rating-stars">
+                                {% for star in stars %}
+                                    <li class="rating-star {% if loop.index > entity.rating.rate %}mdl-color-text--{{ color }}-300{% endif %}">
+                                        <i class="material-icons">star</i>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    
+                        {% if entity.rating.comment != null %}                        
+                            <div class="rating-comment mdl-cell mdl-cell--12-col">
+                                <span>{{ entity.rating.comment }}</span><br>
+                                <i class="rating-comment-footer">
+                                    {{ entity.rating.user.name }}<br>
+                                    Em {{ entity.rating.createdAt|date('d/m/Y H:i:s') }}
+                                </i>
                             </div>
                         {% endif %}
                     </div>
@@ -156,6 +194,26 @@
             {% endif %}
         </div>
     </div>
+        
+    {% if entity.status == 'finished' and app.user.isAdmin() == false and entity.rating == null %}
+        <div id="rating-container" class="mdl-cell mdl-cell--12-col">
+            <div class="mdl-card mdl-shadow--2dp mdl-color--red-400 mdl-color-text--white">
+                <div class="mdl-card__title mdl-color-text--white">
+                    <h2 class="mdl-card__title-text">Avalie este chamado</h2>
+                </div>
+                <div class="mdl-card__supporting-text mdl-card--border npv mdl-color-text--white">
+                    <div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--12-col">
+                            <span>Queremos sempre prestar o melhor serviço para você. Contamos com sua ajuda para que possamos entender se estamos alcançando nosso objetivo e onde precisamos melhorar. Ajude-nos avaliando este chamado.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mdl-card__actions mdl-card--border">
+                    <a id="btn-open-rating" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect mdl-color-text--white">Avaliar</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
     
     {% if app.user.isAdmin() %}
         <div class="mdl-cell mdl-cell--12-col">
@@ -341,7 +399,9 @@
     </div>
 
     {{ form_end(form) }}
-    
+{% endblock %}
+
+{% block modals %}
     <dialog id="dialog-transfer" class="mdl-dialog">
         <div class="mdl-dialog__title">Tranferir chamado</div>
         <div class="mdl-dialog__content npb">
@@ -381,6 +441,48 @@
                 <div class="mdl-cell mdl-cell--12-col">
                     <button type="button" class="mdl-button close">Cancelar</button>
                     <button id="btn-send-comment" type="button" class="mdl-button mdl-button--colored">Enviar</button>
+                </div>
+            </div>
+        </div>
+    </dialog>
+                            
+    <dialog id="dialog-rating" class="mdl-dialog">
+        <div class="mdl-dialog__title">Avaliação do chamado</div>
+        <div class="mdl-dialog__content npb">
+            <div class="mdl-grid">
+                <div class="mdl-cell mdl-cell--12-col">
+                    <p>Sua solicitação foi atendida?</p>
+                    <button type="button" data-value="true" class="rating-thumbs mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">thumb_up</i></button>
+                    <button type="button" data-value="false" class="rating-thumbs mdl-button mdl-js-button mdl-button--icon"><i class="material-icons">thumb_down</i></button>
+                </div>
+                <div class="mdl-cell mdl-cell--12-col">
+                    <p>Qual sua avaliação sobre o atendimento?</p>
+                    
+                    <ul class="rating-stars">
+                        {% set stars = ['Péssimo','Ruim','Regular','Bom','Excelente'] %}
+                        
+                        {% for star in stars %}
+                            <li>
+                                <button id="rating-star-{{ loop.index }}" type="button" data-rate="{{ loop.index }}" class="rating-star mdl-button mdl-js-button mdl-button--icon">
+                                    <i class="material-icons">star</i>
+                                </button>
+                            </li>
+                            <div class="mdl-tooltip mdl-tooltip--top" for="raiting-star-{{ loop.index }}">{{ star }}</div>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="mdl-cell mdl-cell--12-col">
+                    <div class="mdl-textfield mdl-js-textfield npv">
+                        <textarea id="rating-comment" class="mdl-textfield__input" rows="6" placeholder="Escreva-nos um comentário (opcional)"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+            <div class="mdl-grid">
+                <div class="mdl-cell mdl-cell--12-col">
+                    <button type="button" class="mdl-button close">Cancelar</button>
+                    <a id="btn-send-comment" href="javascript: ticket.submitRating()" class="mdl-button mdl-button--colored">Enviar</a>
                 </div>
             </div>
         </div>

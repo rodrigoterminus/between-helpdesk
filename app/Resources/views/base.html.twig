@@ -87,11 +87,17 @@
 
     {# MESSAGES #}
     {% if app.session.flashbag|length > 0 %}
-      {% for type, flashMessage in app.session.flashbag %}
-        {% for message in flashMessage %}                  
-            <script type="text/javascript">notifier.notify({message: '{{ message }}'}, true);</script>                  
-        {% endfor %}
-      {% endfor %}
+        <script type="text/javascript">
+            $(document).ready(function() {
+                setTimeout(function() {
+                    {% for type, flashMessage in app.session.flashbag %}
+                        {% for message in flashMessage %}                  
+                            notifier.notify({message: '{{ message }}'}, true);
+                        {% endfor %}
+                    {% endfor %}
+                }, 1000);
+            });
+        </script>
     {% endif %}
 
     {% block scripts %}{% endblock %}

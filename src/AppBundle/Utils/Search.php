@@ -5,6 +5,11 @@ namespace AppBundle\Utils;
 class Search {
 
     public $buttons, $columns, $data, $totalizer, $translate_prefix;
+    
+    /**
+     * @var array 
+     */
+    private $result;
 
     public function __construct() {
         $this->buttons = array();
@@ -58,7 +63,44 @@ class Search {
 
         return $this;
     }
+    
+    /**
+     * 
+     * @return string
+     */
+    public function toJSON() {
+        $data = [];
+        
+        if ($this->result !== null) {
+            foreach ($this->result as $row) {
+                $entry = [];
 
+                foreach ($row as $column => $value) {
+                    if ($value instanceof \Date) {
+                        $value = $value->getTimestamp();
+                    } elseif ($value instanceof \DateTime) {
+                        $value = $value->getTimestamp();
+                    } 
+                    
+                    $entry[$column] = $value;
+                }
+
+                array_push($data, $entry);
+            }
+        }        
+
+        return json_encode($data);
+    }
+    
+    /**
+     * 
+     * @param array $result
+     * @return \AppBundle\Utils\Search
+     */
+    public function setResult($result)
+    {
+        $this->result = $result;
+        
+        return $this;
+    }
 }
-
-?>

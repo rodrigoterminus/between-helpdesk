@@ -129,6 +129,11 @@ AppBundle\Entity\Ticket:
                 category_id:
                     referencedColumnName: id
             orphanRemoval: false
+    oneToOne:
+        rating:
+            targetEntity: Rating
+            mappedBy: ticket
+            cascade: ['all']
     oneToMany:
         entries:
             targetEntity: Entry

@@ -10,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use AppBundle\Entity\Ticket;
 use AppBundle\Entity\Entry;
+use AppBundle\Entity\Rating;
 use AppBundle\Form\TicketType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -48,6 +49,7 @@ class TicketController extends Controller {
         $qb = $repository->createQueryBuilder('t');
         $query = $qb
             ->select(array(
+                't.id',
                 't.number',
                 'cm.name AS customer',
                 't.subject',
@@ -59,6 +61,8 @@ class TicketController extends Controller {
                 'att.name AS attendant',
                 't.createdAt',
                 't.modifiedAt',
+                'r.solved',
+                'r.rate',
                 )
             )
             ->join('AppBundle:Customer', 'cm', 'WITH', 'cm.id = t.customer')
@@ -66,11 +70,12 @@ class TicketController extends Controller {
             ->join('AppBundle:User', 'u', 'WITH', 'u.id = t.createdBy')
             ->leftJoin('AppBundle:Project', 'p', 'WITH', 'p.id = t.project')
             ->leftJoin('AppBundle:User', 'att', 'WITH', 'att.id = t.attendant')
+            ->leftJoin('AppBundle:Rating', 'r', 'WITH', 'r.ticket = t.id')
             ->addOrderBy('t.id', 'DESC');
-
-        if ($user->hasRole('ROLE_DEFAULT')) {
+        
+        if ($user->isAdmin() === false) {
             $query = $qb
-                ->andWhere($qb->expr()->eq('cm.id', ':customer'))
+                ->where($qb->expr()->eq('cm.id', ':customer'))
                 ->setParameter('customer', $user->getCustomer()->getId());
         }
 
@@ -177,7 +182,41 @@ class TicketController extends Controller {
                 'required' => false,
                 'attr' => array('data-col' => 'mdl-cell--6-col-desktop mdl-cell--12-col-phone')
                 )
-            )
+            );
+        
+        if ($user->isAdmin()) {
+            $rating = [
+                '1' => '1',
+                '2' => '2',
+                '3' => '3',
+                '4' => '4',
+                '5' => '5',
+            ];
+            
+            $form
+                ->add('rate_min', ChoiceType::class, [
+                    'label' => 'Avaliação mínima',
+                    'choices' => $rating,
+                    'placeholder' => 'Selecione uma opção',
+                    'required' => false,
+                    'attr' => array('data-col' => 'mdl-cell--3-col-desktop mdl-cell--6-col-phone'),
+                ])
+                ->add('rate_max', ChoiceType::class, [
+                    'label' => 'Avaliação máxima',
+                    'choices' => $rating,
+                    'placeholder' => 'Selecione uma opção',
+                    'required' => false,
+                    'attr' => array('data-col' => 'mdl-cell--3-col-desktop mdl-cell--6-col-phone'),
+                ])
+                ->add('solved', ChoiceType::class, [
+                    'label' => 'Solucionado?',
+                    'choices' => ['Não', 'Sim'],
+                    'placeholder' => 'Selecione uma opção',
+                    'required' => false,
+                ]);
+        }
+                
+        $form        
             ->add('submit', SubmitType::class, array('label' => 'Pesquisar'));
 
         $form = $form
@@ -243,30 +282,55 @@ class TicketController extends Controller {
                     )
                     ->setParameter('date_final', $data['date_final']->format('Y-m-d') . ' 23:59:59');
             }
+            
+            // Solved
+            if (isset($data['solved'])) {
+                $query = $qb
+                    ->andWhere(
+                        $qb->expr()->eq('r.solved', ':solved')
+                    )
+                    ->setParameter('solved', $data['solved']);
+            }
+            
+            // Rate min
+            if (!empty($data['rate_min'])) {
+                $query = $qb
+                    ->andWhere(
+                        $qb->expr()->gte('r.rate', ':rate_min')
+                    )
+                    ->setParameter('rate_min', $data['rate_min']);
+            }
+            
+            // Rate min
+            if (!empty($data['rate_max'])) {
+                $query = $qb
+                    ->andWhere(
+                        $qb->expr()->lte('r.rate', ':rate_max')
+                    )
+                    ->setParameter('rate_max', $data['rate_max']);
+            }
 
-            $result = $query->getQuery()->getResult();
-//            dump($query->getQuery()->getDql()); die;
+            $result = $query->getQuery()->getResult();            
+            $search->totalizer($result);
 
-//            if (count($result) == 1) {
-//                return $this->redirect($this->generateUrl('ticket_edit', array('number' => $result[0]['number'])));
-//            } else {
-                $search->totalizer($result);
-
-                $this->get('session')->getFlashBag()
-                    ->add(
-                        'success', count($result) . ' resultados encontrados.'
-                );
-//            }
+            $this->get('session')->getFlashBag()
+                ->add('success', count($result) . ' resultados encontrados.');
         } else {
             $query = $qb
-                ->andWhere("t.status != 'finished'")
-                ->orWhere("t.finishedAt BETWEEN :date AND CURRENT_DATE()")
-                ->setParameter(':date', new \DateTime('-1 days'));
-
+                ->andWhere(
+                    $qb->expr()->orX(
+                        $qb->expr()->neq('t.status', ':status'),
+                        $qb->expr()->between('t.finishedAt', ':from', ':to')
+                ))
+                ->setParameter(':from', new \Datetime('-1 day'))
+                ->setParameter(':to', new \Datetime('now'))
+                ->setParameter(':status', 'finished');
+//            dump($query->getQuery()->getDql()); die;
             $result = $query->getQuery()->getResult();
         }
 
-        $result = $query->getQuery()->getResult();
+//        $result = $query->getQuery()->getResult();        
+        $search->setResult($result);
 
         return $this->render('AppBundle:Core:search.html.twig', array(
                 'title' => 'Chamados',
@@ -511,16 +575,14 @@ class TicketController extends Controller {
     /**
      * Displays a form to edit an existing Ticket entity.
      *
-     * @Route("/{number}", name="ticket_edit")
+     * @Route("/{number}", name="ticket_edit", options={"expose": true})
      * @Method("GET")
      * @Template()
      */
     public function editAction($number) {
         $em = $this->getDoctrine()->getManager();
-        $user = $this->get('security.context')->getToken()->getUser();
-
         $ticket = $em->getRepository('AppBundle:Ticket')->findOneBy(array('number' => $number));
-
+        
         if (!$ticket) {
             throw $this->createNotFoundException('Unable to find Ticket entity.');
         } elseif (!$this->isAllowed($ticket)) {
@@ -931,6 +993,11 @@ class TicketController extends Controller {
             ->setStatus('running')
             ->addEntry($entry)
         ;
+        
+        // Remove rating
+        if ($ticket->getRating() !== null) {
+            $em->remove($ticket->getRating());
+        }
 
         $em->persist($ticket);
         $em->flush();
@@ -941,6 +1008,45 @@ class TicketController extends Controller {
             ->notify();
 
         return $this->redirect($this->generateUrl('ticket_edit', array('number' => $ticket->getNumber())));
+    }
+    
+    /**
+     * Rate a ticket
+     *
+     * @Route("/{id}/rating", name="ticket_rating", options={"expose"=true})
+     * @Method("POST")
+     * @Template()
+     */
+    public function ratingAction(Request $request, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $ticket = $em->getRepository('AppBundle:Ticket')->find($id);
+        $user = $this->get('security.context')->getToken()->getUser();
+
+        if (!$ticket) {
+            throw $this->createNotFoundException('Unable to find Ticket entity.');
+        } elseif ($user->isAdmin() === true) {
+            throw $this->createNotFoundException('Only customers can rate the tickets.');
+        } else {
+            $rating = new Rating();
+            $rating
+                ->setSolved(filter_var($request->request->get('solved'), FILTER_VALIDATE_BOOLEAN))
+                ->setRate((int) $request->request->get('rate'))
+                ->setComment($request->request->get('comment'))
+                ->setUser($user)
+                ->setTicket($ticket)
+                ->setCreatedAt(new \Datetime('now'));
+            
+//            dump($rating->getSolved()); die;
+            
+            $em->persist($rating);
+            $em->flush();
+            
+            return new JsonResponse([
+                'solved' => $rating->getSolved(),
+                'rate' => $rating->getRate(),
+                'comment' => $rating->getComment(),
+            ]);
+        }
     }
 
     /**

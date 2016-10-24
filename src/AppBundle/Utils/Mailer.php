@@ -150,6 +150,11 @@ class Mailer
                         $message['subject'] = sprintf($baseMessage['subject'], $words['subject']);
                         $message['content'] = sprintf($baseMessage['content'], $user->getName(), $words['content']);
                             
+                        if ($this->event === 'finish' && $user->isAdmin() === false) {
+                            $message['content'] .= '<p><b>Importante:</b> Não se esqueça de avaliar este chamado, '.
+                                'informando-nos se sua solicitação foi atendida e dando uma nota para este atendimento.</p>';
+                        }
+                        
                         if ($user === $this->ticket->getAttendant() || $user === $this->ticket->getCreatedBy()) {
                             $userPreference = $user->getPreference('notifications.email.'. $this->event, true);
                             
