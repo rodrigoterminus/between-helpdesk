@@ -17,6 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\Common\Collections\Criteria;
 
 /**
  * Ticket controller.
@@ -544,6 +545,41 @@ class TicketController extends Controller {
         }
 
         $users = $queryUsers->getQuery()->getResult();
+        
+        // Statistics
+        $between = $this->get('between');
+        $statistics = [];
+        
+        
+        if ($ticket->getStatus() === 'waiting') {
+            
+        } else {
+            $takeEntry = $ticket->getEntries()->matching(
+                Criteria::create()
+                    ->where(Criteria::expr()->eq('action', 'take'))
+                    ->orWhere(Criteria::expr()->eq('action', 'transfer'))
+                )
+                ->first();
+            
+            if ($takeEntry) {
+                $statistics['wait'] = $between->formatDateDiff($ticket->getCreatedAt(), $takeEntry->getCreatedAt());
+
+                if ($ticket->getStatus() === 'finished') {
+                    $finishEntry = $ticket->getEntries()->matching(
+                        Criteria::create()
+                            ->where(Criteria::expr()->eq('action', 'finish'))
+                        )
+                        ->last();
+                    
+                    if ($finishEntry) {
+                        $statistics['service'] = $between->formatDateDiff($takeEntry->getCreatedAt(), $finishEntry->getCreatedAt());
+                    }
+                } else {
+                    $statistics['service'] = $between->formatDateDiff($takeEntry->getCreatedAt(), new \Datetime('now'));
+                }
+            }
+            
+        }
 
         return array(
             'title' => '#' . $ticket->getNumber(),
@@ -551,6 +587,7 @@ class TicketController extends Controller {
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
             'users' => $users,
+            'statistics' => $statistics,
         );
     }
 
