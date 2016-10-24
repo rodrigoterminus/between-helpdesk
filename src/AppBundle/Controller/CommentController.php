@@ -35,13 +35,13 @@ class CommentController extends Controller
             ->setTicket($ticket)
             ;
         
-        $this->get('app.mailer')
-            ->setEvent('comment')
-            ->setTicket($ticket)
-            ->send();
-        
         $em->persist($comment);
         $em->flush();
+        
+        $this->get('app.notifier')
+            ->setEvent('comment')
+            ->setTicket($ticket)
+            ->notify();
         
         $response = [
             'text' => $comment->getText(),

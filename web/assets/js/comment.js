@@ -21,8 +21,7 @@ var comment = {
                     $('#comments').prepend($comment);
                 })
                 .fail(function() {
-                    between.messages.push({message: 'Não foi possível salvar seu comentário.'});
-                    between.showFlashMessages();
+                    notifier.notify({message: 'Não foi possível salvar seu comentário.'}, true);
                 });
                 
             $comment.val('');

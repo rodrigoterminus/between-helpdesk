@@ -159,6 +159,20 @@ body.fosuser .mdl-card { position: absolute; top: 50%; left: 50%; transform: tra
 .mdl-dialog__title { font-size: 1.5rem !important; }
 .mdl-dialog__content > .mdl-grid { margin: 0 !important; padding: 0 !important; }
 
+/* Notifications */
+#dialog-notifications { width: 90%; height: 90%; }
+#dialog-notifications .mdl-dialog__title { padding-bottom: 20px; }
+#dialog-notifications .mdl-dialog__content { overflow-x: hidden; overflow-y: auto; height: 80%; padding-top: 0;  }
+.notification { 
+    display: block; white-space: nowrap; border-bottom: 1px solid rgba(0,0,0,.1); padding: 16px; 
+    color: inherit;
+    text-decoration: initial;
+    font-weight: initial;
+}
+.notification.unread { background-color: #FFF8E1; }
+.notification-datetime { display: block; color: rgba(0,0,0,.34); margin-top: 4px; }
+.notification-comment { margin: 8px 0; padding: 12px; }
+
 /* Generic */
 #btn-send-message { position: absolute; right: 6px; bottom: 32px; z-index: 3; }
 

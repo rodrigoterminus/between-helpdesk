@@ -27,6 +27,12 @@ AppBundle\Entity\User:
             length: null
             fixed: false
             comment: ''
+        notifications:
+            type: text
+            nullable: true
+            length: null
+            fixed: false
+            comment: ''
     manyToOne:
         customer:
             targetEntity: Customer

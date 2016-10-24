@@ -4,12 +4,12 @@ var between = {
         // Remove webkit form autofill
         // if ($.browser.webkit)
         $('input').attr('autocomplete', 'false');
-
-        between.showFlashMessages();
         
         $(document).on('click', '.mdl-dialog .close', function() {
             dialog.close();
         });
+        
+        notifier.init();
     },
     backButton: function (route) {
         $(document).ready(function () {
@@ -32,30 +32,6 @@ var between = {
                 }
             }, 500);
         });
-    },
-    showFlashMessages: function () {
-        var interval = setInterval(function () {
-            var notification = document.querySelector('.mdl-js-snackbar');
-            var show = function () {
-                notification.MaterialSnackbar.showSnackbar(between.messages[i - 1]);
-            };
-
-            if (notification.MaterialSnackbar != undefined) {
-                var timeout = 2750;
-                var timeSum = 0;
-
-                for (var i = 0; i < between.messages.length; i++) {
-                    var timeout = timeout + 250;
-                    var index = i;
-
-                    setTimeout(show.bind(index), timeSum);
-
-                    timeSum += timeout;
-                }
-
-                clearInterval(interval);
-            }
-        }, 500);
     },
     formSubmit: function (name) {
         $('form[name="' + name + '"]').find('*[type="submit"]').trigger('click');

@@ -214,4 +214,45 @@ class User extends BaseUser
         
         return $path;
     }
+    /**
+     * @var string
+     */
+    private $notifications;
+
+
+    /**
+     * Set notifications
+     *
+     * @param string $notifications
+     * @return User
+     */
+    public function setNotifications($notifications)
+    {
+        $this->notifications = $notifications;
+
+        return $this;
+    }
+
+    /**
+     * Get notifications
+     *
+     * @return string 
+     */
+    public function getNotifications()
+    {
+        return $this->notifications;
+    }
+    
+    /**
+     * 
+     * @return Object
+     */
+    public function getNotificationsArray()
+    {
+        if ($this->notifications === null) {
+            return [];
+        } else {
+            return json_decode($this->notifications, true);
+        }
+    }
 }
