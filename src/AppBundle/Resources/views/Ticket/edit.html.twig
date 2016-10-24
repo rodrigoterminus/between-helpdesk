@@ -134,6 +134,26 @@
                     <div class="mdl-tooltip mdl-tooltip--top" for="icon-watchers">Observadores</div>
                 </div>
             </div>
+            
+            {% if app.user.isAdmin() and statistics|length > 0 %} 
+                <div class="mdl-card__supporting-text ticket-statistics mdl-color--blue-grey-50">
+                    <div class="mdl-grid">
+                        {% if statistics.wait is defined %}
+                            <div class="mdl-cell mdl-cell--6-col mdl-cell--12-col-phone">
+                                <i class="material-icons">schedule</i>&nbsp;
+                                <b>Tempo de espera:</b>&nbsp;{{ statistics.wait }}
+                            </div>
+                        {% endif %}
+                        
+                        {% if statistics.service is defined %}
+                            <div class="mdl-cell mdl-cell--6-col mdl-cell--12-col-phone">
+                                <i class="material-icons">restore</i>&nbsp;
+                                <b>Tempo de atendimento:</b>&nbsp;{{ statistics.service }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </div>
     
@@ -144,13 +164,9 @@
                     <h2 class="mdl-card__title-text" style="overflow: initial;"><span class="mdl-badge" data-badge="{{ entity.comments|length }}">Comentários</span></h2>
                 </div>
                 <div class="mdl-card__menu">
-                    {#<button type="button" id="btn-add-comment" class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
-                        <i class="material-icons">add</i>
-                    </button>#}
                     <button type="button" id="btn-toggle-comments" class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
                         <i class="material-icons">expand_more</i>
-                    </button>                    
-{#                    <div class="mdl-tooltip mdl-tooltip--top" for="btn-add-comment">Adicionar comentário</div>#}
+                    </button>
                     <div class="mdl-tooltip mdl-tooltip--top" for="btn-toggle-comments">Exibir comentários</div>
                 </div>
                 
@@ -184,10 +200,21 @@
             <div class="mdl-card__title" style="margin-bottom: -12px;">
                 <h2 class="mdl-card__title-text">Detalhamento do chamado</h2>
             </div>
+            
+            {% set lastDatetime = null %}
 
             {% for entry in entity.entries if entry.id != null %}
                 <hr>
                 <div class="mdl-card__supporting-text mdl-card--border npv">
+                    
+                    {% if app.user.isAdmin() %}
+                        {% if lastDatetime != null %}
+                            <div class="ticket-interval mdl-color--grey-50">
+                                {{ between.formatDateDiff(lastDatetime, entry.createdAt) }}
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    
                     <div class="mdl-grid no-padding-v ticket-entries">
                         <div class="mdl-cell mdl-cell--12-col">
                             {% if entry.action == 'finish' %}
@@ -227,15 +254,7 @@
                                     transferiru o chamado para <b>{% if entry.directedTo.id == app.user.id %}você{% else %}{{ entry.directedTo.name }}{% endif %}</b><br>
                                     <i>Em {{ entry.createdAt|date('d/m/Y H:i:s') }}</i>
                                 </div>
-                            {% elseif entry.action == 'post' %}
-                                {#{% if (entry.origin == 'customer' and app.user.isAdmin()) or (entry.origin == 'admin' and app.user.isAdmin() == false) %}                                    
-                                    <div class=" icon-text-content">
-                                        <div class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab">
-                                            <i class="material-icons">face</i>
-                                        </div>
-                                    </div>
-                                {% endif %}#}
-                                
+                            {% elseif entry.action == 'post' %}                                
                                 <div class=" icon-text-content">
                                     {% if entry.origin == 'customer' %}
                                         <div class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-color--indigo">
@@ -275,7 +294,6 @@
                                                                 </a>
                                                             </div>                                                        
                                                         </div>
-    {#                                                    <img src="{{ asset('attachments/' ~ entity.id ~ '/' ~ file.name) }}" />#}
                                                     </li>
                                                 {% endfor %}
                                             </ul>
@@ -286,6 +304,8 @@
                         </div>
                     </div>
                 </div>
+                        
+                {% set lastDatetime = entry.createdAt %}
             {% endfor %}
 
             {% if entity.finishedAt == null %}
@@ -310,19 +330,6 @@
                         </div>
                     {% endif %}
                 {% endfor %}
-            {#{% else %}
-                <hr>
-                <div class="mdl-card__supporting-text mdl-card--border npv">
-                    <div class="mdl-grid no-padding-v">
-                        <div class="mdl-cell mdl-cell--12-col nmt">
-                            <i class="material-icons icon-text-content mdl-color-text--greena">check_circle</i>
-                            <div class="text-content">
-                                Chamado finalizado por <b>{% if entity.finishedBy.id == app.user.id %}você{% else %}{{ entity.finishedBy.name }}{% endif %}</b><br>
-                                <i>Em {{ entity.finishedAt|date('d/m/Y H:i:s') }}</i>				    				
-                            </div>
-                        </div>
-                    </div>
-                </div>#}
             {% endif %}
 
         </div>
@@ -421,10 +428,8 @@
         {% endif %}
 
         {% if entity.status != 'finished' %}
-            {# {% set buttons = buttons|merge([{'icon': 'attach_file', 'action_type': 'route', 'action': 'customer_new', 'label': 'Anexar arquivos'}]) %} #}
+            {% set buttons = buttons|merge([{'icon': 'attach_file', 'label': 'Anexar arquivos', 'action_type': 'javascript', 'action': '$(\'input[type=file]:last\').trigger(\'click\')'}]) %}
         {% endif %}
-        
-        {% set buttons = buttons|merge([{'icon': 'attach_file', 'label': 'Anexar arquivos', 'action_type': 'javascript', 'action': '$(\'input[type=file]:last\').trigger(\'click\')'}]) %}
         
         {% include 'AppBundle:Core:fab.html.twig' with { 'fab': fab, 'buttons': buttons } %}
     {% endif %}

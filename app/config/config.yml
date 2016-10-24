@@ -37,6 +37,7 @@ twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
     globals:
+        between: "@between"
         notifier: "@app.notifier"
 
 # Assetic Configuration

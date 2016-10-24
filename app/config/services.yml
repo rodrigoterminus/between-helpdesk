@@ -7,7 +7,10 @@ services:
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
-
+    
+    between:
+        class: AppBundle\Utils\Between
+        
     infinity.search:
         class: AppBundle\Utils\Search
         
