@@ -144,9 +144,9 @@ AppBundle\Entity\Ticket:
             joinTable:
                 name: watcher
                 joinColumns:
-                    user_id:
+                    ticket_id:
                         referencedColumnName: id
                 inverseJoinColumns:
-                    ticket_id:
+                    user_id:
                         referencedColumnName: id
     lifecycleCallbacks: {  }

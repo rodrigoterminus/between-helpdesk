@@ -89,13 +89,13 @@ var ticket = {
                     watcher.icon = 'visibility_off';
                     watcher.label = 'Deixar de acompanhar';
                     $watchers.append('<span class="ticket-watcher" data-id="'+ response.user.id +'">'+ response.user.name +'</span>');
-                    between.messages.push({message: 'Você está assistindo este chamado.'});
+                    notifier.notify({message: 'Você está assistindo este chamado.'}, true);
                 }
                 else {
                     watcher.icon = 'visibility';
                     watcher.label = 'Acompanhar este chamado';
                     $watchers.find('.ticket-watcher[data-id='+ response.user.id +']').remove();
-                    between.messages.push({message: 'Você deixou de assistir este chamado.'});
+                    notifier.notify({message: 'Você deixou de assistir este chamado.'}, true);
                 }
                 
                 if ($watchers.find('.ticket-watcher').length === 0 && $watchers.is(':visible')) {
@@ -107,11 +107,9 @@ var ticket = {
                 
                 $button.find('i').text(watcher.icon);
                 $('#floating-actions').find('.mdl-tooltip[for="btn-watcher"]').text(watcher.label);
-                between.showFlashMessages();
             })
             .fail(function() {
-                between.messages.push({message: 'Não foi possível te inscrever neste chamado.'});
-                between.showFlashMessages();
+                notifier.notify({message: 'Não foi possível te inscrever neste chamado.'}, true);
             });
     },
     toggleWatchers: function() {

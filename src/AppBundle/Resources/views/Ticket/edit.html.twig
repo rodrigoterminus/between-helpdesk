@@ -110,16 +110,28 @@
                         </div>
                     {% endif %}
                     
+                    {# Watchers #}
                     {% if app.user.isAdmin() %}
-                        <div id="ticket-watchers" class="mdl-cell mdl-cell--12-col" {% if entity.watchers|length == 0 %}style="display: none;"{% endif %}>
-                            <span id="icon-watchers" class="material-icons">visibility</span>&nbsp;
-
-                            {% for watcher in entity.watchers %}
-                                <span class="ticket-watcher" data-id="{{ watcher.id }}">{{ watcher.name }}</span>&nbsp;
-                            {% endfor %}
-                        </div>
-                        <div class="mdl-tooltip mdl-tooltip--top" for="icon-watchers">Observadores</div>
+                        {% set watchers = entity.watchers %}
+                    {% else %}
+                        {% set watchers = [] %}
+                        
+                        {# Remove admin watchers #}
+                        {% for watcher in entity.watchers %}
+                            {% if watcher.isAdmin() == false %}                                
+                                {% set watchers = watchers|merge([watcher]) %}
+                            {% endif %}
+                        {% endfor %}
                     {% endif %}
+                    
+                    <div id="ticket-watchers" class="mdl-cell mdl-cell--12-col" {% if watchers|length == 0 %}style="display: none;"{% endif %}>
+                        <span id="icon-watchers" class="material-icons">visibility</span>&nbsp;
+
+                        {% for watcher in watchers %}
+                            <span class="ticket-watcher" data-id="{{ watcher.id }}">{{ watcher.name }}</span>&nbsp;
+                        {% endfor %}
+                    </div>
+                    <div class="mdl-tooltip mdl-tooltip--top" for="icon-watchers">Observadores</div>
                 </div>
             </div>
         </div>
@@ -197,8 +209,8 @@
                                     <i>Em {{ entry.createdAt|date('d/m/Y H:i:s') }}</i>
                                 </div>
                             {% elseif entry.action == 'take' %}
-                                <div class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab icon-text-content">
-                                    <i class="material-icons">person</i>
+                                <div class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab icon-text-content mdl-color--blue-grey-300">
+                                    <i class="material-icons mdl-color-text--white">person</i>
                                 </div>
                                 
                                 <div class="text-content">
@@ -206,8 +218,8 @@
                                     <i>Em {{ entry.createdAt|date('d/m/Y H:i:s') }}</i>
                                 </div>
                             {% elseif entry.action == 'transfer' %}
-                                <div class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab icon-text-content">
-                                    <i class="material-icons">forward</i>
+                                <div class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab icon-text-content mdl-color--blue-grey-300">
+                                    <i class="material-icons mdl-color-text--white">forward</i>
                                 </div>
                                 
                                 <div class="text-content">
@@ -225,17 +237,18 @@
                                 {% endif %}#}
                                 
                                 <div class=" icon-text-content">
-                                    <div class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab">
-                                        <i class="material-icons">
-                                            {% if entry.origin == 'customer' %}
-                                                face
-                                            {% elseif entry.origin == 'admin' %}
-                                                mood
-                                            {% elseif entry.origin == 'system' %}
-                                                memory
-                                            {% endif %}
-                                        </i>
-                                    </div>
+                                    {% if entry.origin == 'customer' %}
+                                        <div class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-color--indigo">
+                                            <i class="material-icons mdl-color-text--white">face</i>
+                                        </div>
+                                    {% elseif entry.origin == 'admin' %}
+                                        <div class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-color--blue-grey">
+                                            <i class="material-icons mdl-color-text--white">mood</i>
+                                        </div>
+                                    {% elseif entry.origin == 'system' %}
+                                        memory
+                                    {% endif %}
+                                        
                                 </div>
 
                                 <div class="text-content">
@@ -341,8 +354,10 @@
         </div>
         <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
             <div class="mdl-grid">
-                <div class="mdl-cell mdl-cell--6-col"><button type="button" class="mdl-button close">Cancelar</button></div>
-                <div class="mdl-cell mdl-cell--6-col"><button id="btn-transfer-ticket" type="button" class="mdl-button mdl-button--colored">Transferir</button></div>
+                <div class="mdl-cell mdl-cell--12-col">
+                    <button type="button" class="mdl-button close">Cancelar</button>
+                    <button id="btn-transfer-ticket" type="button" class="mdl-button mdl-button--colored">Transferir</button>
+                </div>
             </div>
         </div>
     </dialog>
@@ -356,8 +371,10 @@
         </div>
         <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
             <div class="mdl-grid">
-                <div class="mdl-cell mdl-cell--6-col"><button type="button" class="mdl-button close">Cancelar</button></div>
-                <div class="mdl-cell mdl-cell--6-col"><button id="btn-send-comment" type="button" class="mdl-button mdl-button--colored">Enviar</button></div>
+                <div class="mdl-cell mdl-cell--12-col">
+                    <button type="button" class="mdl-button close">Cancelar</button>
+                    <button id="btn-send-comment" type="button" class="mdl-button mdl-button--colored">Enviar</button>
+                </div>
             </div>
         </div>
     </dialog>
@@ -367,20 +384,21 @@
     {% if entity.status != 'finished' or app.user.isAdmin() %}
         {% set fab = {'icon': 'more_vert', 'label': 'Mais ações'} %}
 
-        {% set buttons = [] %}
+        {% set buttons = [] %}        
         
-        {% if app.user.isAdmin() %}            
-            {% set watcher = { icon: 'visibility', label: 'Acompanhar este chamado' } %}
-            {% set stop = false %}
+        {% set watcher = { icon: 'visibility', label: 'Acompanhar este chamado' } %}
+        {% set stop = false %}
 
-            {% for item in entity.watchers if stop == false %}
-                {% if app.user.id == item.id %}
-                    {% set watcher = { icon: 'visibility_off', label: 'Deixar de acompanhar' } %}
-                    {% set stop = true %}
-                {% endif %}
-            {% endfor %}
+        {% for item in entity.watchers if stop == false %}
+            {% if app.user.id == item.id %}
+                {% set watcher = { icon: 'visibility_off', label: 'Deixar de acompanhar' } %}
+                {% set stop = true %}
+            {% endif %}
+        {% endfor %}
 
-            {% set buttons = buttons|merge([{'id': 'btn-watcher', 'icon': watcher.icon, 'label': watcher.label, 'action_type': 'javascript', 'action': 'ticket.watcher()'}]) %}
+        {% set buttons = buttons|merge([{'id': 'btn-watcher', 'icon': watcher.icon, 'label': watcher.label, 'action_type': 'javascript', 'action': 'ticket.watcher()'}]) %}
+        
+        {% if app.user.isAdmin() %}
             {% set buttons = buttons|merge([{'id': 'btn-new-comment', 'icon': 'comment', 'label': 'Adicionar comentário', 'action_type': 'javascript', 'action': 'ticket.openCommentDialog()'}]) %}
         {% endif %}
             

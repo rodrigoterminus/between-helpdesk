@@ -8,8 +8,7 @@ var user = {
                 }
             });
         });
-    },
-    
+    },    
     preferences: function() {
         var preferences = {
             notifications: {
@@ -31,12 +30,10 @@ var user = {
         
         $.post(Routing.generate('user_preferences'), { preferences: JSON.stringify(preferences) })
             .done(function() {
-                between.messages.push({message: 'Preferências salvas com sucesso!'});
-                between.showFlashMessages();
+                notifier.notify({message: 'Preferências salvas com sucesso!'}, true);
             })
             .fail(function() {
-                between.messages.push({message: 'Não foi possível salvar suas preferências.'});
-                between.showFlashMessages();
+                notifier.notify({message: 'Não foi possível salvar suas preferências.'}, true);
             });
     }
 }

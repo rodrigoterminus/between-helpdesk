@@ -36,6 +36,7 @@
         </header>
         <nav class="demo-navigation mdl-navigation mdl-color--grey-50 mdl-color-text--grey-400">
           <a class="mdl-navigation__link mdl-color-text--grey-800" href="{{ path('index') }}"><i class="mdl-color-text--grey-800 material-icons" role="presentation">home</i>Início</a>
+          <a class="mdl-navigation__link mdl-color-text--grey-800" href="javascript: notifier.view();"><i class="mdl-color-text--grey-800 material-icons" role="presentation">notifications</i><span id="notifications-badge" class="mdl-badge">Notificações</span></a>
           <hr>
 
           {% if 'ROLE_DEFAULT' in app.user.roles %}
@@ -61,14 +62,25 @@
 
           <div id="div-toast" class="mdl-js-snackbar mdl-snackbar">
             <div class="mdl-snackbar__text"></div>
-            <button type="button" class="mdl-snackbar__action"></button>
+            <button type="button" class="mdl-snackbar__action mdl-color-text--amber"></button>
           </div>
 
         </div>
       </main>
     </div>
 
-    {% block fab_action %}{% endblock %}      
+    {% block fab_action %}{% endblock %}
+    
+    <dialog id="dialog-notifications" class="mdl-dialog">
+        <div class="mdl-dialog__title">Notificações</div>
+        <div class="mdl-dialog__content npb"></div>
+        <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+            <div class="mdl-grid">
+                <div class="mdl-cell mdl-cell--12-col"><button id="btn-send-comment" type="button" class="mdl-button mdl-button--colored close">Fechar</button></div>
+            </div>
+        </div>
+    </dialog>
+    
     {% block modals %}{% endblock %}
     
     {% include '::foot.html.twig' %}
@@ -77,7 +89,7 @@
     {% if app.session.flashbag|length > 0 %}
       {% for type, flashMessage in app.session.flashbag %}
         {% for message in flashMessage %}                  
-            <script type="text/javascript">between.messages.push({'message' : '{{ message }}'});</script>                  
+            <script type="text/javascript">notifier.notify({message: '{{ message }}'}, true);</script>                  
         {% endfor %}
       {% endfor %}
     {% endif %}
@@ -85,7 +97,8 @@
     {% block scripts %}{% endblock %}
 
     <script>
-      between.init();
+{#        notifier.data = JSON.parse('{{ notifier.get()|json_encode()|raw }}');#}
+        between.init();
     </script>
   </body>
 </html>

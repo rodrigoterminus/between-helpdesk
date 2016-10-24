@@ -11,6 +11,10 @@ services:
     infinity.search:
         class: AppBundle\Utils\Search
         
+    app.notifier:
+        class: AppBundle\Utils\Notifier
+        arguments: ["@service_container", "@doctrine"]
+        
     app.mailer:
         class: AppBundle\Utils\Mailer
         arguments: ["@service_container"]

@@ -520,23 +520,21 @@ class TicketController extends Controller {
 
         $ticket = $em->getRepository('AppBundle:Ticket')->findOneBy(array('number' => $number));
 
-        $entry = new Entry();
-        $ticket->getEntries()->add($entry);
-
         if (!$ticket) {
             throw $this->createNotFoundException('Unable to find Ticket entity.');
-        }
-
-        if (!$this->isAllowed($ticket)) {
+        } elseif (!$this->isAllowed($ticket)) {
             return $this->redirect($this->generateUrl('ticket'));
         }
+        
+        $entry = new Entry();
+        $ticket->getEntries()->add($entry);
 
         $editForm = $this->createEditForm($ticket);
         $deleteForm = $this->createDeleteForm($ticket->getId());
 
         $qb = $em->getRepository('AppBundle:User')->createQueryBuilder('user');
         $queryUsers = $qb->select()
-            ->where("user.id != " . $this->get('security.context')->getToken()->getUser()->getId())
+//            ->where("user.id != " . $this->get('security.context')->getToken()->getUser()->getId())
             ->andWhere("user.roles LIKE '%_ADMIN%'")
             ->andWhere("user.enabled = 1")
             ->orderBy('user.name', 'ASC');
@@ -704,8 +702,8 @@ class TicketController extends Controller {
                     ->setAttendant($user)
                     ->setStatus('running');
                 
-                $entry = $this->fillEntry(new Entry(), $ticket);
-                $entry->setAction('take');
+                $entry = $this->fillEntry(new Entry(), $ticket)
+                    ->setAction('take');
                 $entries->add($entry);
             }
             
@@ -729,16 +727,18 @@ class TicketController extends Controller {
                 ->setModifiedAt(new \DateTime('now'))
                 ->setEntries($entries);
             
-//            dump($ticket->getEntries()); die;
+//            foreach ($ticket->getWatchers() as $watcher)
+//                dump($watcher); 
+//            die;
             
             $em->persist($ticket);
             $em->flush();
 
             if ($newPost === true) {
-                $this->get('app.mailer')
-                    ->setEvent('entry')
+                $this->get('app.notifier')
+                    ->setEvent('post')
                     ->setTicket($ticket)
-                    ->send();
+                    ->notify();
             }
 
             return $this->redirect($this->generateUrl('ticket_edit', array('number' => $ticket->getNumber())));
@@ -785,13 +785,8 @@ class TicketController extends Controller {
             return $this->redirect($this->generateUrl('ticket'));
         }
         
-        $entry = new Entry();
-        $entry
-            ->setCreatedBy($user)
-            ->setCreatedAt(new \DateTime('now'))
-            ->setAction('finish')
-            ->setTicket($ticket)
-            ;
+        $entry = $this->fillEntry(new Entry(), $ticket)
+            ->setAction('finish');
 
         $ticket
             ->setFinishedBy($user)
@@ -799,13 +794,13 @@ class TicketController extends Controller {
             ->setStatus('finished')
             ->addEntry($entry);
 
-        $this->get('app.mailer')
-            ->setEvent('finish')
-            ->setTicket($ticket)
-            ->send();
-
         $em->persist($ticket);
         $em->flush();
+        
+        $this->get('app.notifier')
+            ->setEvent('finish')
+            ->setTicket($ticket)
+            ->notify();
 
         return $this->redirect($this->generateUrl('ticket_edit', array('number' => $ticket->getNumber())));
     }
@@ -834,17 +829,9 @@ class TicketController extends Controller {
             }
 
             $action = ($user === $attendant) ? 'take' : 'transfer';
-            $entry = new Entry();
-            $entry
-                ->setCreatedBy($user)
-                ->setCreatedAt(new \DateTime('now'))
+            $entry = $this->fillEntry(new Entry(), $ticket)
                 ->setAction($action)
-                ->setTicket($ticket)
-                ;
-            
-            if ($user !== $attendant) {
-                $entry->setDirectedTo($attendant);
-            }
+                ->setDirectedTo($attendant);
             
             $ticket
                 ->setAttendant($attendant)
@@ -854,10 +841,10 @@ class TicketController extends Controller {
             $em->persist($ticket);
             $em->flush();
             
-            $this->get('app.mailer')
-                ->setEvent('transfer')
+            $this->get('app.notifier')
+                ->setEvent($action)
                 ->setTicket($ticket)
-                ->send();
+                ->notify();
 
             return $this->redirect($this->generateUrl('ticket_edit', array('number' => $ticket->getNumber())));
         }
@@ -884,13 +871,8 @@ class TicketController extends Controller {
             return $this->redirect($this->generateUrl('ticket'));
         }
         
-        $entry = new Entry();
-        $entry
-            ->setCreatedBy($user)
-            ->setCreatedAt(new \DateTime('now'))
-            ->setAction('reopen')
-            ->setTicket($ticket)
-            ;
+        $entry = $this->fillEntry(new Entry(), $ticket)
+            ->setAction('reopen');
 
         $ticket
             ->setFinishedBy(null)
@@ -902,10 +884,10 @@ class TicketController extends Controller {
         $em->persist($ticket);
         $em->flush();
 
-        $this->get('app.mailer')
+        $this->get('app.notifier')
             ->setEvent('reopen')
             ->setTicket($ticket)
-            ->send();
+            ->notify();
 
         return $this->redirect($this->generateUrl('ticket_edit', array('number' => $ticket->getNumber())));
     }
