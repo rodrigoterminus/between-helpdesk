@@ -8,8 +8,32 @@ var between = {
         $(document).on('click', '.mdl-dialog .close', function() {
             dialog.close();
         });
+        
+        // Open/Close menu
+        if ($(window).width() <= 1024 && between.isTouchDevice()) {
+            $('body').swipe({
+                swipeRight: function() {
+                    var $menu = $('.mdl-layout__drawer');
+
+                    if (!$menu.hasClass('is-visible') && $(window).width() <= 1024) {
+                        $('.mdl-layout__drawer-button:not(".back-button")').trigger('click');  
+                    }
+                },
+                swipeLeft: function() {
+                    var $menu = $('.mdl-layout__drawer');
+
+                    if ($menu.hasClass('is-visible') && $(window).width() <= 1024) {
+                        $('.mdl-layout__obfuscator').trigger('click'); 
+                    }
+                }
+            });
+        }
                 
         notifier.init();
+    },
+    isTouchDevice: function() {
+        return 'ontouchstart' in window        // works on most browsers 
+            || navigator.maxTouchPoints;       // works on IE10/11 and Surface
     },
     backButton: function (route) {
         $(document).ready(function () {
@@ -26,7 +50,7 @@ var between = {
 
                     $menuButton
                         .after($backButton)
-                        .remove();
+                        .hide();
 
                     clearInterval(setButton);
                 }
