@@ -72,9 +72,11 @@ header.mdl-layout__header {
 .rating-thumbs.choosen[data-value=true] i { color: #4CAF50; }
 .rating-thumbs.choosen[data-value=false] i { color: #F44336; }
 
+.card-footer { }
+
 .rating-card { padding-bottom: 7px; }
-.rating-card > * { /*display: inline-block;*/ }
 .rating-card .rating-stars { float: right; }
+.rating-card .comment-icon { display: inline-float; margin-left: 8px; }
 
 .rating-comment-footer { display: block; margin-top: 12px; font-weight: 300; color: rgba(255,255,255,0.7);  }
 

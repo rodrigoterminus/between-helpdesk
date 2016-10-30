@@ -242,21 +242,48 @@ var ticket = {
     },
     showCardsExtraInfo: function() {
         var $container = $('<div/>')
-            .addClass('rating-card mdl-card__supporting-text mdl-card--border mdl-color-text--white');
+            .addClass('card-footer mdl-card__supporting-text mdl-card--border mdl-color-text--white');
         
         search.result.forEach(function(ticket) {
-            if (ticket.rate !== null) {
-                var color = (ticket.solved) ? 'green' : 'red';
-                var $card = $('#search-card-'+ ticket.id);
+            var $card = $('#search-card-'+ ticket.id);
+            
+            if (ticket.status === 'created' || ticket.status === 'running') {
+                var time = moment(ticket.createdAt * 1000).from(moment());
+                var $bar = $container.clone()
+                    .append('<i class="material-icons" style="margin-right: 8px;">schedule</i>')
+                    .append(time)
+                    .removeClass('mdl-color-text--white')
+                    .addClass('vertical-align-middle')
+                    .appendTo($card);
+                
+                if (ticket.status === 'created') {
+                    $card.addClass('mdl-color--yellow-100');
+                    $card.find('.mdl-button')
+                        .removeClass('mdl-color-text--amber-900')
+                        .addClass('mdl-color-text--yellow-600')
+                    $bar.addClass('mdl-color--yellow-200');
+                }
+                else {
+                    $bar.addClass(' mdl-color--grey-200');
+                }
+                
+//                $bar.text(time);
+            }
+            else if (ticket.rate !== null) {
+                var color = (ticket.solved) ? 'green' : 'red';                
                 var thumb = (ticket.solved) ? 'thumb_up' : 'thumb_down';
                 var $stars = $('<ul/>')
                     .addClass('rating-stars');
                 
-                $container.clone()
-                    .addClass('mdl-color--'+ color)
+                var $bar = $container.clone()
+                    .addClass('rating-card mdl-color--'+ color)
                     .append('<div class="rating-thumbs"><i class="material-icons">'+ thumb +'</i></div>')
                     .append($stars)
-                    .appendTo($card);               
+                    .appendTo($card);
+                
+                if (ticket.comment !== '') {
+                    $bar.find('.rating-thumbs').after('<i class="material-icons comment-icon mdl-color-text--'+ color +'-300">comment</i>')                    
+                }
                 
                 // Stars
                 for (var i = 1; i <= 5; i++) {

@@ -63,6 +63,7 @@ class TicketController extends Controller {
                 't.modifiedAt',
                 'r.solved',
                 'r.rate',
+                'r.comment',
                 )
             )
             ->join('AppBundle:Customer', 'cm', 'WITH', 'cm.id = t.customer')
