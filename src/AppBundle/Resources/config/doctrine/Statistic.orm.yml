@@ -1,0 +1,104 @@
+AppBundle\Entity\Statistic:
+    type: entity
+    table: statistic
+    readOnly: true
+    repositoryClass: AppBundle\Entity\StatisticRepository
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            comment: ''
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        waitingTimeEver:
+            type: decimal
+            nullable: false
+            precision: 10
+            scale: 2
+            comment: ''
+            default: '0.00'
+            columnName: waiting_time_ever
+        waitingTimeMonth:
+            type: decimal
+            nullable: false
+            precision: 10
+            scale: 2
+            comment: ''
+            default: '0.00'
+            columnName: waiting_time_month
+        ticketTimeEver:
+            type: decimal
+            nullable: false
+            precision: 10
+            scale: 2
+            comment: ''
+            default: '0.00'
+            columnName: ticket_time_ever
+        ticketTimeMonth:
+            type: decimal
+            nullable: false
+            precision: 10
+            scale: 2
+            comment: ''
+            default: '0.00'
+            columnName: ticket_time_month
+        serviceTimeEver:
+            type: decimal
+            nullable: false
+            precision: 10
+            scale: 2
+            comment: ''
+            default: '0.00'
+            columnName: service_time_ever
+        serviceTimeMonth:
+            type: decimal
+            nullable: false
+            precision: 10
+            scale: 2
+            comment: ''
+            default: '0.00'
+            columnName: service_time_month
+        ticketsTotal:
+            type: decimal
+            nullable: false
+            precision: 10
+            scale: 2
+            comment: ''
+            default: '0.00'
+            columnName: tickets_total
+        ticketsLastMonth:
+            type: decimal
+            nullable: false
+            precision: 10
+            scale: 2
+            comment: ''
+            default: '0.00'
+            columnName: tickets_last_month
+        ticketsLastMonthPeriod:
+            type: decimal
+            nullable: false
+            precision: 10
+            scale: 2
+            comment: ''
+            default: '0.00'
+            columnName: tickets_last_month_period
+        ticketsUntilLastMonth:
+            type: decimal
+            nullable: false
+            precision: 10
+            scale: 2
+            comment: ''
+            default: '0.00'
+            columnName: tickets_until_last_month
+        ticketsThisMonth:
+            type: decimal
+            nullable: false
+            precision: 10
+            scale: 2
+            comment: ''
+            default: '0.00'
+            columnName: tickets_this_month
+    lifecycleCallbacks: {  }

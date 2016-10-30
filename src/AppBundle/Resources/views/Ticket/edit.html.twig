@@ -199,12 +199,12 @@
         <div id="rating-container" class="mdl-cell mdl-cell--12-col">
             <div class="mdl-card mdl-shadow--2dp mdl-color--red-400 mdl-color-text--white">
                 <div class="mdl-card__title mdl-color-text--white">
-                    <h2 class="mdl-card__title-text">Avalie este chamado</h2>
+                    <h2 class="mdl-card__title-text">Avalie este ticket</h2>
                 </div>
                 <div class="mdl-card__supporting-text mdl-card--border npv mdl-color-text--white">
                     <div class="mdl-grid">
                         <div class="mdl-cell mdl-cell--12-col">
-                            <span>Queremos sempre prestar o melhor serviço para você. Contamos com sua ajuda para que possamos entender se estamos alcançando nosso objetivo e onde precisamos melhorar. Ajude-nos avaliando este chamado.</span>
+                            <span>Queremos sempre prestar o melhor serviço para você. Contamos com sua ajuda para que possamos entender se estamos alcançando nosso objetivo e onde precisamos melhorar. Ajude-nos avaliando este ticket.</span>
                         </div>
                     </div>
                 </div>
@@ -256,7 +256,7 @@
     <div class="mdl-cell mdl-cell--12-col">
         <div class="mdl-card mdl-shadow--2dp">
             <div class="mdl-card__title" style="margin-bottom: -12px;">
-                <h2 class="mdl-card__title-text">Detalhamento do chamado</h2>
+                <h2 class="mdl-card__title-text">Detalhamento do ticket</h2>
             </div>
             
             {% set lastDatetime = null %}
@@ -281,7 +281,7 @@
                                 </div>
                                 
                                 <div class="text-content">
-                                    Chamado finalizado por <b>{% if entry.createdBy.id == app.user.id %}você{% else %}{{ entry.createdBy.name }}{% endif %}</b><br>
+                                    Ticket finalizado por <b>{% if entry.createdBy.id == app.user.id %}você{% else %}{{ entry.createdBy.name }}{% endif %}</b><br>
                                     <i>Em {{ entry.createdAt|date('d/m/Y H:i:s') }}</i>
                                 </div>
                             {% elseif entry.action == 'reopen' %}
@@ -290,7 +290,7 @@
                                 </div>
                                 
                                 <div class="text-content">
-                                    Chamado reaberto por <b>{% if entry.createdBy.id == app.user.id %}você{% else %}{{ entry.createdBy.name }}{% endif %}</b><br>
+                                    Ticket reaberto por <b>{% if entry.createdBy.id == app.user.id %}você{% else %}{{ entry.createdBy.name }}{% endif %}</b><br>
                                     <i>Em {{ entry.createdAt|date('d/m/Y H:i:s') }}</i>
                                 </div>
                             {% elseif entry.action == 'take' %}
@@ -299,7 +299,7 @@
                                 </div>
                                 
                                 <div class="text-content">
-                                    Chamado assumido por <b>{% if entry.createdBy.id == app.user.id %}você{% else %}{{ entry.createdBy.name }}{% endif %}</b><br>
+                                    Ticket assumido por <b>{% if entry.createdBy.id == app.user.id %}você{% else %}{{ entry.createdBy.name }}{% endif %}</b><br>
                                     <i>Em {{ entry.createdAt|date('d/m/Y H:i:s') }}</i>
                                 </div>
                             {% elseif entry.action == 'transfer' %}
@@ -309,7 +309,7 @@
                                 
                                 <div class="text-content">
                                     <b>{% if entry.createdBy.id == app.user.id %}Você{% else %}{{ entry.createdBy.name }}{% endif %}</b>
-                                    transferiru o chamado para <b>{% if entry.directedTo.id == app.user.id %}você{% else %}{{ entry.directedTo.name }}{% endif %}</b><br>
+                                    transferiru o ticket para <b>{% if entry.directedTo.id == app.user.id %}você{% else %}{{ entry.directedTo.name }}{% endif %}</b><br>
                                     <i>Em {{ entry.createdAt|date('d/m/Y H:i:s') }}</i>
                                 </div>
                             {% elseif entry.action == 'post' %}                                
@@ -403,10 +403,10 @@
 
 {% block modals %}
     <dialog id="dialog-transfer" class="mdl-dialog">
-        <div class="mdl-dialog__title">Tranferir chamado</div>
+        <div class="mdl-dialog__title">Tranferir ticket</div>
         <div class="mdl-dialog__content npb">
             <div class="mdl-grid">
-                <div class="mdl-cell mdl-cell--12-col">Informe o usuário para o qual o chamado será transferido:</div>
+                <div class="mdl-cell mdl-cell--12-col">Informe o usuário para o qual o ticket será transferido:</div>
                 <div class="mdl-cell mdl-cell--12-col">
                     <div class="mdl-textfield mdl-js-textfield">
                         <select id="transfer-user" class="mdl-textfield__input">
@@ -447,7 +447,7 @@
     </dialog>
                             
     <dialog id="dialog-rating" class="mdl-dialog">
-        <div class="mdl-dialog__title">Avaliação do chamado</div>
+        <div class="mdl-dialog__title">Avaliação do ticket</div>
         <div class="mdl-dialog__content npb">
             <div class="mdl-grid">
                 <div class="mdl-cell mdl-cell--12-col">
@@ -495,7 +495,7 @@
 
         {% set buttons = [] %}        
         
-        {% set watcher = { icon: 'visibility', label: 'Acompanhar este chamado' } %}
+        {% set watcher = { icon: 'visibility', label: 'Acompanhar este ticket' } %}
         {% set stop = false %}
 
         {% for item in entity.watchers if stop == false %}
@@ -512,14 +512,14 @@
         {% endif %}
             
         {% if entity.status != 'finished' %}
-            {% set buttons = buttons|merge([{'icon': 'done', 'label': 'Finalizar chamado', 'action_type': 'javascript', 'action': 'ticket.finish()'}]) %}
+            {% set buttons = buttons|merge([{'icon': 'done', 'label': 'Finalizar ticket', 'action_type': 'javascript', 'action': 'ticket.finish()'}]) %}
         {% elseif app.user.isAdmin() %}
-            {% set buttons = buttons|merge([{'icon': 'lock_open', 'label': 'Reabrir chamado', 'action_type': 'javascript', 'action': 'ticket.reopen()'}]) %}
+            {% set buttons = buttons|merge([{'icon': 'lock_open', 'label': 'Reabrir ticket', 'action_type': 'javascript', 'action': 'ticket.reopen()'}]) %}
         {% endif %}
 
         {% if entity.status != 'finished' and app.user.isAdmin() %}
             {% if entity.attendant == null %}
-                {% set buttons = buttons|merge([{'icon': 'person', 'label': 'Assumir chamado', 'action_type': 'javascript', 'action': 'ticket.transfer('~ app.user.id ~')'}]) %}
+                {% set buttons = buttons|merge([{'icon': 'person', 'label': 'Assumir ticket', 'action_type': 'javascript', 'action': 'ticket.transfer('~ app.user.id ~')'}]) %}
             {% endif %}
             
 {#            {% if entity.attendant == null or (entity.attendant != null and entity.attendant.id == app.user.id) %}#}

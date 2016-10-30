@@ -33,38 +33,38 @@
                     <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-watcher">
                         <input type="checkbox" id="checkbox-watcher" class="mdl-checkbox__input" 
                             {% if preferences.notifications.email.watcher is not defined or preferences.notifications.email.watcher == true %}checked{% endif %}>
-                        <span class="mdl-checkbox__label">Alterações em chamados assistidos</span>
+                        <span class="mdl-checkbox__label">Alterações em tickets assistidos</span>
                     </label>
                     
                     <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-transfer">
                         <input type="checkbox" id="checkbox-transfer" class="mdl-checkbox__input" 
                             {% if preferences.notifications.email.transfer is not defined or preferences.notifications.email.transfer == true %}checked{% endif %}>
-                        <span class="mdl-checkbox__label">Transferências de chamado para mim</span>
+                        <span class="mdl-checkbox__label">Transferências de ticket para mim</span>
                     </label>
                         
                     <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-comment">
                         <input type="checkbox" id="checkbox-comment" class="mdl-checkbox__input" 
                             {% if preferences.notifications.email.comment is not defined or preferences.notifications.email.comment == true %}checked{% endif %}>
-                        <span class="mdl-checkbox__label">Comentários nos meus chamados</span>
+                        <span class="mdl-checkbox__label">Comentários nos meus tickets</span>
                     </label>
                 {% endif %}
                 
                 <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-entry">
                     <input type="checkbox" id="checkbox-entry" class="mdl-checkbox__input" 
                         {% if preferences.notifications.email.entry is not defined or preferences.notifications.email.entry == true %}checked{% endif %}>
-                    <span class="mdl-checkbox__label">Postagens nos meus chamados</span>
+                    <span class="mdl-checkbox__label">Postagens nos meus tickets</span>
                 </label>
                 
                 <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-finish">
                     <input type="checkbox" id="checkbox-finish" class="mdl-checkbox__input" 
                         {% if preferences.notifications.email.finish is not defined or preferences.notifications.email.finish == true %}checked{% endif %}>
-                    <span class="mdl-checkbox__label">Finalizações dos meus chamados</span>
+                    <span class="mdl-checkbox__label">Finalizações dos meus tickets</span>
                 </label>
                 
                 <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-reopen">
                     <input type="checkbox" id="checkbox-reopen" class="mdl-checkbox__input" 
                         {% if preferences.notifications.email.reopen is not defined or preferences.notifications.email.reopen == true %}checked{% endif %}>
-                    <span class="mdl-checkbox__label">Reabertura dos meus chamados</span>
+                    <span class="mdl-checkbox__label">Reabertura dos meus tickets</span>
                 </label>
             </div>
             <div class="mdl-card__actions mdl-card--border">

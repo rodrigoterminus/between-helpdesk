@@ -112,12 +112,12 @@ var ticket = {
             });
     },
     finish: function () {
-        if (confirm('Confirma o fechamento deste chamado?')) {
+        if (confirm('Confirma o fechamento deste ticket?')) {
             window.location = window.location.href + '/finish';
         }
     },
     reopen: function () {
-        if (confirm('Confirma a reabertura deste chamado?')) {
+        if (confirm('Confirma a reabertura deste ticket?')) {
             window.location = window.location.href + '/reopen';
         }
     },
@@ -141,7 +141,7 @@ var ticket = {
     },
     transfer: function (userId) {
         if (userId === '' || userId === undefined) {
-            alert('Selecione um atendente para transferir o chamado');
+            alert('Selecione um atendente para transferir o ticket');
             return false;
         }
         else {
@@ -159,13 +159,13 @@ var ticket = {
                     watcher.icon = 'visibility_off';
                     watcher.label = 'Deixar de acompanhar';
                     $watchers.append('<span class="ticket-watcher" data-id="'+ response.user.id +'">'+ response.user.name +'</span>');
-                    notifier.notify({message: 'Você está assistindo este chamado.'}, true);
+                    notifier.notify({message: 'Você está assistindo este ticket.'}, true);
                 }
                 else {
                     watcher.icon = 'visibility';
-                    watcher.label = 'Acompanhar este chamado';
+                    watcher.label = 'Acompanhar este ticket';
                     $watchers.find('.ticket-watcher[data-id='+ response.user.id +']').remove();
-                    notifier.notify({message: 'Você deixou de assistir este chamado.'}, true);
+                    notifier.notify({message: 'Você deixou de assistir este ticket.'}, true);
                 }
                 
                 if ($watchers.find('.ticket-watcher').length === 0 && $watchers.is(':visible')) {
@@ -179,7 +179,7 @@ var ticket = {
                 $('#floating-actions').find('.mdl-tooltip[for="btn-watcher"]').text(watcher.label);
             })
             .fail(function() {
-                notifier.notify({message: 'Não foi possível te inscrever neste chamado.'}, true);
+                notifier.notify({message: 'Não foi possível te inscrever neste ticket.'}, true);
             });
     },
     toggleWatchers: function() {
@@ -240,7 +240,7 @@ var ticket = {
             return true;
         }
     },
-    showCardsRatings: function() {
+    showCardsExtraInfo: function() {
         var $container = $('<div/>')
             .addClass('rating-card mdl-card__supporting-text mdl-card--border mdl-color-text--white');
         

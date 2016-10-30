@@ -220,3 +220,5 @@ body.fosuser .mdl-card { position: absolute; top: 50%; left: 50%; transform: tra
 .nph { padding-left: 0; padding-right: 0; }
 .npt { padding-top: 0; }
 .npb { padding-bottom: 0; }
+
+.vertical-align-middle > * { vertical-align: middle; }
