@@ -333,7 +333,7 @@ class TicketController extends Controller {
         $search->setResult($result);
 
         return $this->render('AppBundle:Core:search.html.twig', array(
-                'title' => 'Chamados',
+                'title' => 'Tickets',
                 'search' => $search,
                 'result' => $result,
                 'form' => $form->createView(),
@@ -538,7 +538,7 @@ class TicketController extends Controller {
         $form = $this->createCreateForm($ticket);
 
         return array(
-            'title' => 'Abertura de chamado',
+            'title' => 'Abertura de ticket',
             'entity' => $ticket,
             'form' => $form->createView(),
         );

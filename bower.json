@@ -18,6 +18,6 @@
     "masonry": "~4.0.0",
     "material-design-lite": "~1.1.3",
     "packery": "~2.0.0",
-    "moment": "^2.15.1"
+    "moment": "^2.15.2"
   }
 }

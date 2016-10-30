@@ -24,7 +24,8 @@
         "friendsofsymfony/jsrouting-bundle": "^1.5",
         "whiteoctober/breadcrumbs-bundle": "^1.2",
         "knplabs/knp-snappy-bundle": "~1.4",
-        "wemersonjanuario/wkhtmltopdf-windows": "~0.12"
+        "wemersonjanuario/wkhtmltopdf-windows": "~0.12",
+        "oro/doctrine-extensions": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"

@@ -1,33 +1,403 @@
 {% extends '::base.html.twig' %}
 
-{% block body %}
-	<div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-phone">
-		<div class="mdl-card mdl-shadow--2dp">
-			<div class="mdl-card__title">
-	        	<h2 class="mdl-card__title-text">Seja bem vindo ao Between!</h2>
-	        </div>	        
-
-			{% if app.user.isAdmin() %}
-				<div class="mdl-card__supporting-text">
-					Between é a forma mais ágil, simples e bonita de conectar seus clientes à sua empresa.
-					<br>
-					<br>
-					Quer ver seus chamados? Simples, é só clicar no botão abaixo.
-		        </div>
-		        <div class="mdl-card__actions mdl-card--border">
-		        	<a href="{{ path('ticket') }}" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Visualizar chamados</a>
-			{% else %}
-				<div class="mdl-card__supporting-text">
-					Between é a forma mais ágil, simples e bonita de criar e gerenciar suas solicitações ao seu parceiro.
-					<br>
-					<br>
-					Precisando abrir um chamado? Simples, é só clicar no botão abaixo.
-		        </div>
-		        <div class="mdl-card__actions mdl-card--border">
-		        	<a href="{{ path('ticket_new') }}" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Abrir um novo chamado</a>
-			{% endif %}
-				
-	        </div>
-        </div>
-	</div>
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
 {% endblock %}
+
+{% block body %}
+    {% if app.user.isAdmin() %}
+{#        {{ dump(rating) }}#}
+        
+        {# Rating #}
+        <div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
+            {% if rating.user.solved.1 < rating.user.solved.0 %}
+                {% set color = 'red' %}
+            {% else %}
+                {% set color = 'green' %}
+            {% endif %}
+            
+            <div class="mdl-card mdl-shadow--2dp rating-card mdl-color--{{ color }}">
+                <div class="mdl-card__title mdl-color-text--white">
+                    <div class="icon"><i class="material-icons">person</i></div>
+                    <h2 class="mdl-card__title-text">Avaliações</h2>
+                </div>
+                {% set stars = ['Péssimo','Ruim','Regular','Bom','Excelente'] %}
+                
+                <div class="mdl-card__supporting-text mdl-color-text--white rating-user npt">
+                    <ul class="rating-thumbs">
+                        <li>
+                            <i class="material-icons mdl-color-text--green-800">thumb_up</i>
+                            <span class="number">{{ (rating.user.solved.1 * 100 / (rating.user.solved.1 + rating.user.solved.0))|round }}%</span>
+                        </li>
+                        <li>
+                            <i class="material-icons mdl-color-text--red-900">thumb_down</i>
+                            <span class="number">{{ (rating.user.solved.0 * 100 / (rating.user.solved.1 + rating.user.solved.0))|round }}%</span>
+                        </li>
+                    </ul>
+                        
+                    <ul class="rating-stars">
+                        {% for star in stars %}
+                            <li class="rating-star mdl-color-text--{% if loop.index <= rating.user.rate %}white{%else %}{{ color }}-300{% endif %}">
+                                <i class="material-icons">star</i>
+                            </li>
+                        {% endfor %}
+                        
+                        <li class="number">{{ rating.user.rate|number_format(1, '.') }}</li>
+                    </ul>
+                </div>
+                    
+                <div class="mdl-card__supporting-text rating-general mdl-color-text--white mdl-color--{{ color }}-600 npt">
+                    <h6>
+                        <div class="icon"><i class="material-icons">people</i></div>
+                        Geral
+                    </h6>
+                    <ul class="rating-thumbs">
+                        <li>
+                            <i class="material-icons mdl-color-text--green-800">thumb_up</i>
+                            <span class="number">{{ (rating.general.solved.1 * 100 / (rating.general.solved.1 + rating.general.solved.0))|round }}%</span>
+                        </li>
+                        <li>
+                            <i class="material-icons mdl-color-text--red-900">thumb_down</i>
+                            <span class="number">{{ (rating.general.solved.0 * 100 / (rating.general.solved.1 + rating.general.solved.0))|round }}%</span>
+                        </li>
+                    </ul>
+                    
+                    <ul class="rating-stars">
+                        {% for star in stars %}
+                            <li class="rating-star mdl-color-text--{% if loop.index <= rating.general.rate %}white{%else %}{{ color }}-300{% endif %}">
+                                <i class="material-icons">star</i>
+                            </li>
+                        {% endfor %}
+                        
+                        <li class="number">{{ rating.general.rate|number_format(1, '.') }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+                    
+        {# Tickets #}
+        <div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
+            <div class="mdl-card mdl-shadow--2dp mdl-color--blue-grey tickets-card">
+                {#<ul class="card-section-2">
+                    <li class="mdl-color--blue-grey-400">
+                        <div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text mdl-color-text--white">Tickets</h2>
+                        </div>
+                        <div class="mdl-card__supporting-text mdl-color-text--white npt">
+                            <h1 class="nmv">{{ time.value }}</h1>
+                            <span>{{ time.type }}</span>
+                            <div class="icon"><i class="material-icons">person</i></div>
+                        </div>
+                        <div class="mdl-card__supporting-text mdl-color--blue-grey-500 mdl-color-text--white vertical-align-middle">
+                            {% if tickets.month < tickets.ever %}
+                                {% set difference = tickets.ever - tickets.month %}
+                                {% set percentage = difference * 100 / tickets.ever %}
+
+                                <i class="material-icons mdl-color-text--red-200">trending_down</i>&nbsp;&nbsp;<b>{{ percentage|round() }}% mais baixo</b> este mês
+                            {% else %}
+                                {% set difference = tickets.month - tickets.ever %}
+
+                                {% if difference == 0 %}
+                                    {% set percentage = 0 %}
+                                {% else %}
+                                    {% set percentage = difference * 100 / tickets.month %}
+                                {% endif %}
+                                <i class="material-icons mdl-color-text--light-blue-100">trending_up</i>&nbsp;&nbsp;<b>{{ percentage|round() }}% mais alto</b> este mês
+                            {% endif %}
+                        </div>
+                    </li>#}
+{#                    <li class="mdl-color--blue-grey-600">#}
+                        <div class="mdl-card__title">
+{#                            <h2 class="mdl-card__title-text mdl-color-text--white">&nbsp;</h2>#}
+                            <h2 class="mdl-card__title-text mdl-color-text--white">Tickets neste mês</h2>
+                        </div>
+                        <div class="mdl-card__supporting-text mdl-color-text--white npt">
+                            <h1 class="nmv">{{ statistic.ticketsThisMonth }}</h1>
+                            <span>tickets</span>
+                            <div class="icon"><i class="material-icons">people</i></div>
+                        </div>
+                        <div class="mdl-card__supporting-text mdl-color--blue-grey-600 mdl-color-text--white vertical-align-middle">
+                            {% if statistic.ticketsThisMonth < statistic.ticketsLastMonthPeriod %}
+                                {% set difference = statistic.ticketsLastMonthPeriod - statistic.ticketsThisMonth %}
+                                {% set percentage = difference * 100 / statistic.ticketsLastMonthPeriod %}
+
+                                <i class="material-icons mdl-color-text--red-200">trending_down</i>&nbsp;&nbsp;<b>{{ percentage|round() }}% mais baixo</b> este mês
+                            {% else %}
+                                {% set difference = statistic.ticketsThisMonth - statistic.ticketsLastMonthPeriod %}
+
+                                {% if difference == 0 %}
+                                    {% set percentage = 0 %}
+                                {% else %}
+                                    {% set percentage = difference * 100 / statistic.ticketsThisMonth %}
+                                {% endif %}
+                                <i class="material-icons mdl-color-text--light-blue-100">trending_up</i>&nbsp;&nbsp;<b>{{ percentage|round() }}% mais alto</b> este mês
+                            {% endif %}
+                        </div>
+                    {#</li>
+                </ul>#}
+            </div>
+        </div>
+        
+        {# Waiting time #}
+        {#<div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
+            <div class="mdl-card mdl-shadow--2dp mdl-color--blue-grey month-card">
+                <div class="mdl-card__title">
+                    <h2 class="mdl-card__title-text mdl-color-text--white">Tickets este mês</h2>
+                </div>
+                <div class="mdl-card__supporting-text mdl-color-text--white npt">
+                    <h1 class="nmv">{{ tickets.month }}</h1>
+                    <span>tickets</span>
+                </div>
+                <div class="mdl-card__supporting-text  mdl-color--blue-grey-600 mdl-color-text--white vertical-align-middle">
+                    {% if tickets.month < tickets.ever %}
+                        {% set difference = tickets.ever - tickets.month %}
+                        {% set percentage = difference * 100 / tickets.ever %}
+                        
+                        <i class="material-icons mdl-color-text--red-200">trending_down</i>&nbsp;&nbsp;<b>{{ percentage|round() }}% mais baixo</b> este mês
+                    {% else %}
+                        {% set difference = tickets.month - tickets.ever %}
+                        
+                        {% if difference == 0 %}
+                            {% set percentage = 0 %}
+                        {% else %}
+                            {% set percentage = difference * 100 / tickets.month %}
+                        {% endif %}
+                        <i class="material-icons mdl-color-text--light-blue-100">trending_up</i>&nbsp;&nbsp;<b>{{ percentage|round() }}% mais alto</b> este mês
+                    {% endif %}
+                </div>
+            </div>
+        </div>#}
+        <div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
+            <div class="mdl-card mdl-shadow--2dp mdl-color--blue-grey waiting-time-card">
+                <div class="mdl-card__title">
+                    <h2 class="mdl-card__title-text mdl-color-text--white">Tempo de espera</h2>
+                </div>
+                <div class="mdl-card__supporting-text mdl-color-text--white npt">
+                    {% set break = false %}
+                    {% set time = {value: 0, type: null} %}
+
+                    {% for type, value in statistic.waitingTimeEver|reverse if break == false %}
+                        {% set time = {value: value, type: type} %}
+
+                        {% if value > 0 %}
+                            {% set break = true %}
+                        {% endif %}
+                    {% endfor %}
+
+                    <h1 class="nmv">{{ time.value }}</h1>
+                    <span>{{ time.type }}</span>
+                    <div class="icon"><i class="material-icons">people</i></div>
+                </div>
+                <div class="mdl-card__supporting-text  mdl-color--blue-grey-600 mdl-color-text--white vertical-align-middle">
+                    {% if statistic.waitingTimeMonth.seconds < statistic.waitingTimeEver.seconds %}
+                        {% set difference = statistic.waitingTimeEver.seconds - statistic.waitingTimeMonth.seconds %}
+                        {% set percentage = difference * 100 / statistic.waitingTimeEver.seconds %}
+                        
+                        <i class="material-icons mdl-color-text--red-200">trending_down</i>&nbsp;&nbsp;<b>{{ percentage|round() }}% mais baixo</b> este mês
+                    {% else %}
+                        {% set difference = statistic.waitingTimeMonth.seconds - statistic.waitingTimeEver.seconds %}
+                        
+                        {% if difference == 0 %}
+                            {% set percentage = 0 %}
+                        {% else %}
+                            {% set percentage = difference * 100 / statistic.waitingTimeMonth.seconds %}
+                        {% endif %}
+                        <i class="material-icons mdl-color-text--light-blue-100">trending_up</i>&nbsp;&nbsp;<b>{{ percentage|round() }}% mais alto</b> este mês
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        {# Solution time #}
+        {#<div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
+            <div class="mdl-card mdl-shadow--2dp mdl-color--blue-grey ticket-time-card">
+                <div class="mdl-card__title">
+                    <h2 class="mdl-card__title-text mdl-color-text--white">Tempo médio de atendimento</h2>
+                </div>
+                <div class="mdl-card__supporting-text mdl-color-text--white npt">
+                    <h1 class="nmv">7</h1>
+                    <span>horas</span>
+                </div>
+                <div class="mdl-card__supporting-text  mdl-color--blue-grey-600 mdl-color-text--white vertical-align-middle">
+                    <i class="material-icons mdl-color-text--red-200">trending_down</i>&nbsp;&nbsp;<b>32% mais baixo</b> este mês
+                </div>
+            </div>
+        </div>#}
+        <div class="mdl-cell mdl-cell--3-col mdl-cell--12-col-phone">
+            <div class="mdl-card mdl-shadow--2dp mdl-color--blue-grey solution-time-card">
+                {#<ul class="card-section-2">
+                    <li class="mdl-color--blue-grey-400">
+                        <div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text mdl-color-text--white">Tempo até a solução</h2>
+                        </div>
+                        <div class="mdl-card__supporting-text mdl-color-text--white npt">
+                            {% set break = false %}
+                            {% set time = {value: 0, type: null} %}
+
+                            {% for type, value in statistic.waitingTimeEver|reverse if break == false %}
+                                {% set time = {value: value, type: type} %}
+
+                                {% if value > 0 %}
+                                    {% set break = true %}
+                                {% endif %}
+                            {% endfor %}
+
+                            <h1 class="nmv">{{ time.value }}</h1>
+                            <span>{{ time.type }}</span>
+                            <div class="icon"><i class="material-icons">person</i></div>
+                        </div>
+                        <div class="mdl-card__supporting-text mdl-color--blue-grey-500 mdl-color-text--white vertical-align-middle">
+                            {% if tickets.month < tickets.ever %}
+                                {% set difference = tickets.ever - tickets.month %}
+                                {% set percentage = difference * 100 / tickets.ever %}
+
+                                <i class="material-icons mdl-color-text--red-200">trending_down</i>&nbsp;&nbsp;<b>{{ percentage|round() }}% mais baixo</b> este mês
+                            {% else %}
+                                {% set difference = tickets.month - tickets.ever %}
+
+                                {% if difference == 0 %}
+                                    {% set percentage = 0 %}
+                                {% else %}
+                                    {% set percentage = difference * 100 / tickets.month %}
+                                {% endif %}
+                                <i class="material-icons mdl-color-text--light-blue-100">trending_up</i>&nbsp;&nbsp;<b>{{ percentage|round() }}% mais alto</b> este mês
+                            {% endif %}
+                        </div>
+                    </li>
+                    <li class="mdl-color--blue-grey-600">#}
+                        <div class="mdl-card__title">
+                            <h2 class="mdl-card__title-text mdl-color-text--white">Tempo de solução</h2>
+                        </div>
+                        <div class="mdl-card__supporting-text mdl-color-text--white npt">
+                            {% set break = false %}
+                            {% set time = {value: 0, type: null} %}
+
+                            {% for type, value in statistic.serviceTimeEver|reverse if break == false %}
+                                {% set time = {value: value, type: type} %}
+
+                                {% if value > 0 %}
+                                    {% set break = true %}
+                                {% endif %}
+                            {% endfor %}
+
+                            <h1 class="nmv">{{ time.value }}</h1>
+                            <span>{{ time.type }}</span>
+                            <div class="icon"><i class="material-icons">people</i></div>
+                        </div>
+                        <div class="mdl-card__supporting-text mdl-color--blue-grey-600 mdl-color-text--white vertical-align-middle">
+                            {% if statistic.ticketTimeMonth.seconds < statistic.ticketTimeEver.seconds %}
+                                {% set difference = statistic.ticketTimeEver.seconds - statistic.ticketTimeMonth.seconds %}
+                                {% set percentage = difference * 100 / statistic.ticketTimeEver.seconds %}
+
+                                <i class="material-icons mdl-color-text--red-200">trending_down</i>&nbsp;&nbsp;<b>{{ percentage|round() }}% mais baixo</b> este mês
+                            {% else %}
+                                {% set difference = statistic.ticketTimeMonth.seconds - statistic.ticketTimeEver.seconds %}
+
+                                {% if difference == 0 %}
+                                    {% set percentage = 0 %}
+                                {% else %}
+                                    {% set percentage = difference * 100 / statistic.ticketTimeMonth.seconds %}
+                                {% endif %}
+                                <i class="material-icons mdl-color-text--light-blue-100">trending_up</i>&nbsp;&nbsp;<b>{{ percentage|round() }}% mais alto</b> este mês
+                            {% endif %}
+                        </div>
+                    {#</li>
+                </ul>#}
+            </div>
+        </div>
+        
+        {# Running tickets #}
+        {% if running|length > 0 %}
+            <div class="mdl-cell mdl-cell--6-col mdl-cell--12-col-phone running-card">
+                <div class="mdl-card mdl-shadow--2dp mdl-color--grey">
+                    <div class="mdl-card__title mdl-color-text--white">
+                        <h2 class="mdl-card__title-text">Tickets em atendimento</h2>
+                    </div>
+                    {% for ticket in running %}
+                        <a href="{{ path('ticket_edit', {number: ticket.number}) }}" class="mdl-card__supporting-text">
+                            <h6 class="vertical-align-middle npt nmt mdl-color-text--white"><i class="material-icons">receipt</i>{{ ticket.number }}</h6>
+                            <ul class="mdl-color-text--grey-200">
+                                <li class="vertical-align-middle"><i class="material-icons">subject</i>{{ ticket.subject }}</li>
+                                <li class="vertical-align-middle"><i class="material-icons">work</i>{{ ticket.customerName }}</li>
+                                <li class="vertical-align-middle"><i class="material-icons">schedule</i><span class="stopwatch" data-datetime="{{ ticket.createdAt.date }}"></span></li>
+                            </ul>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-phone">
+            <div class="mdl-card mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                    <h2 class="mdl-card__title-text">Seja bem vindo ao Between!</h2>
+                </div>
+                <div class="mdl-card__supporting-text">
+                    Between é a forma mais ágil, simples e bonita de criar e gerenciar suas solicitações ao seu parceiro.
+                    <br>
+                    <br>
+                    Precisando abrir um ticket? Simples, é só clicar no botão abaixo.
+                </div>
+                <div class="mdl-card__actions mdl-card--border">
+                    <a href="{{ path('ticket_new') }}" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Abrir um novo ticket</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% if app.user.isAdmin() == false %}
+    {% block fab_action %}
+        {% set fab = { icon: 'add', label: 'Criar novo ticket', action_type: 'route', action: 'ticket_new' } %}
+
+        {% include 'AppBundle:Core:fab.html.twig' with { 'fab': fab } %}
+    {% endblock %}
+{% endif %}
+    
+{% block scripts %}
+    <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    
+    <script>
+        dashboard.init();
+        
+        {% if app.user.isAdmin() %}
+            dashboard.admin();
+        {% else %}
+            dashboard.customer();
+        {% endif %}
+    </script>
+{% endblock %}
+
+
+
+{#% block body %}
+    <div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-phone">
+        <div class="mdl-card mdl-shadow--2dp">
+            <div class="mdl-card__title">
+                <h2 class="mdl-card__title-text">Seja bem vindo ao Between!</h2>
+            </div>	        
+
+            {% if app.user.isAdmin() %}
+                <div class="mdl-card__supporting-text">
+                    Between é a forma mais ágil, simples e bonita de conectar seus clientes à sua empresa.
+                    <br>
+                    <br>
+                    Quer ver seus tickets? Simples, é só clicar no botão abaixo.
+                </div>
+                <div class="mdl-card__actions mdl-card--border">
+                    <a href="{{ path('ticket') }}" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Visualizar tickets</a>
+            {% else %}
+                <div class="mdl-card__supporting-text">
+                    Between é a forma mais ágil, simples e bonita de criar e gerenciar suas solicitações ao seu parceiro.
+                    <br>
+                    <br>
+                    Precisando abrir um ticket? Simples, é só clicar no botão abaixo.
+                </div>
+                <div class="mdl-card__actions mdl-card--border">
+                    <a href="{{ path('ticket_new') }}" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Abrir um novo ticket</a>
+            {% endif %}
+
+            </div>
+        </div>
+    </div>
+{% endblock %#}

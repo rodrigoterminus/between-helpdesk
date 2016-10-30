@@ -8,7 +8,7 @@ var between = {
         $(document).on('click', '.mdl-dialog .close', function() {
             dialog.close();
         });
-        
+                
         notifier.init();
     },
     backButton: function (route) {
@@ -68,6 +68,8 @@ var between = {
         });
     }
 };
+
+moment.locale('pt-br');
 
 var dialog = null;
 
