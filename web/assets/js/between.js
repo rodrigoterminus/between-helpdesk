@@ -66,6 +66,33 @@ var between = {
                 $selectbox.removeAttr('disabled');
             }
         });
+    },
+    stopwatch: function() {
+//        setInterval(function() {
+//            $('.stopwatch[data-datetime]').each(function() {
+//                var datetime = $(this).data('datetime');
+//                console.log(datetime)
+//                if (datetime !== undefined) {
+//                    $(this).text(moment().from(moment(datetime)));
+//                }
+//            });
+//        }, 60000, true);
+        
+        setInterval(function datetimeUpdate() {
+            $('.stopwatch[data-datetime]').each(function() {
+                var datetime = $(this).data('datetime');
+                
+                if ((datetime + '').indexOf('/') === -1 && (datetime + '').indexOf('-') === -1) {
+                    datetime = parseInt(datetime) * 1000;
+                }
+                
+                if (datetime !== '') {
+                    $(this).text(moment(datetime).from(moment()));
+                }
+            });
+            
+            return datetimeUpdate;
+        }(), 60000);
     }
 };
 

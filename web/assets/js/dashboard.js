@@ -6,7 +6,7 @@ var dashboard = {
     },
     admin: function() {
         // Stopwatches
-        dashboard.stopwatch();
+//        dashboard.stopwatch();
     },
     customer: function() {
         
