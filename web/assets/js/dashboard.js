@@ -7,6 +7,10 @@ var dashboard = {
     admin: function() {
         // Stopwatches
 //        dashboard.stopwatch();
+
+        $('.animate-number').each(function() {
+            $(this).animateNumber({ number: parseInt($(this).data('number')) }, 3000);
+        });
     },
     customer: function() {
         
