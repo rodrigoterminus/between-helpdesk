@@ -251,7 +251,7 @@ var ticket = {
                 var time = moment(ticket.createdAt * 1000).from(moment());
                 var $bar = $container.clone()
                     .append('<i class="material-icons" style="margin-right: 8px;">schedule</i>')
-                    .append(time)
+                    .append('<span class="stopwatch" data-datetime="'+ ticket.createdAt +'">'+ time +'</div>')
                     .removeClass('mdl-color-text--white')
                     .addClass('vertical-align-middle')
                     .appendTo($card);
@@ -293,6 +293,8 @@ var ticket = {
                 }
             }
         });
+        
+        between.stopwatch();
     },
     showRatingInvitations: function() {
         var $container = $('<div/>')

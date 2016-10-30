@@ -8,8 +8,32 @@ var between = {
         $(document).on('click', '.mdl-dialog .close', function() {
             dialog.close();
         });
+        
+        // Open/Close menu
+        if ($(window).width() <= 1024 && between.isTouchDevice()) {
+            $('body').swipe({
+                swipeRight: function() {
+                    var $menu = $('.mdl-layout__drawer');
+
+                    if (!$menu.hasClass('is-visible') && $(window).width() <= 1024) {
+                        $('.mdl-layout__drawer-button:not(".back-button")').trigger('click');  
+                    }
+                },
+                swipeLeft: function() {
+                    var $menu = $('.mdl-layout__drawer');
+
+                    if ($menu.hasClass('is-visible') && $(window).width() <= 1024) {
+                        $('.mdl-layout__obfuscator').trigger('click'); 
+                    }
+                }
+            });
+        }
                 
         notifier.init();
+    },
+    isTouchDevice: function() {
+        return 'ontouchstart' in window        // works on most browsers 
+            || navigator.maxTouchPoints;       // works on IE10/11 and Surface
     },
     backButton: function (route) {
         $(document).ready(function () {
@@ -26,7 +50,7 @@ var between = {
 
                     $menuButton
                         .after($backButton)
-                        .remove();
+                        .hide();
 
                     clearInterval(setButton);
                 }
@@ -66,6 +90,33 @@ var between = {
                 $selectbox.removeAttr('disabled');
             }
         });
+    },
+    stopwatch: function() {
+//        setInterval(function() {
+//            $('.stopwatch[data-datetime]').each(function() {
+//                var datetime = $(this).data('datetime');
+//                console.log(datetime)
+//                if (datetime !== undefined) {
+//                    $(this).text(moment().from(moment(datetime)));
+//                }
+//            });
+//        }, 60000, true);
+        
+        setInterval(function datetimeUpdate() {
+            $('.stopwatch[data-datetime]').each(function() {
+                var datetime = $(this).data('datetime');
+                
+                if ((datetime + '').indexOf('/') === -1 && (datetime + '').indexOf('-') === -1) {
+                    datetime = parseInt(datetime) * 1000;
+                }
+                
+                if (datetime !== '') {
+                    $(this).text(moment(datetime).from(moment()));
+                }
+            });
+            
+            return datetimeUpdate;
+        }(), 60000);
     }
 };
 

@@ -112,7 +112,7 @@
                             <h2 class="mdl-card__title-text mdl-color-text--white">Tickets neste mês</h2>
                         </div>
                         <div class="mdl-card__supporting-text mdl-color-text--white npt">
-                            <h1 class="nmv">{{ statistic.ticketsThisMonth }}</h1>
+                            <h1 class="nmv animate-number" data-number="{{ statistic.ticketsThisMonth }}">0</h1>
                             <span>tickets</span>
                             <div class="icon"><i class="material-icons">people</i></div>
                         </div>
@@ -184,7 +184,7 @@
                         {% endif %}
                     {% endfor %}
 
-                    <h1 class="nmv">{{ time.value }}</h1>
+                    <h1 class="nmv animate-number" data-number="{{ time.value }}">0</h1>
                     <span>{{ time.type }}</span>
                     <div class="icon"><i class="material-icons">people</i></div>
                 </div>
@@ -280,7 +280,7 @@
                                 {% endif %}
                             {% endfor %}
 
-                            <h1 class="nmv">{{ time.value }}</h1>
+                            <h1 class="nmv animate-number" data-number="{{ time.value }}">0</h1>
                             <span>{{ time.type }}</span>
                             <div class="icon"><i class="material-icons">people</i></div>
                         </div>
