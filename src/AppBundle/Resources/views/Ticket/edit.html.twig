@@ -232,7 +232,7 @@
                     {% for comment in entity.comments|reverse %}
                         <div class="mdl-card__supporting-text mdl-card--border npv">
                             <div class="mdl-grid">
-                                <div class="mdl-cell mdl-cell--12-col">
+                                <div class="mdl-cell mdl-cell--12-col" style="display: inline-flex;">
                                     <div class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab icon-text-content">
                                         <i class="material-icons">person</i>
                                     </div>
@@ -268,13 +268,19 @@
                     {% if app.user.isAdmin() %}
                         {% if lastDatetime != null %}
                             <div class="ticket-interval mdl-color--grey-50">
-                                {{ between.formatDateDiff(lastDatetime, entry.createdAt) }}
+                                {% set timeDiff = between.formatDateDiff(lastDatetime, entry.createdAt) %}
+                                
+                                {% if timeDiff == '' %}
+                                    -
+                                {% else %}
+                                    {{ between.formatDateDiff(lastDatetime, entry.createdAt) }}
+                                {% endif %}
                             </div>
                         {% endif %}
                     {% endif %}
                     
                     <div class="mdl-grid no-padding-v ticket-entries">
-                        <div class="mdl-cell mdl-cell--12-col">
+                        <div class="mdl-cell mdl-cell--12-col" style="display: inline-flex;">
                             {% if entry.action == 'finish' %}
                                 <div class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab icon-text-content mdl-color--green">
                                     <i class="material-icons mdl-color-text--white">check</i>

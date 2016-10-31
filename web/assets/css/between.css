@@ -23,6 +23,8 @@ header.mdl-layout__header {
   }
 }
 
+/*.mdl-cell { display: inline-flex; }*/
+
 /* Ticket */
 .ticket-footer { color: rgba(0,0,0,.35); margin-top: 20px; }
 .ticket-entry-files { margin: 10px 0 0 0; padding: 0; }
@@ -132,13 +134,28 @@ header.mdl-layout__header {
 .mdl-card__supporting-text hr { margin: 1em -16px; }
 
 .ticket-entries > .mdl-cell { white-space: nowrap; }
-.text-content { display: inline-block; /*float: left;*/ white-space: normal; }
-.icon-text-content { margin-right: 16px; /*float: left;*/ display: inline-block; vertical-align: top; }
+.text-content { display: inline-block; /*float: left;*/ white-space: normal; text-align: justify; }
+.icon-text-content { margin-right: 16px; /*float: left;*/ display: inline-block; vertical-align: top; margin-left: 0; }
+
+.icon-text-content { margin-top: 0; }
+.icon-text-content > .mdl-button--fab { margin-top: 0; }
+
+@media (max-width: 479px){
+    .text-content { text-align: left; }
+    
+    .icon-text-content { margin-right: 10px; }
+    .icon-text-content > .mdl-button--fab,
+    .icon-text-content.mdl-button--fab { width: 30px; min-width: 30px; height: 30px; }
+    .icon-text-content > .mdl-button--fab > .material-icons,
+    .icon-text-content.mdl-button--fab > .material-icons { font-size: 18px; }
+    
+    .comment-content { text-align: left !important; }
+}
 
 #comments .mdl-cell { white-space: nowrap; }
 #comments > .mdl-card__supporting-text:last-child { margin-bottom: 16px; }
 .comment-text { white-space: normal; }
-.comment-content { display: inline-block; }
+.comment-content { display: inline-block; text-align: justify; }
 .comment-header { margin: 5px 0 12px 0; }
 
 .mdl-badge[data-badge]:after { background-color: #ff6f00; }
@@ -199,14 +216,20 @@ body.fosuser .mdl-card { position: absolute; top: 50%; left: 50%; transform: tra
 #dialog-notifications .mdl-dialog__title { padding-bottom: 20px; }
 #dialog-notifications .mdl-dialog__content { overflow-x: hidden; overflow-y: auto; height: 80%; padding-top: 0;  }
 .notification { 
-    display: block; white-space: nowrap; border-bottom: 1px solid rgba(0,0,0,.1); padding: 16px; 
+    display: inline-flex; white-space: nowrap; border-bottom: 1px solid rgba(0,0,0,.1); padding: 16px; 
     color: inherit;
     text-decoration: initial;
     font-weight: initial;
+    width: 100%;
 }
+.notification .text-content { text-align: left; }
 .notification.unread { background-color: #FFF8E1; }
 .notification-datetime { display: block; color: rgba(0,0,0,.34); margin-top: 4px; }
 .notification-comment { margin: 8px 0; padding: 12px; }
+
+@media (max-width: 479px){
+    .notification { padding: 16px 0; }
+}
 
 /* Generic */
 #btn-send-message { position: absolute; right: 6px; bottom: 32px; z-index: 3; }
