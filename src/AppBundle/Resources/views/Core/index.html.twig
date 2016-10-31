@@ -27,11 +27,23 @@
                     <ul class="rating-thumbs">
                         <li>
                             <i class="material-icons mdl-color-text--green-800">thumb_up</i>
-                            <span class="number">{{ (rating.user.solved.1 * 100 / (rating.user.solved.1 + rating.user.solved.0))|round }}%</span>
+                            <span class="number">
+                                {% if rating.user != null %}
+                                    {{ (rating.user.solved.1 * 100 / (rating.user.solved.1 + rating.user.solved.0))|round }}%
+                                {% else %}
+                                    0%
+                                {% endif %}
+                            </span>
                         </li>
                         <li>
                             <i class="material-icons mdl-color-text--red-900">thumb_down</i>
-                            <span class="number">{{ (rating.user.solved.0 * 100 / (rating.user.solved.1 + rating.user.solved.0))|round }}%</span>
+                            <span class="number">
+                                {% if rating.user != null %}
+                                    {{ (rating.user.solved.0 * 100 / (rating.user.solved.1 + rating.user.solved.0))|round }}%
+                                {% else %}
+                                    0%
+                                {% endif %}
+                            </span>
                         </li>
                     </ul>
                         
@@ -54,11 +66,21 @@
                     <ul class="rating-thumbs">
                         <li>
                             <i class="material-icons mdl-color-text--green-800">thumb_up</i>
-                            <span class="number">{{ (rating.general.solved.1 * 100 / (rating.general.solved.1 + rating.general.solved.0))|round }}%</span>
+                            <span class="number">
+                                {% if rating.general != null %}
+                                    {{ (rating.general.solved.1 * 100 / (rating.general.solved.1 + rating.general.solved.0))|round }}%</span>
+                                {% else %}
+                                    0%
+                                {% endif %}
                         </li>
                         <li>
                             <i class="material-icons mdl-color-text--red-900">thumb_down</i>
-                            <span class="number">{{ (rating.general.solved.0 * 100 / (rating.general.solved.1 + rating.general.solved.0))|round }}%</span>
+                            <span class="number">
+                                {% if rating.general != null %}
+                                    {{ (rating.general.solved.0 * 100 / (rating.general.solved.1 + rating.general.solved.0))|round }}%</span>
+                                {% else %}
+                                    0%
+                                {% endif %}
                         </li>
                     </ul>
                     
