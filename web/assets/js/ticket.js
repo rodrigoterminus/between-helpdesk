@@ -236,8 +236,6 @@ var ticket = {
                     $('#dialog-rating .mdl-dialog__actions .mdl-button:last-child').text('Enviar');
                     $('#dialog-rating .mdl-dialog__actions .mdl-button').removeAttr('disabled');
                 });
-                
-            return true;
         }
     },
     showCardsExtraInfo: function() {
