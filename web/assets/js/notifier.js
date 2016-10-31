@@ -113,7 +113,7 @@ var notifier = {
                     'data-seen': item.seen +'',
                     'data-timestamp': item.timestamp
                 })
-                .addClass('notification')
+                .addClass('notification vertical-align-top')
                 .prependTo($('#dialog-notifications .mdl-dialog__content'));
 
             if (item.seen === false) {
