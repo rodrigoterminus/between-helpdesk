@@ -30,7 +30,7 @@ var ticket = {
         });
         
         // Comment
-        $('#btn-send-comment').on('click', function() {
+        $(document).on('click', '#btn-send-comment', function() {
             comment.add()
                 .done(function() {
                     var $comments = $('#comments');
