@@ -44,7 +44,8 @@ var between = {
                     var $backButton = $('<div/>')
                         .addClass('mdl-layout__drawer-button back-button')
                         .on('click', function () {
-                            window.location = Routing.generate(route);
+//                            window.location = Routing.generate(route);
+                            window.history.back();
                         })
                         .html('<i class="material-icons">arrow_back</i>');
 
