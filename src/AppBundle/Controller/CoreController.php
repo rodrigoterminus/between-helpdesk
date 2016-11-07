@@ -5,7 +5,7 @@ namespace AppBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Common\Collections\Criteria;
 
 class CoreController extends Controller
 {
@@ -14,6 +14,20 @@ class CoreController extends Controller
      * @Template()
      */
     public function indexAction()
+    {
+        $user = $this->get('security.context')->getToken()->getUser();
+        
+        if ($user->isAdmin()) {
+            return $this->redirectToRoute('dashboard_admin');
+        } else {
+            return $this->redirectToRoute('dashboard_customer');
+        }
+    }
+    
+    /**
+     * @Route("/dashboard/admin", name="dashboard_admin")
+     */
+    public function dashboardAction()
     {
         $user = $this->get('security.context')->getToken()->getUser();
         
@@ -65,27 +79,54 @@ class CoreController extends Controller
                 ->andWhere('ticket.attendant = '. $user->getId());
             $rating['user']['solved'][] = $qb->getQuery()->getOneOrNullResult()[1];
             
-            return $this->render('AppBundle:Core:index.html.twig', [
+            return $this->render('AppBundle:Core:dashboard-admin.html.twig', [
                 'statistic' => $statistic,
                 'running' => $running,
                 'rating' => $rating,
 //                'tickets' => $tickets,
             ]);
         } else {
-            return $this->redirectToRoute('ticket');
+            return $this->redirectToRoute('index_customer');
         }    
     }
     
     /**
-     * @Route("/customer", name="index_customer")
+     * @Route("/dashboard/customer", name="dashboard_customer")
      * @Template()
      */
-    public function indexCustomerAction()
+    public function dashboardCustomerAction()
     {
         $user = $this->get('security.context')->getToken()->getUser();
         $ticketRepository = $this->getDoctrine()->getRepository('AppBundle:Ticket');
         
-        return $this->render('AppBundle:Core:index-customer.html.twig', [
-        ]);
+        // Get unrated tickets
+        $qb = $ticketRepository->createQueryBuilder('ticket')
+            ->select([
+                'ticket.id',
+                'ticket.number',
+                'ticket.subject',
+                'ticket.finishedAt',
+                'rating.rate',
+                'attendant.name',
+            ])
+            ->leftJoin('AppBundle:Rating', 'rating', 'WITH', 'rating.ticket = ticket.id')
+            ->leftJoin('AppBundle:User', 'attendant', 'WITH', 'attendant.id = ticket.attendant')
+            ->where('ticket.customer = :customer')
+            ->andWhere('ticket.status = :status')
+            ->andWhere('rating.ticket IS NULL')
+            ->setParameters([
+                'customer' => $user->getCustomer()->getId(),
+                'status' => 'finished'
+            ])
+            ;
+        $tickets = $qb->getQuery()->getResult();
+        
+        if (count($tickets) === 0) {
+            return $this->redirectToRoute('ticket');
+        } else {
+            return $this->render('AppBundle:Core:dashboard-customer.html.twig', [
+                'tickets' => $tickets
+            ]);
+        }
     }
 }

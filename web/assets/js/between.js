@@ -5,6 +5,18 @@ var between = {
         // if ($.browser.webkit)
         $('input').attr('autocomplete', 'false');
         
+        $(document).ready(function() {
+            between.loading.hide();
+        });
+        
+        $(window).on('beforeunload', function() {
+            between.loading.show();
+        });
+        
+        $(document).on('submit', 'form', function() {
+            between.loading.show();
+        });
+        
         $(document).on('click', '.mdl-dialog .close', function() {
             dialog.close();
         });
@@ -31,6 +43,14 @@ var between = {
                 
         notifier.init();
     },
+    loading: {
+        show: function() {
+            $('.loading-overlay').show();
+        },
+        hide: function() {
+            $('.loading-overlay').hide();
+        }
+    },
     isTouchDevice: function() {
         return 'ontouchstart' in window        // works on most browsers 
             || navigator.maxTouchPoints;       // works on IE10/11 and Surface
@@ -44,8 +64,14 @@ var between = {
                     var $backButton = $('<div/>')
                         .addClass('mdl-layout__drawer-button back-button')
                         .on('click', function () {
-//                            window.location = Routing.generate(route);
-                            window.history.back();
+                            between.loading.show();
+                            
+                            if (document.referrer === window.location.href) {
+                                window.location = Routing.generate(route);
+                            }
+                            else {
+                                window.history.back();
+                            }
                         })
                         .html('<i class="material-icons">arrow_back</i>');
 

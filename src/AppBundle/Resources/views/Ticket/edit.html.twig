@@ -266,16 +266,14 @@
                 <div class="mdl-card__supporting-text mdl-card--border npv">
                     
                     {% if app.user.isAdmin() %}
-                        {% if lastDatetime != null %}
-                            <div class="ticket-interval mdl-color--grey-50">
-                                {% set timeDiff = between.formatDateDiff(lastDatetime, entry.createdAt) %}
-                                
-                                {% if timeDiff == '' %}
-                                    -
-                                {% else %}
+                        {% if lastDatetime != null %}                            
+                            {% set timeDiff = between.formatDateDiff(lastDatetime, entry.createdAt) %}
+
+                            {% if timeDiff != '' %}
+                                <div class="ticket-interval mdl-color--grey-50">
                                     {{ between.formatDateDiff(lastDatetime, entry.createdAt) }}
-                                {% endif %}
-                            </div>
+                                </div>
+                            {% endif %}                            
                         {% endif %}
                     {% endif %}
                     

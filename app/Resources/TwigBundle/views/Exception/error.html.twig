@@ -1,0 +1,9 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+    <div class="no-result" style="text-align: center;">
+        <i class="material-icons" style="font-size: 76px;">mood_bad</i><br>
+        <h2>{{ status_code }}</h2>
+        {{ status_text }}
+    </div>
+{% endblock %}

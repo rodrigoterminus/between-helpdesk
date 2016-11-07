@@ -381,12 +381,7 @@
     
     <script>
         dashboard.init();
-        
-        {% if app.user.isAdmin() %}
-            dashboard.admin();
-        {% else %}
-            dashboard.customer();
-        {% endif %}
+        dashboard.admin();
     </script>
 {% endblock %}
 

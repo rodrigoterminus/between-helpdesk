@@ -135,6 +135,7 @@ class TicketController extends Controller {
                     'query_builder' => function(EntityRepository $er) {
                         return $er->createQueryBuilder('u')
                             ->where("u.roles LIKE '%ROLE_ADMIN%'")
+                            ->orWhere("u.roles LIKE '%ROLE_SUPER_ADMIN%'")
                             ->orderBy('u.name', 'ASC');
                     },
                     'property' => 'name',

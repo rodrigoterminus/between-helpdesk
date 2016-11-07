@@ -1,0 +1,55 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+    <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-phone">
+        <div class="mdl-card mdl-shadow--2dp mdl-color--red">
+            <div class="mdl-card__title">
+                <h2 class="mdl-card__title-text mdl-color-text--white">
+                    {% transchoice tickets|length %}
+                        {0} Avalie seus tickets|{1} Você tem 1 ticket para avaliar|]1,Inf[ Você tem %count% tickets para avaliar
+                    {% endtranschoice %}
+                </h2>
+            </div>
+            <div class="mdl-card__supporting-text mdl-color-text--white">
+                Contamos com você para avaliar nosso atendimento e, desta forma, conseguirmos sempre nos aperfeiçoar e buscar o melhor atendimento possível para você.<br><br>
+                Avalie seus atendimentos. É muito rápido e você só tem a ganhar!
+            </div>
+        </div>
+    </div>
+                
+    {% for ticket in tickets %}
+        <div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-phone">
+            <div class="mdl-card mdl-shadow--2dp">
+                <div class="mdl-card__title">
+                    <h2 class="mdl-card__title-text">{{ ticket.number }}</h2>
+                </div>
+                <div class="mdl-card__supporting-text">
+                    <div class="mdl-textfield mdl-js-textfield">
+                        <span class="fake-label">Assunto</span>
+                        <span class="fake-field">{{ ticket.subject }}</span>
+                    </div>
+                    <div class="mdl-textfield mdl-js-textfield">
+                        <span class="fake-label">Atendente</span>
+                        <span class="fake-field">{{ ticket.name }}</span>
+                    </div>
+                    <div class="mdl-textfield mdl-js-textfield">
+                        <span class="fake-label">Finalizado em</span>
+                        <span class="fake-field">{{ ticket.finishedAt.date|date('d/m/Y H:i:s') }}</span>
+                    </div>
+                </div>
+                <div class="mdl-card__actions mdl-card--border">
+                    <a href="{{ path('ticket_edit', { number: ticket.number, rating: 'true' }) }}" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Avaliar</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    
+    <script>
+        dashboard.init();
+        dashboard.customer();
+    </script>
+{% endblock %}
