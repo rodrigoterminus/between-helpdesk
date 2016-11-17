@@ -331,20 +331,33 @@
         {# Running tickets #}
         {% if running|length > 0 %}
             <div class="mdl-cell mdl-cell--6-col mdl-cell--12-col-phone running-card">
-                <div class="mdl-card mdl-shadow--2dp mdl-color--grey">
-                    <div class="mdl-card__title mdl-color-text--white">
+                <div class="mdl-card mdl-shadow--2dp">
+                    <div class="mdl-card__title">
                         <h2 class="mdl-card__title-text">Tickets em atendimento</h2>
                     </div>
-                    {% for ticket in running %}
+                    {% set index = 0 %}
+                    
+                    {% for ticket in running|reverse if index < 5 %}                        
                         <a href="{{ path('ticket_edit', {number: ticket.number}) }}" class="mdl-card__supporting-text">
-                            <h6 class="vertical-align-middle npt nmt mdl-color-text--white"><i class="material-icons">receipt</i>{{ ticket.number }}</h6>
-                            <ul class="mdl-color-text--grey-200">
+                            <h6 class="vertical-align-middle npt"><i class="material-icons">receipt</i>{{ ticket.number }}</h6>
+                            <ul class="mdl-color-text--grey-500">
                                 <li class="vertical-align-middle"><i class="material-icons">subject</i>{{ ticket.subject }}</li>
-                                <li class="vertical-align-middle"><i class="material-icons">work</i>{{ ticket.customerName }}</li>
-                                <li class="vertical-align-middle"><i class="material-icons">schedule</i><span class="stopwatch" data-datetime="{{ ticket.createdAt.date }}"></span></li>
+                                <li class="vertical-align-middle"><i class="material-icons">work</i>{{ ticket.customer.name }}</li>
+                                <li class="vertical-align-middle"><i class="material-icons">schedule</i>{{ between.formatDateDiff(ticket.createdAt.date) }}</li>
                             </ul>
                         </a>
+                            
+                        {% set index = loop.index %}
                     {% endfor %}
+                    
+                    {% if running|length > 5 %}
+                        <a href="{{ path('ticket', { form: { attendant: app.user.id, status: 'running' } }) }}" class="mdl-card__supporting-text vertical-align-middle">
+                            <i class="material-icons">more_horiz</i>
+                            {% transchoice (running|length - 5) %}
+                                {1} Visualizar mais 1 ticket|]1,Inf[ Visualizar mais %count% tickets
+                            {% endtranschoice %}
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         {% endif %}

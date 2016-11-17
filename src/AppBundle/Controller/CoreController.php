@@ -16,46 +16,50 @@ class CoreController extends Controller
     public function indexAction()
     {
         $user = $this->get('security.context')->getToken()->getUser();
-        
+
         if ($user->isAdmin()) {
             return $this->redirectToRoute('dashboard_admin');
         } else {
             return $this->redirectToRoute('dashboard_customer');
         }
     }
-    
+
     /**
      * @Route("/dashboard/admin", name="dashboard_admin")
      */
     public function dashboardAction()
     {
         $user = $this->get('security.context')->getToken()->getUser();
-        
+
         if ($user->isAdmin()) {
             $statisticRepository = $this->getDoctrine()->getRepository('AppBundle:Statistic');
             $ticketRepository = $this->getDoctrine()->getRepository('AppBundle:Ticket');
             $ratingRepository = $this->getDoctrine()->getRepository('AppBundle:Rating');
-            
-            // Running tickets
-            $running = [];            
+
             $statistic = $statisticRepository->get();
-            
+
+            // Running tickets
+            $running = $ticketRepository->findBy([
+                'attendant' => $user,
+                'status' => 'running',
+            ]);
+
             // Rating General
             $rating = [];
             $qb = $ratingRepository->createQueryBuilder('rating')
                 ->addSelect('AVG(rating.rate)');
             $rating['general']['rate'] = $qb->getQuery()->getOneOrNullResult()[1];
-            
+
             $qb = $ratingRepository->createQueryBuilder('rating')
                 ->addSelect('COUNT(rating.id)')
                 ->where('rating.solved = 0');
             $rating['general']['solved'][] = $qb->getQuery()->getOneOrNullResult()[1];
-            
+
             $qb = $ratingRepository->createQueryBuilder('rating')
                 ->addSelect('COUNT(rating.id)')
                 ->where('rating.solved = 1');
             $rating['general']['solved'][] = $qb->getQuery()->getOneOrNullResult()[1];
-            
+
             // Rating user
             $qb = $ratingRepository->createQueryBuilder('rating')
                 ->select([
@@ -64,21 +68,21 @@ class CoreController extends Controller
                 ->join('AppBundle:Ticket', 'ticket', 'WITH', 'ticket.id = rating.ticket')
                 ->where('ticket.attendant = '. $user->getId());
             $rating['user']['rate'] = $qb->getQuery()->getOneOrNullResult()[1];
-            
+
             $qb = $ratingRepository->createQueryBuilder('rating')
                 ->addSelect('COUNT(rating.id)')
                 ->join('AppBundle:Ticket', 'ticket','WITH', 'ticket.id = rating.ticket')
                 ->where('rating.solved = 0')
                 ->andWhere('ticket.attendant = '. $user->getId());
             $rating['user']['solved'][] = $qb->getQuery()->getOneOrNullResult()[1];
-            
+
             $qb = $ratingRepository->createQueryBuilder('rating')
                 ->addSelect('COUNT(rating.id)')
                 ->join('AppBundle:Ticket', 'ticket','WITH', 'ticket.id = rating.ticket')
                 ->where('rating.solved = 1')
                 ->andWhere('ticket.attendant = '. $user->getId());
             $rating['user']['solved'][] = $qb->getQuery()->getOneOrNullResult()[1];
-            
+
             return $this->render('AppBundle:Core:dashboard-admin.html.twig', [
                 'statistic' => $statistic,
                 'running' => $running,
@@ -87,9 +91,9 @@ class CoreController extends Controller
             ]);
         } else {
             return $this->redirectToRoute('index_customer');
-        }    
+        }
     }
-    
+
     /**
      * @Route("/dashboard/customer", name="dashboard_customer")
      * @Template()
@@ -98,7 +102,7 @@ class CoreController extends Controller
     {
         $user = $this->get('security.context')->getToken()->getUser();
         $ticketRepository = $this->getDoctrine()->getRepository('AppBundle:Ticket');
-        
+
         // Get unrated tickets
         $qb = $ticketRepository->createQueryBuilder('ticket')
             ->select([
@@ -120,7 +124,7 @@ class CoreController extends Controller
             ])
             ;
         $tickets = $qb->getQuery()->getResult();
-        
+
         if (count($tickets) === 0) {
             return $this->redirectToRoute('ticket');
         } else {

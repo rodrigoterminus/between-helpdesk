@@ -138,6 +138,7 @@ class TicketController extends Controller {
                             ->orWhere("u.roles LIKE '%ROLE_SUPER_ADMIN%'")
                             ->orderBy('u.name', 'ASC');
                     },
+                    'preferred_choices' => [$user],
                     'property' => 'name',
                     'placeholder' => 'Selecione uma opção',
                     'required' => false,
@@ -150,6 +151,21 @@ class TicketController extends Controller {
             ->add('status', ChoiceType::class, array(
                 'label' => 'Status',
                 'choices' => array('' => 'Selecione', 'created' => 'Aguardando atendimento', 'running' => 'Em atendimento', 'finished' => 'Finalizado'),
+                'required' => false,
+                'attr' => array('data-col' => 'mdl-cell--6-col-desktop mdl-cell--12-col-phone')
+                )
+            )
+            ->add('category', EntityType::class, array(
+                'label' => 'Categoria',
+                'class' => 'AppBundle:Category',
+                'query_builder' => function(EntityRepository $er) {
+                    $return = $er->createQueryBuilder('c')
+                        ->orderBy('c.name', 'ASC');
+
+                    return $return;
+                },
+                'property' => 'name',
+                'placeholder' => 'Selecione uma opção',
                 'required' => false,
                 'attr' => array('data-col' => 'mdl-cell--6-col-desktop mdl-cell--12-col-phone')
                 )
@@ -175,14 +191,14 @@ class TicketController extends Controller {
                 'label' => 'Data inicial',
                 'widget' => 'single_text',
                 'required' => false,
-                'attr' => array('data-col' => 'mdl-cell--6-col-desktop mdl-cell--12-col-phone')
+                'attr' => array('data-col' => 'mdl-cell--3-col-desktop mdl-cell--12-col-phone')
                 )
             )
             ->add('date_final', DateType::class, array(
                 'label' => 'Data final',
                 'widget' => 'single_text',
                 'required' => false,
-                'attr' => array('data-col' => 'mdl-cell--6-col-desktop mdl-cell--12-col-phone')
+                'attr' => array('data-col' => 'mdl-cell--3-col-desktop mdl-cell--12-col-phone')
                 )
             );
         
@@ -249,6 +265,24 @@ class TicketController extends Controller {
                         $qb->expr()->eq('t.customer', ':customer')
                     )
                     ->setParameter('customer', $data['customer']->getId());
+            }
+            
+            // Category
+            if (!empty($data['category'])) {
+                $query = $qb
+                    ->andWhere(
+                        $qb->expr()->eq('t.category', ':category')
+                    )
+                    ->setParameter('category', $data['category']->getId());
+            }
+            
+            // Project
+            if (!empty($data['project'])) {
+                $query = $qb
+                    ->andWhere(
+                        $qb->expr()->eq('t.project', ':project')
+                    )
+                    ->setParameter('project', $data['project']->getId());
             }
             
             // Status

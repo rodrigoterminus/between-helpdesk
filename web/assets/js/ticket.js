@@ -29,6 +29,10 @@ var ticket = {
             }
         });
         
+        $(document).on('click', '.btn-file-download', function() {
+            setTimeout(between.loading.hide, 2000);
+        });
+        
         // Comment
         $(document).on('click', '#btn-send-comment', function() {
             comment.add()
