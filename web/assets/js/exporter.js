@@ -12,6 +12,7 @@ var exporter = {
             criteria: [],
             columns: [],
             results: [],
+            footer: [],
             title: $.trim($('.mdl-layout-title').text()),
             url: window.location.href
         };
