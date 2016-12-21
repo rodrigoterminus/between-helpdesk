@@ -40,6 +40,15 @@ var between = {
                 }
             });
         }
+        
+        ion.sound({
+            sounds: [{
+                name: "button_tiny"
+            }],
+            volume: 1,
+            path: 'http://'+ window.location.host +'/assets/vendor/ion-sound/sounds/',
+            preload: true
+        });
                 
         notifier.init();
     },

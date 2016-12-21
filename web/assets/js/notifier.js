@@ -23,7 +23,7 @@ var notifier = {
     load: function() {
         $.post(Routing.generate('notification_load'))
             .done(function(response) {
-                $.removeCookie('notifications_read', {path: '/'});
+                $.removeCookie('notifications_read', { path: '/' });
                 notifier.check(response);
             });
     },
@@ -31,12 +31,12 @@ var notifier = {
         var index = 0;
         var newNotifications = [];
 
-        if (notifier.data.length < response.length) {
-            index = response.length - notifier.data.length;
+        if (notifier.data.length < response.registred.length) {
+            index = response.registred.length - notifier.data.length;
         }
         else {
             var data = JSON.parse(JSON.stringify(notifier.data));
-            var last = response[response.length - 1];
+            var last = response.registred[response.registred.length - 1];
             var i = 0;
 
             // Check number of new messages
@@ -53,16 +53,22 @@ var notifier = {
         // Get new messages
         if (index > 0) {
             for (var i = 0; i < index; i++) {
-                newNotifications.push(response[i]);
+                newNotifications.push(response.registred[i]);
             }
         }
 
         notifier.data = newNotifications.concat(notifier.data);
         notifier.show(newNotifications.reverse());
+        
+        // Flash messages
+        response.unregistred.forEach(function(item) {
+            item['message'] = notifier.resolveMessage(item.message);
+            notifier.notify(item);
+        });
     },
     show: function(notifications) {
         notifications.forEach(function(item) {
-            var message = notifier.resolveMessage(item.message);
+            var message = notifier.resolveMessage(item.message);            
             var icon = {
                 icon: null,
                 bgcolor: null,
@@ -151,9 +157,9 @@ var notifier = {
             if (item.seen === false && moment().diff(moment(item.timestamp * 1000)) < notifier.interval) {
                 item['message'] = message;
                 notifier.notify(item);
-            }
+            }    
         });
-
+        
         notifier.updateBadge();
     },
     resolveMessage: function(item) {
@@ -214,7 +220,10 @@ var notifier = {
                 notifier.markAsRead(item.timestamp);
                 window.location = item.url;
             };
-
+            
+            if (typeof ion !== 'undefined') {
+                ion.sound.play('button_tiny');
+            }
         }
     },
     markAsRead: function(timestamp) {
@@ -252,7 +261,7 @@ var notifier = {
         var unread = 0;
 
         notifier.data.forEach(function(item) {
-            if (item.seen === false) {
+            if (item.seen === false && item.registred === true) {
                 unread++;
             }
         });

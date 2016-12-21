@@ -27,6 +27,11 @@ class Notifier
     private $currentUser;
 
     /**
+     * @var integer
+     */
+    private $interval = 30;
+
+    /**
      *
      * @param type $container
      * @param type $doctrine
@@ -36,15 +41,14 @@ class Notifier
         $this->doctrine = $doctrine;
         $this->em = $this->doctrine->getManager();
         $this->router = $this->container->get('router');
-        
+
         if ($this->container->get('security.token_storage')->getToken() !== null) {
             $this->currentUser = $this->container->get('security.token_storage')->getToken()->getUser();
         }
     }
 
-
     /**
-     * 
+     *
      * @return boolean
      * @throws \Exception
      */
@@ -125,12 +129,12 @@ class Notifier
             ->setTicket($this->ticket)
             ->setUsers($users)
             ->send();
-        
+
         return true;
     }
 
     /**
-     * 
+     *
      * @param \AppBundle\Entity\User $user
      * @param array $notification
      * @throws \Exception
@@ -169,8 +173,8 @@ class Notifier
         if ($this->currentUser === null) {
             $this->currentUser = $this->container->get('security.token_storage')->getToken()->getUser();
         }
-        
-        $readNotifications = (isset($_COOKIE['notifications_read'])) 
+
+        $readNotifications = (isset($_COOKIE['notifications_read']))
             ? json_decode($_COOKIE['notifications_read'])
             : [];
         $notificationsRaw = $this->currentUser->getNotificationsArray();
@@ -181,7 +185,8 @@ class Notifier
 
             if ($event[0] === 'ticket') {
                 $ticket = $this->doctrine->getRepository('AppBundle:Ticket')->find($notification['ticket']);
-                
+
+                $notifications[$index]['registred'] = true;
                 $notifications[$index]['url'] = $this->router->generate('ticket_edit', ['number' => $ticket->getNumber()], true);
                 $notifications[$index]['ticket'] = [
                     'id' => $ticket->getId(),
@@ -239,7 +244,7 @@ class Notifier
                             'params' => [$entry->getCreatedBy()->getName(), $ticket->getNumber(), $ticket->getSubject()]
                         ];
                         break;
-                    
+
                     case 'take':
                         $notifications[$index]['title'] = 'Chamado assumido';
                         $notifications[$index]['message'] = [
@@ -247,7 +252,7 @@ class Notifier
                             'params' => [$entry->getCreatedBy()->getName(), $ticket->getNumber(), $ticket->getSubject()]
                         ];
                         break;
-                    
+
                     case 'transfer':
                         $notifications[$index]['title'] = 'Transferência de chamado';
                         $notifications[$index]['message'] = [
@@ -263,21 +268,73 @@ class Notifier
                         break;
                 }
             }
-            
+
             if ($notification['seen'] === false && in_array($notification['timestamp'], $readNotifications)) {
                 $notifications[$index]['seen'] = true;
                 $notificationsRaw[$index]['seen'] = true;
             }
         }
-        
+
         // Update user's notification
         $this->currentUser->setNotifications(json_encode(array_slice($notificationsRaw, 0, 20)));
         $this->em->persist($this->currentUser);
         $this->em->flush();
         
+        $return = [];
+        $return['unregistred'] = [];
+        $return['registred'] = array_slice($notifications, 0, 20);
+
+        // Get new tickets
+        if ($this->currentUser->isAdmin()) {
+            $query = $this->doctrine->getRepository('AppBundle:Ticket')->createQueryBuilder('ticket')
+                ->select([
+                    'ticket.id as ticketId',
+                    'ticket.number as ticketNumber',
+                    'ticket.subject',
+                    'customer.id as customerId',
+                    'customer.name as customerName',
+                    'attendant.name as attendantName',
+                    'ticket.createdAt',
+                    'ticket.status',
+                ])
+                ->join('AppBundle:Customer', 'customer', 'WITH', 'customer.id = ticket.customer')
+                ->leftJoin('AppBundle:User', 'attendant', 'WITH', 'attendant.id = ticket.attendant')
+                ->where("ticket.status = 'created'")
+                ->andWhere('ticket.createdBy <> :user')
+                ->andWhere('ticket.createdAt >= :datetime')
+                ->setParameter('datetime', new \DateTime('-'. $this->interval .' seconds'))
+                ->setParameter('user', $this->currentUser->getId())
+                ;
+
+            $result = $query->getQuery()->getResult();
+
+            foreach ($result as $ticket) {
+                $return['unregistred'][] = [
+                    'customer' => [
+                        'id' => $ticket['customerId'],
+                        'name' => $ticket['customerName'],
+                    ],
+                    'event' => 'ticket.new',
+                    'message' => [
+                        'raw' =>  '#{0}: {1}',
+                        'params' => [$ticket['ticketNumber'], $ticket['subject']]
+                    ],
+                    'seen' => false,
+                    'ticket' => [
+                        'id' => $ticket['ticketId'],
+                        'number' => $ticket['ticketNumber'],
+                    ],
+                    'timestamp' => time(),
+                    'registred' => false,
+                    'title' => 'Novo chamado de '. $ticket['customerName'],
+                    'url' => $this->router->generate('ticket_edit', ['number' => $ticket['ticketNumber']], true),
+                ];
+            }
+        }
+
         unset($_COOKIE['notifications_read']);
 
-        return array_slice($notifications, 0, 20);
+        return $return;
     }
 
     /**
@@ -302,6 +359,25 @@ class Notifier
     public function setTicket(\AppBundle\Entity\Ticket $ticket)
     {
         $this->ticket = $ticket;
+
+        return $this;
+    }
+
+    /**
+     *
+     * @return type
+     */
+    function getInterval() {
+        return $this->interval;
+    }
+
+    /**
+     *
+     * @param type $interval
+     * @return \AppBundle\Utils\Notifier
+     */
+    function setInterval($interval) {
+        $this->interval = $interval;
 
         return $this;
     }

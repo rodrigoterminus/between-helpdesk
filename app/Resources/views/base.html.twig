@@ -105,10 +105,11 @@
     {% endif %}
 
     {% block scripts %}{% endblock %}
-
+    
     <script>
         {#        notifier.data = JSON.parse('{{ notifier.get()|json_encode()|raw }}');#}
-            between.init();
+        notifier.interval = {{ notifier.interval * 1000 }};
+        between.init();
     </script>
     </body>
 </html>
