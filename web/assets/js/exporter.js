@@ -1,5 +1,9 @@
 var exporter = {
     get: function(format) {
+        setTimeout(function() {
+            between.loading.hide();
+        }, 2000);
+        
         $('#export-data').val(JSON.stringify(exporter.getData()));
         $('#form-export')
             .attr('action', Routing.generate('export', { format: format }))
