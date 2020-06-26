@@ -119,12 +119,15 @@ fos_user:
     user_class: AppBundle\Entity\User
     service:
         mailer: fos_user.mailer.twig_swift
+    from_email:
+        address: "%contact_email%"
+        sender_name: "%contact_name%"
     resetting:
         email:
             template: email/password_resetting.email.twig
             from_email:
-                address:        %contact_email%
-                sender_name:    %contact_name%
+                address: "%contact_email%"
+                sender_name: "%contact_name%"
 
 white_october_breadcrumbs: ~
 

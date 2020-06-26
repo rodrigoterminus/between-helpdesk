@@ -1,3 +1,4 @@
+.idea
 /web/bundles/
 /web/assets/img/logos/*
 !/web/assets/img/logos/.gitkeep
@@ -13,7 +14,6 @@
 /composer.phar
 *.sublime-project
 *.sublime-workspace
-composer.lock
 /nbproject/private/
 nbproject/
 /web/attachments/*
