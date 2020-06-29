@@ -42,7 +42,7 @@ AppBundle\Entity\Comment:
         ticket:
             targetEntity: Ticket
             cascade: {  }
-            inversedBy: entries
+            inversedBy: comments
             joinColumns:
                 ticket_id:
                     referencedColumnName: id
