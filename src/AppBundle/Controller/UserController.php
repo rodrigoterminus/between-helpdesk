@@ -2,6 +2,9 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Utils\Search;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -20,6 +23,15 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class UserController extends Controller
 {
+    /**
+     * @var Search
+     */
+    private $search;
+
+    public function __construct(Search $search)
+    {
+        $this->search = $search;
+    }
 
     /**
      * Lists all User entities.
@@ -57,7 +69,7 @@ class UserController extends Controller
             ->where($qb->expr()->neq('u.id', 1))
             ->addOrderBy('u.name', 'ASC');
 
-        $search = $this->get('infinity.search')
+        $search = $this->search
             ->addButton(array(
                 'label' => 'Novo',
                 'icon' => 'add',
@@ -135,7 +147,7 @@ class UserController extends Controller
      */
     private function createCreateForm(User $entity)
     {
-        $form = $this->createForm(new UserType(), $entity, array(
+        $form = $this->createForm(UserType::class, $entity, array(
             'action' => $this->generateUrl('user_create'),
             'method' => 'POST',
         ));
@@ -143,8 +155,8 @@ class UserController extends Controller
         $form['enabled']->setData(true);
 
         $form
-            ->add('password', 'password', array('label' => 'Senha'))
-            ->add('submit', 'submit', array('label' => 'Create'));
+            ->add('password', PasswordType::class, array('label' => 'Senha'))
+            ->add('submit', SubmitType::class, array('label' => 'Create'));
 
         return $form;
     }
@@ -230,7 +242,7 @@ class UserController extends Controller
     */
     private function createEditForm(User $entity)
     {
-        $form = $this->createForm(new UserType(), $entity, array(
+        $form = $this->createForm(UserType::class, $entity, array(
             'action' => $this->generateUrl('user_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
@@ -238,7 +250,7 @@ class UserController extends Controller
         $roles = $entity->getRoles();
         $form['role']->setData($roles[0]);
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit', SubmitType::class, array('label' => 'Update'));
 
         return $form;
     }
@@ -315,7 +327,7 @@ class UserController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('user_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->add('submit', SubmitType::class, array('label' => 'Delete'))
             ->getForm()
         ;
     }
@@ -328,7 +340,7 @@ class UserController extends Controller
      */
     public function preferencesAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
-        $user = $this->get('security.context')->getToken()->getUser();
+        $user = $this->getUser();
         
         $user->setPreferences($request->request->get('preferences'));
         $em->persist($user);

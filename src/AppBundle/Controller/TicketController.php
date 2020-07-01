@@ -2,6 +2,9 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Utils\Between;
+use AppBundle\Utils\Notifier;
+use AppBundle\Utils\Search;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -28,6 +31,27 @@ use Doctrine\Common\Collections\Criteria;
 class TicketController extends Controller {
 
     /**
+     * @var Search
+     */
+    private $search;
+
+    /**
+     * @var Between
+     */
+    private $between;
+
+    /**
+     * @var Notifier
+     */
+    private $notifier;
+
+    public function __construct(Search $search, Between $between, Notifier $notifier) {
+        $this->search = $search;
+        $this->between = $between;
+        $this->notifier = $notifier;
+    }
+
+    /**
      * Lists all Ticket entities.
      *
      * @Route("/", name="ticket", options={"expose": true})
@@ -35,13 +59,7 @@ class TicketController extends Controller {
      * @Template()
      */
     public function indexAction(Request $request) {
-        // $em = $this->getDoctrine()->getManager();
-        // $entities = $em->getRepository('AppBundle:Ticket')->findAll();
-        // return array(
-        //     'entities' => $entities,
-        // );
-
-        $user = $this->get('security.context')->getToken()->getUser();
+        $user = $this->getUser();
         $repository = $this->getDoctrine()
             ->getRepository('AppBundle:Ticket');
 
@@ -80,7 +98,7 @@ class TicketController extends Controller {
                 ->setParameter('customer', $user->getCustomer()->getId());
         }
 
-        $search = $this->get('infinity.search')
+        $search = $this->search
             ->addButton(array(
                 'label' => 'Novo',
                 'icon' => 'add',
@@ -123,7 +141,7 @@ class TicketController extends Controller {
 
                         return $return;
                     },
-                    'property' => 'name',
+                    'choice_label' => 'name',
                     'placeholder' => 'Selecione uma opção',
                     'required' => false,
                     'attr' => array('data-col' => 'mdl-cell--6-col-desktop mdl-cell--6-col-phone')
@@ -139,7 +157,7 @@ class TicketController extends Controller {
                             ->orderBy('u.name', 'ASC');
                     },
                     'preferred_choices' => [$user],
-                    'property' => 'name',
+                    'choice_label' => 'name',
                     'placeholder' => 'Selecione uma opção',
                     'required' => false,
                     'attr' => array('data-col' => 'mdl-cell--6-col-desktop mdl-cell--6-col-phone')
@@ -164,7 +182,7 @@ class TicketController extends Controller {
 
                     return $return;
                 },
-                'property' => 'name',
+                'choice_label' => 'name',
                 'placeholder' => 'Selecione uma opção',
                 'required' => false,
                 'attr' => array('data-col' => 'mdl-cell--6-col-desktop mdl-cell--12-col-phone')
@@ -181,7 +199,7 @@ class TicketController extends Controller {
 
                     return $return;
                 },
-                'property' => 'name',
+                'choice_label' => 'name',
                 'placeholder' => 'Selecione uma opção',
                 'required' => false,
                 'attr' => array('data-col' => 'mdl-cell--6-col-desktop mdl-cell--12-col-phone')
@@ -234,12 +252,9 @@ class TicketController extends Controller {
                 ]);
         }
                 
-        $form        
-            ->add('submit', SubmitType::class, array('label' => 'Pesquisar'));
+        $form->add('submit', SubmitType::class, array('label' => 'Pesquisar'));
 
-        $form = $form
-            ->getForm();
-
+        $form = $form->getForm();
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -386,7 +401,7 @@ class TicketController extends Controller {
     public function createAction(Request $request) {
         $ticket = new Ticket();
         $em = $this->getDoctrine()->getManager();
-        $user = $this->get('security.context')->getToken()->getUser();
+        $user = $this->getUser();
 
         $form = $this->createCreateForm($ticket);
         $form->handleRequest($request);
@@ -491,12 +506,12 @@ class TicketController extends Controller {
      * @return \Symfony\Component\Form\Form The form
      */
     private function createCreateForm(Ticket $ticket) {
-        $user = $this->get('security.context')->getToken()->getUser();
+        $user = $this->getUser();
 
         $entry = new Entry();
         $ticket->getEntries()->add($entry);
 
-        $form = $this->createForm(new TicketType($user), $ticket, array(
+        $form = $this->createForm(TicketType::class, $ticket, array(
             'action' => $this->generateUrl('ticket_create'),
             'method' => 'POST',
         ));
@@ -506,11 +521,11 @@ class TicketController extends Controller {
             ->add('priority', ChoiceType::class, array(
                 'label' => 'Prioridade',
                 'choices' => array(
-                    'low' => 'Baixa',
-                    'medium' => 'Média',
-                    'high' => 'Alta',
+                    'Baixa' => 'low',
+                    'Média' => 'medium',
+                    'Alta' => 'high',
                 ),
-                'empty_value' => 'Selecione',
+                'placeholder' => 'Selecione',
             ))
             ->add('category', EntityType::class, array(
                 'label' => 'Categoria',
@@ -519,8 +534,8 @@ class TicketController extends Controller {
                     return $er->createQueryBuilder('c')
                         ->orderBy("c.name", 'ASC');
                 },
-                'property' => 'name',
-                'empty_value' => 'Selecione',
+                'choice_label' => 'name',
+                'placeholder' => 'Selecione',
             ))
             ->add('submit', SubmitType::class, array('label' => 'Create'));
 
@@ -532,14 +547,14 @@ class TicketController extends Controller {
                         return $er->createQueryBuilder('c')
                             ->where("c.activated = 1");
                     },
-                    'property' => 'name',
-                    'empty_value' => 'Selecione',
+                    'choice_label' => 'name',
+                    'placeholder' => 'Selecione',
                 ))
                 ->add('project', EntityType::class, array(
                     'label' => 'Projeto',
                     'class' => 'AppBundle:Project',
-                    'property' => 'name',
-                    'empty_value' => 'Selecione',
+                    'choice_label' => 'name',
+                    'placeholder' => 'Selecione',
                     'required' => false,
             ));
         } else {
@@ -553,8 +568,8 @@ class TicketController extends Controller {
                 'label' => 'Projeto',
                 'class' => 'AppBundle:Project',
                 'query_builder' => $projectQuery,
-                'property' => 'name',
-                'empty_value' => 'Selecione',
+                'choice_label' => 'name',
+                'placeholder' => 'Selecione',
                 'required' => false,
             ));
         }
@@ -633,7 +648,7 @@ class TicketController extends Controller {
 
         $qb = $em->getRepository('AppBundle:User')->createQueryBuilder('user');
         $queryUsers = $qb->select()
-//            ->where("user.id != " . $this->get('security.context')->getToken()->getUser()->getId())
+//            ->where("user.id != " . $this->getUser()->getId())
             ->andWhere("user.roles LIKE '%_ADMIN%'")
             ->andWhere("user.enabled = 1")
             ->orderBy('user.name', 'ASC');
@@ -645,7 +660,6 @@ class TicketController extends Controller {
         $users = $queryUsers->getQuery()->getResult();
         
         // Statistics
-        $between = $this->get('between');
         $statistics = [];
         
         
@@ -660,7 +674,7 @@ class TicketController extends Controller {
                 ->first();
             
             if ($takeEntry) {
-                $statistics['wait'] = $between->formatDateDiff($ticket->getCreatedAt(), $takeEntry->getCreatedAt());
+                $statistics['wait'] = $this->between->formatDateDiff($ticket->getCreatedAt(), $takeEntry->getCreatedAt());
 
                 if ($ticket->getStatus() === 'finished') {
                     $finishEntry = $ticket->getEntries()->matching(
@@ -670,10 +684,10 @@ class TicketController extends Controller {
                         ->last();
                     
                     if ($finishEntry) {
-                        $statistics['service'] = $between->formatDateDiff($takeEntry->getCreatedAt(), $finishEntry->getCreatedAt());
+                        $statistics['service'] = $this->between->formatDateDiff($takeEntry->getCreatedAt(), $finishEntry->getCreatedAt());
                     }
                 } else {
-                    $statistics['service'] = $between->formatDateDiff($takeEntry->getCreatedAt(), new \Datetime('now'));
+                    $statistics['service'] = $this->between->formatDateDiff($takeEntry->getCreatedAt(), new \Datetime('now'));
                 }
             }
             
@@ -690,7 +704,7 @@ class TicketController extends Controller {
     }
 
     private function isAllowed($ticket) {
-        $user = $this->get('security.context')->getToken()->getUser();
+        $user = $this->getUser();
 
         if (!$user->isAdmin() && $user->getCustomer()->getId() != $ticket->getCustomer()->getId()) {
             return false;
@@ -707,9 +721,9 @@ class TicketController extends Controller {
      * @return \Symfony\Component\Form\Form The form
      */
     private function createEditForm(Ticket $ticket) {
-        $user = $this->get('security.context')->getToken()->getUser();
+        $user = $this->getUser();
 
-        $form = $this->createForm(new TicketType($user), $ticket, array(
+        $form = $this->createForm(TicketType::class, $ticket, array(
             'action' => $this->generateUrl('ticket_update', array('id' => $ticket->getId())),
             'method' => 'PUT',
         ));
@@ -726,18 +740,18 @@ class TicketController extends Controller {
                 ->add('priority', ChoiceType::class, array(
                     'label' => 'Prioridade',
                     'choices' => array(
-                        'low' => 'Baixa',
-                        'medium' => 'Média',
-                        'high' => 'Alta',
+                        'Baixa' => 'low',
+                        'Média' => 'medium',
+                        'Alta' => 'high',
                     ),
-                    'empty_value' => 'Selecione',
+                    'placeholder' => 'Selecione',
                 ))
                 ->add('project', EntityType::class, array(
                     'label' => 'Projeto',
                     'class' => 'AppBundle:Project',
                     'query_builder' => $projectQuery,
-                    'property' => 'name',
-                    'empty_value' => 'Selecione',
+                    'choice_label' => 'name',
+                    'placeholder' => 'Selecione',
                     'required' => false,
                 ))
                 ->add('category', EntityType::class, array(
@@ -747,8 +761,8 @@ class TicketController extends Controller {
                         return $er->createQueryBuilder('c')
                             ->orderBy("c.name", 'ASC');
                     },
-                    'property' => 'name',
-                    'empty_value' => 'Selecione',
+                    'choice_label' => 'name',
+                    'placeholder' => 'Selecione',
             ));
         }
 
@@ -766,7 +780,7 @@ class TicketController extends Controller {
      */
     public function updateAction(Request $request, $id) {
         $em = $this->getDoctrine()->getManager();
-        $user = $this->get('security.context')->getToken()->getUser();
+        $user = $this->getUser();
 
         $ticket = $em->getRepository('AppBundle:Ticket')->find($id);
 
@@ -840,7 +854,7 @@ class TicketController extends Controller {
             $em->flush();
 
             if ($newPost === true) {
-                $this->get('app.notifier')
+                $this->notifier
                     ->setEvent('post')
                     ->setTicket($ticket)
                     ->notify();
@@ -849,15 +863,18 @@ class TicketController extends Controller {
             return $this->redirect($this->generateUrl('ticket_edit', array('number' => $ticket->getNumber())));
         }
 
+        $users = $em->getRepository('AppBundle:User')->findAll();
+
         return array(
             'entity' => $ticket,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'users' => $users,
         );
     }
 
     private function fillEntry($entry, $ticket) {
-        $user = $this->get('security.context')->getToken()->getUser();
+        $user = $this->getUser();
         $orign = ($user->isAdmin()) ? 'admin' : 'customer';
 
         $entry
@@ -880,7 +897,7 @@ class TicketController extends Controller {
         $response = [];
         $em = $this->getDoctrine()->getManager();
         $ticket = $em->getRepository('AppBundle:Ticket')->findOneBy(array('number' => $number));
-        $user = $this->get('security.context')->getToken()->getUser();
+        $user = $this->getUser();
 
         if (!$ticket) {
             throw $this->createNotFoundException('Unable to find Ticket entity.');
@@ -922,7 +939,7 @@ class TicketController extends Controller {
      */
     public function finishAction($number) {
         $em = $this->getDoctrine()->getManager();
-        $user = $this->get('security.context')->getToken()->getUser();
+        $user = $this->getUser();
 
         $ticket = $em->getRepository('AppBundle:Ticket')->findOneBy(array('number' => $number));
 
@@ -946,7 +963,7 @@ class TicketController extends Controller {
         $em->persist($ticket);
         $em->flush();
         
-        $this->get('app.notifier')
+        $this->notifier
             ->setEvent('finish')
             ->setTicket($ticket)
             ->notify();
@@ -962,7 +979,7 @@ class TicketController extends Controller {
      */
     public function transferAction(Request $request, $number, $userId) {
         $em = $this->getDoctrine()->getManager();
-        $user = $this->get('security.context')->getToken()->getUser();
+        $user = $this->getUser();
 
         $ticket = $em->getRepository('AppBundle:Ticket')->findOneBy(array('number' => $number));
 
@@ -990,7 +1007,7 @@ class TicketController extends Controller {
             $em->persist($ticket);
             $em->flush();
             
-            $this->get('app.notifier')
+            $this->notifier
                 ->setEvent($action)
                 ->setTicket($ticket)
                 ->notify();
@@ -1008,7 +1025,7 @@ class TicketController extends Controller {
      */
     public function reopenAction($number) {
         $em = $this->getDoctrine()->getManager();
-        $user = $this->get('security.context')->getToken()->getUser();
+        $user = $this->getUser();
 
         $ticket = $em->getRepository('AppBundle:Ticket')->findOneBy(array('number' => $number));
 
@@ -1038,7 +1055,7 @@ class TicketController extends Controller {
         $em->persist($ticket);
         $em->flush();
 
-        $this->get('app.notifier')
+        $this->notifier
             ->setEvent('reopen')
             ->setTicket($ticket)
             ->notify();
@@ -1056,7 +1073,7 @@ class TicketController extends Controller {
     public function ratingAction(Request $request, $id) {
         $em = $this->getDoctrine()->getManager();
         $ticket = $em->getRepository('AppBundle:Ticket')->find($id);
-        $user = $this->get('security.context')->getToken()->getUser();
+        $user = $this->getUser();
 
         if (!$ticket) {
             throw $this->createNotFoundException('Unable to find Ticket entity.');

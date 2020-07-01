@@ -3,6 +3,8 @@
 namespace AppBundle\Utils;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Notifier
 {
@@ -32,14 +34,19 @@ class Notifier
     private $interval = 30;
 
     /**
-     *
-     * @param type $container
-     * @param type $doctrine
+     * @var Mailer
      */
-    public function __construct($container, $doctrine) {
+    private $mailer;
+
+    /**
+     *
+     * @param ContainerInterface $container
+     * @param EntityManagerInterface $em
+     */
+    public function __construct(ContainerInterface $container, EntityManagerInterface $em, Mailer $mailer) {
         $this->container = $container;
-        $this->doctrine = $doctrine;
-        $this->em = $this->doctrine->getManager();
+        $this->em = $em;
+        $this->mailer = $mailer;
         $this->router = $this->container->get('router');
 
         if ($this->container->get('security.token_storage')->getToken() !== null) {
@@ -124,7 +131,7 @@ class Notifier
         $this->em->flush();
 
         // Send emails
-        $this->container->get('app.mailer')
+        $this->mailer
             ->setEvent($this->event)
             ->setTicket($this->ticket)
             ->setUsers($users)
@@ -184,7 +191,7 @@ class Notifier
             $event = explode('.', $notification['event']);
 
             if ($event[0] === 'ticket') {
-                $ticket = $this->doctrine->getRepository('AppBundle:Ticket')->find($notification['ticket']);
+                $ticket = $this->em->getRepository('AppBundle:Ticket')->find($notification['ticket']);
 
                 $notifications[$index]['registred'] = true;
                 $notifications[$index]['url'] = $this->router->generate('ticket_edit', ['number' => $ticket->getNumber()], true);
@@ -286,7 +293,7 @@ class Notifier
 
         // Get new tickets
         if ($this->currentUser->isAdmin()) {
-            $query = $this->doctrine->getRepository('AppBundle:Ticket')->createQueryBuilder('ticket')
+            $query = $this->em->getRepository('AppBundle:Ticket')->createQueryBuilder('ticket')
                 ->select([
                     'ticket.id as ticketId',
                     'ticket.number as ticketNumber',

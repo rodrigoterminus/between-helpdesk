@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Utils\Notifier;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,13 +14,24 @@ use AppBundle\Entity\Comment;
  */
 class CommentController extends Controller
 {
+
+    /**
+     * @var Notifier
+     */
+    private $notifier;
+
+    public function __construct(Notifier $notifier)
+    {
+        $this->notifier = $notifier;
+    }
+
     /**
      * @Route("/add/{ticketId}", name="comment_add", options={"expose":true})
      */
     public function addAction(Request $request, $ticketId)
     {
         $em = $this->getDoctrine()->getManager();
-        $user = $this->get('security.context')->getToken()->getUser();
+        $user = $this->getUser();
         
         $ticket = $em->getRepository('AppBundle:Ticket')->find($ticketId);
 
@@ -38,7 +50,7 @@ class CommentController extends Controller
         $em->persist($comment);
         $em->flush();
         
-        $this->get('app.notifier')
+        $this->notifier
             ->setEvent('comment')
             ->setTicket($ticket)
             ->notify();

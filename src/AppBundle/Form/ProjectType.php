@@ -2,7 +2,9 @@
 
 namespace AppBundle\Form;
 
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
@@ -17,16 +19,16 @@ class ProjectType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name', 'text', array('label' => 'Nome'))
-            ->add('customer', 'entity', array(
+            ->add('name', TextType::class, array('label' => 'Nome'))
+            ->add('customer', EntityType::class, array(
                     'label' => 'Cliente',
                     'class' => 'AppBundle:Customer',
                     'query_builder' => function(EntityRepository $er) {
                         return $er->createQueryBuilder('c')
                             ->where("c.activated = 1");
                         },
-                    'property' => 'name',
-                    'empty_value' => 'Selecione',
+                    'choice_label' => 'name',
+                    'placeholder' => 'Selecione',
                     'required' => false,
                 )
             )

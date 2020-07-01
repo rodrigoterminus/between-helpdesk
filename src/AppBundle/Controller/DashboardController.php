@@ -16,7 +16,7 @@ class DashboardController extends Controller
      */
     public function adminAction()
     {
-        $user = $this->get('security.context')->getToken()->getUser();
+        $user = $this->getUser();
 
         if ($user->isAdmin()) {
             $statisticRepository = $this->getDoctrine()->getRepository('AppBundle:Statistic');
@@ -87,7 +87,7 @@ class DashboardController extends Controller
      */
     public function customerAction()
     {
-        $user = $this->get('security.context')->getToken()->getUser();
+        $user = $this->getUser();
         $ticketRepository = $this->getDoctrine()->getRepository('AppBundle:Ticket');
 
         // Get unrated tickets

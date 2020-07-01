@@ -133,7 +133,7 @@
                     </div>
                     <div class="mdl-tooltip mdl-tooltip--top" for="icon-watchers">Observadores</div>
                     
-                    {% if app.user.isAdmin() and statistics|length > 0 %} 
+                    {% if app.user.isAdmin() and statistics is defined and statistics|length > 0 %}
                         {#<div class="mdl-card__supporting-text ticket-statistics">
                             <div class="mdl-grid">#}
                                 {% if statistics.wait is defined %}

@@ -3,6 +3,7 @@
 namespace AppBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
@@ -17,7 +18,7 @@ class CategoryType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name', 'text', array('label' => 'Nome'))
+            ->add('name', TextType::class, array('label' => 'Nome'))
             // ->add('category', 'entity', array(
             //         'label' => 'Categoria',
             //         'class' => 'AppBundle:Category',
@@ -25,8 +26,8 @@ class CategoryType extends AbstractType
             //             return $er->createQueryBuilder('c')
             //                 ->addOrderBy("c.name", 'ASC');
             //             },
-            //         'property' => 'name',
-            //         'empty_value' => 'Selecione',
+            //         'choice_label' => 'name',
+            //         'placeholder' => 'Selecione',
             //         'required' => false,
             //     )
             // )

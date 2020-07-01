@@ -2,6 +2,8 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Utils\Search;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -20,6 +22,15 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  */
 class ProjectController extends Controller
 {
+    /**
+     * @var Search
+     */
+    private $search;
+
+    public function __construct(Search $search)
+    {
+        $this->search = $search;
+    }
 
     /**
      * Lists all Project entities.
@@ -53,7 +64,7 @@ class ProjectController extends Controller
             ->join('AppBundle:Customer', 'c', 'WITH', 'c.id = p.customer')
             ->addOrderBy('c.name, p.name', 'ASC');
 
-        $search = $this->get('infinity.search')
+        $search = $this->search
             ->addButton(array(
                 'label' => 'Novo',
                 'icon' => 'add',
@@ -114,12 +125,12 @@ class ProjectController extends Controller
      */
     private function createCreateForm(Project $entity)
     {
-        $form = $this->createForm(new ProjectType(), $entity, array(
+        $form = $this->createForm(ProjectType::class, $entity, array(
             'action' => $this->generateUrl('project_create'),
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Create'));
+        $form->add('submit', SubmitType::class, array('label' => 'Create'));
 
         return $form;
     }
@@ -205,12 +216,12 @@ class ProjectController extends Controller
     */
     private function createEditForm(Project $entity)
     {
-        $form = $this->createForm(new ProjectType(), $entity, array(
+        $form = $this->createForm(ProjectType::class, $entity, array(
             'action' => $this->generateUrl('project_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit',  SubmitType::class, array('label' => 'Update'));
 
         return $form;
     }
@@ -285,7 +296,7 @@ class ProjectController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('project_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->add('submit',  SubmitType::class, array('label' => 'Delete'))
             ->getForm()
         ;
     }

@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Utils\Notifier;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -12,11 +13,21 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class NotificationController extends Controller
 {
     /**
+     * @var Notifier
+     */
+    private $notifier;
+
+    public function __construct(Notifier $notifier)
+    {
+        $this->notifier = $notifier;
+    }
+
+    /**
      * @Route("/load", name="notification_load", options={"expose": true})
      */
     public function loadAction()
     {
-        $notifications = $this->get('app.notifier')->get();
+        $notifications = $this->notifier->get();
         
         return new JsonResponse($notifications);
     }

@@ -15,7 +15,7 @@ class CoreController extends Controller
      */
     public function indexAction()
     {
-        $user = $this->get('security.context')->getToken()->getUser();
+        $user = $this->getUser();
 
         if ($user->isAdmin()) {
             return $this->redirectToRoute('dashboard_admin');

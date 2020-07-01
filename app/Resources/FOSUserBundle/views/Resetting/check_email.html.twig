@@ -13,9 +13,13 @@
 
     <div class="mdl-card__supporting-text">
       <br>
-      {{ 'resetting.check_email'|trans({'%email%': email}) }}
+      {{ 'resetting.check_email'|trans({'%tokenLifetime%': tokenLifetime})|nl2br }}
       <br>
       <br>
+    </div>
+
+    <div class="mdl-card__actions mdl-card--border">
+      <a href="{{ path('fos_user_security_login') }}" class="mdl-button mdl-js-button mdl-button--primary mdl-color-text--amber-400" style="float: right;">Fazer login</a>
     </div>
   </div>
 {% endblock %}

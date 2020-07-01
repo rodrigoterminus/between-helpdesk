@@ -2,6 +2,8 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Utils\Search;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -17,6 +19,15 @@ use AppBundle\Form\CategoryType;
  */
 class CategoryController extends Controller
 {
+    /**
+     * @var Search
+     */
+    private $search;
+
+    public function __construct(Search $search)
+    {
+        $this->search = $search;
+    }
 
     /**
      * Lists all Category entities.
@@ -27,35 +38,6 @@ class CategoryController extends Controller
      */
     public function indexAction()
     {
-        // $em = $this->getDoctrine()->getManager();
-
-        // $entities = $em->getRepository('AppBundle:Category')->findAll();
-
-
-        // $repository = $this->getDoctrine()
-        //     ->getRepository('AppBundle:Category');
-        
-        // // Query
-        // $qb = $repository->createQueryBuilder('c');
-        // $query = $qb
-        //     ->select(array(
-        //             'c.id',
-        //             'c.name',
-        //             'ccc.id AS parent'
-        //         )
-        //     )
-        //     ->addSelect('(SELECT COUNT(cc.id) FROM AppBundle:Category cc WHERE c.id = cc.category) AS children')            
-        //     ->leftJoin('AppBundle:Category', 'ccc', 'WITH', 'ccc.id = c.category')
-        //     ->addOrderBy('c.name', 'ASC');
-
-        // $result = $query->getQuery()->getResult();
-
-        // return array(
-        //     'title'    => 'Categorias',
-        //     'result' => $result,
-        // );
-
-
         $repository = $this->getDoctrine()
             ->getRepository('AppBundle:Category');
         
@@ -69,7 +51,7 @@ class CategoryController extends Controller
             )
             ->addOrderBy('c.name', 'ASC');
 
-        $search = $this->get('infinity.search')
+        $search = $this->search
             ->addButton(array(
                 'label' => 'Novo',
                 'icon' => 'add',
@@ -129,12 +111,12 @@ class CategoryController extends Controller
      */
     private function createCreateForm(Category $entity)
     {
-        $form = $this->createForm(new CategoryType(), $entity, array(
+        $form = $this->createForm(CategoryType::class, $entity, array(
             'action' => $this->generateUrl('category_create'),
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Create'));
+        $form->add('submit', SubmitType::class, array('label' => 'Create'));
 
         return $form;
     }
@@ -219,12 +201,12 @@ class CategoryController extends Controller
     */
     private function createEditForm(Category $entity)
     {
-        $form = $this->createForm(new CategoryType(), $entity, array(
+        $form = $this->createForm(CategoryType::class, $entity, array(
             'action' => $this->generateUrl('category_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit', SubmitType::class, array('label' => 'Update'));
 
         return $form;
     }
@@ -299,7 +281,7 @@ class CategoryController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('category_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->add('submit', SubmitType::class, array('label' => 'Delete'))
             ->getForm()
         ;
     }

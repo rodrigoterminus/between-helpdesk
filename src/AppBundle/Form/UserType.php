@@ -2,7 +2,12 @@
 
 namespace AppBundle\Form;
 
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
@@ -17,29 +22,29 @@ class UserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name', 'text', array('label' => 'Nome'))
-            ->add('email', 'email', array('label' => 'Email'))
-            ->add('role', 'choice', array(
+            ->add('name', TextType::class, array('label' => 'Nome'))
+            ->add('email', EmailType::class, array('label' => 'Email'))
+            ->add('role', ChoiceType::class, array(
                 'label' => 'Nível de acesso',
                 'choices' => array(
-                    ''             => 'Selecione',
-                    'ROLE_ADMIN'   => 'Atendente',
-                    'ROLE_DEFAULT' => 'Cliente',
+                    'Selecione' => '',
+                    'Atendente' => 'ROLE_ADMIN',
+                    'Cliente' => 'ROLE_DEFAULT',
                 ),
             ))
-            ->add('customer', 'entity', array(
+            ->add('customer', EntityType::class, array(
                     'label' => 'Cliente',
                     'class' => 'AppBundle:Customer',
                     'query_builder' => function(EntityRepository $er) {
                         return $er->createQueryBuilder('c')
                             ->where("c.activated = 1");
                         },
-                    'property' => 'name',
-                    'empty_value' => 'Selecione',
+                    'choice_label' => 'name',
+                    'placeholder' => 'Selecione',
                     'required' => false,
                 )
             )
-            ->add('enabled', 'checkbox', array(
+            ->add('enabled', CheckboxType::class, array(
                     'label' => 'Ativado',
                     'required'=> false,
                 )

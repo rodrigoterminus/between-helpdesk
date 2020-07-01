@@ -3,6 +3,8 @@
 namespace AppBundle\Utils;
 
 use \Doctrine\Common\Collections\ArrayCollection;
+use Psr\Container\ContainerInterface;
+use Symfony\Component\Security\Core\Security;
 
 class Mailer
 {
@@ -22,12 +24,16 @@ class Mailer
      * @var \Doctrine\Common\Collections\ArrayCollection
      */
     private $users;
-    
-    public function __construct($container) {
+
+    /**
+     * Mailer constructor.
+     * @param ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container, Security $security) {
         $this->container = $container;
         $this->mailer = $this->container->get('mailer');
         $this->router = $this->container->get('router');
-        $this->currentUser = $this->container->get('security.token_storage')->getToken()->getUser();
+        $this->currentUser = $security->getUser();
     }
     
     /**
