@@ -7,6 +7,8 @@ if (PHP_VERSION_ID < 70000) {
     include_once __DIR__.'/../var/bootstrap.php.cache';
 }
 
+//\Symfony\Component\Debug\Debug::enable();
+
 $kernel = new AppKernel('prod', false);
 if (PHP_VERSION_ID < 70000) {
     $kernel->loadClassCache();

@@ -35,14 +35,4 @@ services:
       - ./php/php.ini:/usr/local/etc/php/conf.d/custom.ini
     environment:
       - COMPOSER_MEMORY_LIMIT=-1
-
-#  composer:
-#    container_name: composer
-#    image: composer
-#    volumes:
-#      - ../:/var/www
-#    command: composer install
-#    depends_on:
-#      - php
-#      - database
-#      - ngnix
+      - PHP_OPCACHE_VALIDATE_TIMESTAMPS=1

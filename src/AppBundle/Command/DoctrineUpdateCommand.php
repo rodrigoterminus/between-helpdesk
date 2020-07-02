@@ -14,17 +14,16 @@ class DoctrineUpdateCommand extends \Doctrine\Bundle\DoctrineBundle\Command\Prox
       'AppBundle\Entity\Statistic'
   );
 
-  protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas) {
-
-    /** @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+  protected function executeSchemaCommand(\Symfony\Component\Console\Input\InputInterface $input, \Symfony\Component\Console\Output\OutputInterface $output, \Doctrine\ORM\Tools\SchemaTool $schemaTool, array $metadatas, \Symfony\Component\Console\Style\SymfonyStyle $ui)
+  {
     $newMetadatas = array();
-    foreach ($metadatas as $metadata) {
-      if (!in_array($metadata->getName(), $this->ignoredEntities)) {
-        array_push($newMetadatas, $metadata);
-      }
+    foreach($metadatas as $metadata){
+        if(!in_array($metadata->getName(), $this->ignoredEntities)){
+            array_push($newMetadatas, $metadata);
+        }
     }
 
-    parent::executeSchemaCommand($input, $output, $schemaTool, $newMetadatas);
+    parent::executeSchemaCommand($input, $output, $schemaTool, $newMetadatas,$ui);
   }
 
 }
