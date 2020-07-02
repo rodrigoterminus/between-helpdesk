@@ -122,7 +122,7 @@
                                     {% set action_command = path(action.route_name, action.arguments) %}
                                 {% endif %}
 
-                                <a id="list-action-{{ index }}-{{ loop.index }}" href="{{ action_command }}" class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect mdl-color-text--amber-900"><i class="material-icons">{{ action.icon }}</i></a>
+                                <a id="list-action-{{ index }}-{{ loop.index }}" href="{{ action_command }}" class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect mdl-color-text--pink-600"><i class="material-icons">{{ action.icon }}</i></a>
 
                                 <div class="mdl-tooltip" for="list-action-{{ index }}-{{ loop.index }}">{{ action.label }}</div>
                             {% endfor %}
@@ -231,7 +231,7 @@
 
                 <div class="mdl-grid">
                     <div class="mdl-cell mdl-cell--12-col">
-                        <center>{{ form_widget(form.submit, {'attr' : {'class' : 'mdl-button mdl-js-button mdl-button--raised mdl-color--amber-900 mdl-js-ripple-effect mdl-button--accent'}}) }}</center>
+                        <center>{{ form_widget(form.submit, {'attr' : {'class' : 'mdl-button mdl-js-button mdl-button--raised mdl-color--pink-600 mdl-js-ripple-effect mdl-button--accent'}}) }}</center>
                     </div>
                 </div>
             {{ form_end(form) }}

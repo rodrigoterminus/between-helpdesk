@@ -348,10 +348,10 @@
                                                         <div class="ticket-file-label">
                                                             <div class="ticket-file-name">{{ file.originalName }}</div>
                                                             <div class="ticket-file-buttons">
-                                                                <a href="{{ path('entry_filedownload', { id: entry.id, fileName: file.name }) }}" class="btn-file-download mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-color--amber-900 mdl-color-text--white">
+                                                                <a href="{{ path('entry_filedownload', { id: entry.id, fileName: file.name }) }}" class="btn-file-download mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-color--pink-600 mdl-color-text--white">
                                                                     <i class="material-icons">file_download</i>
                                                                 </a>
-                                                                <a href="{{ asset('attachments/' ~ entity.id ~ '/' ~ file.name) }}" target="_blank" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-color--amber-900 mdl-color-text--white">
+                                                                <a href="{{ asset('attachments/' ~ entity.id ~ '/' ~ file.name) }}" target="_blank" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-color--pink-600 mdl-color-text--white">
                                                                     <i class="material-icons">search</i>
                                                                 </a>
                                                             </div>                                                        
@@ -383,7 +383,7 @@
                                     </div>
 
                                     {# {% if 'ROLE_DEFAULT' in app.user.roles %}
-                                            <button id="btn-send-message" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-color--amber-900 mdl-color-text--white">
+                                            <button id="btn-send-message" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-color--pink-600 mdl-color-text--white">
                                                     <i class="material-icons">send</i>
                                             </button>
                                     {% endif %} #}

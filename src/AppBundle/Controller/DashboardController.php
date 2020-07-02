@@ -74,7 +74,7 @@ class DashboardController extends Controller
                 'statistic' => $statistic,
                 'running' => $running,
                 'rating' => $rating,
-//                'tickets' => $tickets,
+                'title' => 'Dashboard',
             ]);
         } else {
             return $this->redirectToRoute('index_customer');
@@ -116,7 +116,8 @@ class DashboardController extends Controller
             return $this->redirectToRoute('ticket');
         } else {
             return $this->render('AppBundle:Core:dashboard-customer.html.twig', [
-                'tickets' => $tickets
+                'tickets' => $tickets,
+                'title' => 'Dashboard',
             ]);
         }
     }

@@ -261,7 +261,7 @@ var ticket = {
                 if (ticket.status === 'created') {
                     $card.addClass('mdl-color--yellow-100');
                     $card.find('.mdl-button')
-                        .removeClass('mdl-color-text--amber-900')
+                        .removeClass('mdl-color-text--pink-600')
                         .addClass('mdl-color-text--yellow-600')
                     $bar.addClass('mdl-color--yellow-200');
                 }
