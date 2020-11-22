@@ -7,7 +7,7 @@
     <div class="loading-overlay"><img src="{{ asset('assets/images/loading.gif') }}" width="80" /></div>
 
     <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
-        <header class="demo-header mdl-layout__header mdl-color--indigo-900 mdl-color-text--white">
+        <header class="demo-header mdl-layout__header mdl-color--white mdl-color-text--grey-800">
             <div class="mdl-layout__header-row">
                 <span class="mdl-layout-title">
                     {% if title is defined %}
@@ -18,25 +18,14 @@
                 </span>
                 <div class="mdl-layout-spacer"></div>
                 <div id="header-actions">
-                    {% block header_actions %}
-                        {# <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="search">
-                          <i class="material-icons">search</i>
-                        </button> #}
-                    {% endblock %}
+                    {% block header_actions %}{% endblock %}
                 </div>
             </div>
         </header>
-        <div class="demo-drawer mdl-layout__drawer mdl-color--indigo-900 mdl-color-text--white">
+        <div class="demo-drawer mdl-layout__drawer">
 
-            <header class="demo-drawer-header">
-                {% if app.user.customer %}
-                    <h6>{{ app.user.customer.name }}</h6>
-                {% endif %}
-
-                <div class="demo-avatar-dropdown">
-                    <span>{{ app.user.name }}</span>
-                    <div class="mdl-layout-spacer"></div>
-                </div>
+            <header class="menu-header">
+                <img src="{{ asset('assets/images/logo.png') }}" height="32">
             </header>
             <nav class="demo-navigation mdl-navigation mdl-color--grey-50 mdl-color-text--grey-400">
                 <a class="mdl-navigation__link mdl-color-text--grey-800" href="{{ path('index') }}"><i class="mdl-color-text--grey-800 material-icons" role="presentation">dashboard</i>Dashboard</a>
@@ -46,9 +35,9 @@
                 {% if 'ROLE_DEFAULT' in app.user.roles %}
                     <a class="mdl-navigation__link mdl-color-text--grey-800" href="{{ path('ticket') }}"><i class="mdl-color-text--grey-800 material-icons" role="presentation">receipt</i>Tickets</a>
                 {% else %}          
-                    <a class="mdl-navigation__link mdl-color-text--grey-800" href="{{ path('category') }}"><i class="mdl-color-text--grey-800 material-icons" role="presentation">local_offer</i>Categorias</a>
                     <a class="mdl-navigation__link mdl-color-text--grey-800" href="{{ path('ticket') }}"><i class="mdl-color-text--grey-800 material-icons" role="presentation">receipt</i>Tickets</a>
                     <a class="mdl-navigation__link mdl-color-text--grey-800" href="{{ path('customer') }}"><i class="mdl-color-text--grey-800 material-icons" role="presentation">business</i>Clientes</a>
+                    <a class="mdl-navigation__link mdl-color-text--grey-800" href="{{ path('category') }}"><i class="mdl-color-text--grey-800 material-icons" role="presentation">local_offer</i>Categorias</a>
                     <a class="mdl-navigation__link mdl-color-text--grey-800" href="{{ path('project') }}"><i class="mdl-color-text--grey-800 material-icons" role="presentation">content_paste</i>Projetos</a>
                     <a class="mdl-navigation__link mdl-color-text--grey-800" href="{{ path('user') }}"><i class="mdl-color-text--grey-800 material-icons" role="presentation">people</i>Usuários</a>
                 {% endif %}
@@ -85,7 +74,9 @@
         </div>
     </dialog>
 
+    <div id="dialogs">
     {% block modals %}{% endblock %}
+    </div>
 
     {% include '::foot.html.twig' %}
 

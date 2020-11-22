@@ -1,5 +1,8 @@
 FROM php:7.3-fpm-stretch
 
+ARG APP_ENV
+
+ENV APP_ENV=$APP_ENV
 ENV PHP_OPCACHE_VALIDATE_TIMESTAMPS="0"
 
 RUN apt-get update && \

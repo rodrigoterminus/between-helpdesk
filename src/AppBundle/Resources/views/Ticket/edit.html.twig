@@ -125,13 +125,13 @@
                     {% endif %}
                     
                     <div id="ticket-watchers" class="mdl-cell mdl-cell--12-col" {% if watchers|length == 0 %}style="display: none;"{% endif %}>
-                        <span id="icon-watchers" class="material-icons">visibility</span>&nbsp;
+                        <span id="icon-watchers" class="material-icons">notifications</span>&nbsp;
 
                         {% for watcher in watchers %}
                             <span class="ticket-watcher" data-id="{{ watcher.id }}">{{ watcher.name }}</span>&nbsp;
                         {% endfor %}
                     </div>
-                    <div class="mdl-tooltip mdl-tooltip--top" for="icon-watchers">Observadores</div>
+                    <div class="mdl-tooltip mdl-tooltip--top" for="icon-watchers">Usuários acompanhando este ticket</div>
                     
                     {% if app.user.isAdmin() and statistics is defined and statistics|length > 0 %}
                         {#<div class="mdl-card__supporting-text ticket-statistics">
@@ -219,31 +219,31 @@
         <div class="mdl-cell mdl-cell--12-col">
             <div class="mdl-card mdl-shadow--2dp">
                 <div class="mdl-card__title">
-                    <h2 class="mdl-card__title-text" style="overflow: initial;"><span class="mdl-badge" data-badge="{{ entity.comments|length }}">Comentários</span></h2>
+                    <h2 class="mdl-card__title-text" style="overflow: initial;"><span class="mdl-badge" data-badge="{{ entity.comments|length }}">Discussão interna</span></h2>
                 </div>
                 <div class="mdl-card__menu">
                     <button type="button" id="btn-toggle-comments" class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
                         <i class="material-icons">expand_more</i>
                     </button>
-                    <div class="mdl-tooltip mdl-tooltip--top" for="btn-toggle-comments">Exibir comentários</div>
+                    <div class="mdl-tooltip mdl-tooltip--top" for="btn-toggle-comments">Exibir discussão interna</div>
                 </div>
                 
                 <div id="comments" style="display: none;">
                     {% for comment in entity.comments|reverse %}
-                        <div class="mdl-card__supporting-text mdl-card--border npv">
-                            <div class="mdl-grid">
-                                <div class="mdl-cell mdl-cell--12-col" style="display: inline-flex;">
-                                    <div class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab icon-text-content">
-                                        <i class="material-icons">person</i>
-                                    </div>
+                        <hr>
 
-                                    <div class="comment-content">
-                                        <div class="comment-header">
-                                            <b class="comment-creator">{{ comment.createdBy.name }}</b><br>
-                                            <i class="comment-datetime">{{ comment.createdAt|date('d/m/Y H:i:s') }}</i>
-                                        </div>                                        
-                                        <div class="comment-text">{{ comment.text|nl2br }}</div>
-                                    </div>                                
+                        <div class="mdl-card__supporting-text npv">
+                            <div class="ticket-entries">
+                                <div class="ticket-entry-icon">
+                                    <i class="material-icons">person</i>
+                                </div>
+
+                                <div class="comment-content">
+                                    <div class="comment-header">
+                                        <b class="comment-creator">{{ comment.createdBy.name }}</b><br>
+                                        <i class="comment-datetime">{{ comment.createdAt|date('d/m/Y H:i:s') }}</i>
+                                    </div>
+                                    <div class="comment-text">{{ comment.text|nl2br }}</div>
                                 </div>
                             </div>
                         </div>
@@ -263,7 +263,7 @@
 
             {% for entry in entity.entries if entry.id != null %}
                 <hr>
-                <div class="mdl-card__supporting-text mdl-card--border npv">
+                <div class="mdl-card__supporting-text npv">
                     
                     {% if app.user.isAdmin() %}
                         {% if lastDatetime != null %}                            
@@ -278,92 +278,86 @@
                     {% endif %}
                     
                     <div class="mdl-grid no-padding-v ticket-entries">
-                        <div class="mdl-cell mdl-cell--12-col" style="display: inline-flex;">
-                            {% if entry.action == 'finish' %}
-                                <div class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab icon-text-content mdl-color--green">
-                                    <i class="material-icons mdl-color-text--white">check</i>
-                                </div>
-                                
-                                <div class="text-content">
-                                    Ticket finalizado por <b>{% if entry.createdBy.id == app.user.id %}você{% else %}{{ entry.createdBy.name }}{% endif %}</b><br>
-                                    <i>Em {{ entry.createdAt|date('d/m/Y H:i:s') }}</i>
-                                </div>
-                            {% elseif entry.action == 'reopen' %}
-                                <div class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab icon-text-content mdl-color--yellow-700">
-                                    <i class="material-icons mdl-color-text--white">lock_open</i>
-                                </div>
-                                
-                                <div class="text-content">
-                                    Ticket reaberto por <b>{% if entry.createdBy.id == app.user.id %}você{% else %}{{ entry.createdBy.name }}{% endif %}</b><br>
-                                    <i>Em {{ entry.createdAt|date('d/m/Y H:i:s') }}</i>
-                                </div>
-                            {% elseif entry.action == 'take' %}
-                                <div class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab icon-text-content mdl-color--blue-grey-300">
-                                    <i class="material-icons mdl-color-text--white">person</i>
-                                </div>
-                                
-                                <div class="text-content">
-                                    Ticket assumido por <b>{% if entry.createdBy.id == app.user.id %}você{% else %}{{ entry.createdBy.name }}{% endif %}</b><br>
-                                    <i>Em {{ entry.createdAt|date('d/m/Y H:i:s') }}</i>
-                                </div>
-                            {% elseif entry.action == 'transfer' %}
-                                <div class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab icon-text-content mdl-color--blue-grey-300">
-                                    <i class="material-icons mdl-color-text--white">forward</i>
-                                </div>
-                                
-                                <div class="text-content">
-                                    <b>{% if entry.createdBy.id == app.user.id %}Você{% else %}{{ entry.createdBy.name }}{% endif %}</b>
-                                    transferiru o ticket para <b>{% if entry.directedTo.id == app.user.id %}você{% else %}{{ entry.directedTo.name }}{% endif %}</b><br>
-                                    <i>Em {{ entry.createdAt|date('d/m/Y H:i:s') }}</i>
-                                </div>
-                            {% elseif entry.action == 'post' %}                                
-                                <div class=" icon-text-content">
-                                    {% if entry.origin == 'customer' %}
-                                        <div class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-color--indigo">
-                                            <i class="material-icons mdl-color-text--white">face</i>
-                                        </div>
-                                    {% elseif entry.origin == 'admin' %}
-                                        <div class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-color--blue-grey">
-                                            <i class="material-icons mdl-color-text--white">mood</i>
-                                        </div>
-                                    {% elseif entry.origin == 'system' %}
-                                        memory
-                                    {% endif %}
-                                        
-                                </div>
+                        {% if entry.action == 'finish' %}
+                            <div class="ticket-entry-icon">
+                                <i class="material-icons">check</i>
+                            </div>
 
-                                <div class="text-content">
-                                    {{ entry.text|nl2br }}
+                            <div class="text-content">
+                                Ticket finalizado por <b>{% if entry.createdBy.id == app.user.id %}você{% else %}{{ entry.createdBy.name }}{% endif %}</b><br>
+                                <i>Em {{ entry.createdAt|date('d/m/Y H:i:s') }}</i>
+                            </div>
+                        {% elseif entry.action == 'reopen' %}
+                            <div class="ticket-entry-icon">
+                                <i class="material-icons">lock_open</i>
+                            </div>
 
-                                    <div class="ticket-footer">
-                                        Postado por <b>{% if entry.createdBy.id == app.user.id %}você{% else %}{{ entry.createdBy.name }}{% endif %}</b><br>
-                                        <i>Em {{ entry.createdAt|date('d/m/Y H:i:s') }}</i>
+                            <div class="text-content">
+                                Ticket reaberto por <b>{% if entry.createdBy.id == app.user.id %}você{% else %}{{ entry.createdBy.name }}{% endif %}</b><br>
+                                <i>Em {{ entry.createdAt|date('d/m/Y H:i:s') }}</i>
+                            </div>
+                        {% elseif entry.action == 'take' %}
+                            <div class="ticket-entry-icon">
+                                <i class="material-icons">person</i>
+                            </div>
 
-                                        {% if entry.files != null %}
-                                            <ul class="ticket-entry-files">
-                                                {% set files = entry.filesObject() %}
+                            <div class="text-content">
+                                Ticket assumido por <b>{% if entry.createdBy.id == app.user.id %}você{% else %}{{ entry.createdBy.name }}{% endif %}</b><br>
+                                <i>Em {{ entry.createdAt|date('d/m/Y H:i:s') }}</i>
+                            </div>
+                        {% elseif entry.action == 'transfer' %}
+                            <div class="ticket-entry-icon">
+                                <i class="material-icons">forward</i>
+                            </div>
 
-                                                {% for file in files %}
-                                                    <li class="mdl-shadow--2dp" style="background-image: url('{{ asset('attachments/' ~ entity.id ~ '/' ~ file.name) }}')">
-                                                        <div class="ticket-file-label">
-                                                            <div class="ticket-file-name">{{ file.originalName }}</div>
-                                                            <div class="ticket-file-buttons">
-                                                                <a href="{{ path('entry_filedownload', { id: entry.id, fileName: file.name }) }}" class="btn-file-download mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-color--pink-600 mdl-color-text--white">
-                                                                    <i class="material-icons">file_download</i>
-                                                                </a>
-                                                                <a href="{{ asset('attachments/' ~ entity.id ~ '/' ~ file.name) }}" target="_blank" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-color--pink-600 mdl-color-text--white">
-                                                                    <i class="material-icons">search</i>
-                                                                </a>
-                                                            </div>                                                        
+                            <div class="text-content">
+                                <b>{% if entry.createdBy.id == app.user.id %}Você{% else %}{{ entry.createdBy.name }}{% endif %}</b>
+                                transferiru o ticket para <b>{% if entry.directedTo.id == app.user.id %}você{% else %}{{ entry.directedTo.name }}{% endif %}</b><br>
+                                <i>Em {{ entry.createdAt|date('d/m/Y H:i:s') }}</i>
+                            </div>
+                        {% elseif entry.action == 'post' %}
+                            <div class="ticket-entry-icon">
+                                {% if entry.origin == 'customer' %}
+                                    <i class="material-icons">face</i>
+                                {% elseif entry.origin == 'admin' %}
+                                    <i class="material-icons">mood</i>
+                                {% elseif entry.origin == 'system' %}
+                                    memory
+                                {% endif %}
+
+                            </div>
+
+                            <div class="text-content">
+                                {{ entry.text|nl2br }}
+
+                                <div class="ticket-footer">
+                                    Postado por <b>{% if entry.createdBy.id == app.user.id %}você{% else %}{{ entry.createdBy.name }}{% endif %}</b><br>
+                                    <i>Em {{ entry.createdAt|date('d/m/Y H:i:s') }}</i>
+
+                                    {% if entry.files != null %}
+                                        <ul class="ticket-entry-files">
+                                            {% set files = entry.filesObject() %}
+
+                                            {% for file in files %}
+                                                <li class="mdl-shadow--2dp" style="background-image: url('{{ asset('attachments/' ~ entity.id ~ '/' ~ file.name) }}')">
+                                                    <div class="ticket-file-label">
+                                                        <div class="ticket-file-name">{{ file.originalName }}</div>
+                                                        <div class="ticket-file-buttons">
+                                                            <a href="{{ path('entry_filedownload', { id: entry.id, fileName: file.name }) }}" class="btn-file-download mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-color--grey-800 mdl-color-text--white">
+                                                                <i class="material-icons">file_download</i>
+                                                            </a>
+                                                            <a href="{{ asset('attachments/' ~ entity.id ~ '/' ~ file.name) }}" target="_blank" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-color--grey-800 mdl-color-text--white">
+                                                                <i class="material-icons">search</i>
+                                                            </a>
                                                         </div>
-                                                    </li>
-                                                {% endfor %}
-                                            </ul>
-                                        {% endif %}
-                                    </div>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
                                 </div>
-                            {% endif %}
-                        </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
                         
@@ -383,7 +377,7 @@
                                     </div>
 
                                     {# {% if 'ROLE_DEFAULT' in app.user.roles %}
-                                            <button id="btn-send-message" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-color--pink-600 mdl-color-text--white">
+                                            <button id="btn-send-message" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-color--grey-800 mdl-color-text--white">
                                                     <i class="material-icons">send</i>
                                             </button>
                                     {% endif %} #}
@@ -495,16 +489,16 @@
 
 {% block fab_action %}
     {% if entity.status != 'finished' or app.user.isAdmin() %}
-        {% set fab = {'icon': 'more_vert', 'label': 'Mais ações'} %}
+        {% set fab = {'icon': 'more_horiz', 'label': 'Mais ações'} %}
 
         {% set buttons = [] %}        
         
-        {% set watcher = { icon: 'visibility', label: 'Acompanhar este ticket' } %}
+        {% set watcher = { icon: 'notifications', label: 'Acompanhar este ticket' } %}
         {% set stop = false %}
 
         {% for item in entity.watchers if stop == false %}
             {% if app.user.id == item.id %}
-                {% set watcher = { icon: 'visibility_off', label: 'Deixar de acompanhar' } %}
+                {% set watcher = { icon: 'notifications_off', label: 'Deixar de acompanhar' } %}
                 {% set stop = true %}
             {% endif %}
         {% endfor %}
@@ -512,7 +506,7 @@
         {% set buttons = buttons|merge([{'id': 'btn-watcher', 'icon': watcher.icon, 'label': watcher.label, 'action_type': 'javascript', 'action': 'ticket.watcher()'}]) %}
         
         {% if app.user.isAdmin() %}
-            {% set buttons = buttons|merge([{'id': 'btn-new-comment', 'icon': 'comment', 'label': 'Adicionar comentário', 'action_type': 'javascript', 'action': 'ticket.openCommentDialog()'}]) %}
+            {% set buttons = buttons|merge([{'id': 'btn-new-comment', 'icon': 'comment', 'label': 'Comentar na discusão interna', 'action_type': 'javascript', 'action': 'ticket.openCommentDialog()'}]) %}
         {% endif %}
             
         {% if entity.status != 'finished' %}
@@ -544,7 +538,7 @@
 {% block header_actions %}
     {% if entity.status != 'finished' %}
         {% set buttons = [] %}
-        {% set buttons = buttons|merge([{ 'icon': 'save', 'action_type': 'javascript', 'action': 'between.formSubmit("' ~ form.vars.name ~ '")', 'label': 'Salvar' }]) %}
+        {% set buttons = buttons|merge([{ 'icon': 'save', 'action_type': 'javascript', 'action': 'between.submitForm("' ~ form.vars.name ~ '")', 'label': 'Salvar' }]) %}
 
         {% include 'AppBundle:Core:header-actions.html.twig' with { 'buttons': buttons } %}
     {% endif %}

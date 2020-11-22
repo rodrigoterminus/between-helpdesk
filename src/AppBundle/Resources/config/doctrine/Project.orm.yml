@@ -21,12 +21,19 @@ AppBundle\Entity\Project:
             length: 255
             fixed: false
             comment: ''
+        deleted:
+            type: boolean
+            nullable: false
+    oneToMany:
+        tickets:
+            targetEntity: Ticket
+            mappedBy: project
     manyToOne:
         customer:
             targetEntity: Customer
             cascade: {  }
             mappedBy: null
-            inversedBy: null
+            inversedBy: projects
             joinColumns:
                 customer_id:
                     referencedColumnName: id

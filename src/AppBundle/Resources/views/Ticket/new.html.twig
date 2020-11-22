@@ -108,10 +108,10 @@
 
 {% block header_actions %}
     {% set buttons = [] %}
-    {% set buttons = buttons|merge([{ 'icon': 'save', 'action_type': 'javascript', 'action': 'between.formSubmit("' ~ form.vars.name ~ '")', 'label': 'Salvar' }]) %}
+    {% set buttons = buttons|merge([{ 'icon': 'save', 'action_type': 'javascript', 'action': 'between.submitForm("' ~ form.vars.name ~ '")', 'label': 'Salvar' }]) %}
 
     {# {% if '_edit' in app.request.get('_route') %}
-            {% set buttons = buttons|merge([{ 'icon': 'delete', 'action_type': 'javascript', 'action': 'between.formSubmit("' ~ delete_form.vars.name ~ '")', 'label': 'Excluir' }]) %}
+            {% set buttons = buttons|merge([{ 'icon': 'delete', 'action_type': 'javascript', 'action': 'between.submitForm("' ~ delete_form.vars.name ~ '")', 'label': 'Excluir' }]) %}
     {% endif %} #}
 
     {% include 'AppBundle:Core:header-actions.html.twig' with { 'buttons': buttons } %}

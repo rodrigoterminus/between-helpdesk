@@ -18,7 +18,7 @@ var between = {
         });
         
         $(document).on('click', '.mdl-dialog .close', function() {
-            dialog.close();
+            $(this).closest('.mdl-dialog').get(0).close();
         });
         
         // Open/Close menu
@@ -93,7 +93,28 @@ var between = {
             }, 500);
         });
     },
-    formSubmit: function (name) {
+    showConfirmationDialog: function(message, confirmAction) {
+        const $dialog = _dialog.create(
+            _dialog.title('Atenção!'),
+            _dialog.content(message),
+            _dialog.actions([
+                {
+                    cssClass: 'close',
+                    label: 'Cancelar',
+                },
+                {
+                    cssClass: 'mdl-button--colored',
+                    label: 'Confirmar',
+                    onClick: confirmAction,
+                },
+            ])
+        );
+
+        $('#dialogs').append($dialog);
+        $dialog.attr('id', 'dialog-confirm');
+        $dialog.get(0).showModal()
+    },
+    submitForm: function (name) {
         $('form[name="' + name + '"]').find('*[type="submit"]').trigger('click');
     },
     loadSelectbox: function ($selectbox, route, data) {
@@ -128,16 +149,6 @@ var between = {
         });
     },
     stopwatch: function() {
-//        setInterval(function() {
-//            $('.stopwatch[data-datetime]').each(function() {
-//                var datetime = $(this).data('datetime');
-//                console.log(datetime)
-//                if (datetime !== undefined) {
-//                    $(this).text(moment().from(moment(datetime)));
-//                }
-//            });
-//        }, 60000, true);
-        
         setInterval(function datetimeUpdate() {
             $('.stopwatch[data-datetime]').each(function() {
                 var datetime = $(this).data('datetime');

@@ -2,15 +2,15 @@
 
 {# BUTTONS #}
 {% block header_actions -%}
-    {% set buttons = [] %}    
+    {% set buttons = [] %}
+
+    {% set buttons = buttons|merge([{ icon: 'cloud_download', id: 'btn-export', label: 'Exportar' }]) %}
     
     {% if form is defined %}
-        {% set buttons = buttons|merge([{ icon: 'search', id: 'btn-search', action_type: 'javascript', action: 'search.toggleSearch()', label: 'Pesquisar' }]) %}
+        {% set buttons = buttons|merge([{ icon: 'filter_alt', id: 'btn-search', action_type: 'javascript', action: 'search.toggleSearch()', label: 'Pesquisar' }]) %}
     {% else %}
-        {% set buttons = buttons|merge([{ icon: 'search', id: 'btn-search-on-screen', action_type: 'javascript', action: 'search.toggleSearchInScreen()', label: 'Pesquisar' }]) %}
+        {% set buttons = buttons|merge([{ icon: 'search', id: 'btn-search-on-screen', action_type: 'javascript', action: 'search.toggleSearchOnScreen()', label: 'Pesquisar' }]) %}
     {% endif %}
-    
-    {% set buttons = buttons|merge([{ icon: 'cloud_download', id: 'btn-export', label: 'Exportar' }]) %}
 
     {% include 'AppBundle:Core:header-actions.html.twig' with { 'buttons': buttons } %}
     
@@ -25,51 +25,43 @@
     
     {% if search.data|length > 0 %}
         <div class="mdl-cell mdl-cell--12-col">
-            <div class="mdl-card mdl-shadow--2dp search-criteria">
-                <div class="mdl-card__title">
-                    <h2 class="mdl-card__title-text">Resultados para:</h2>
-                </div>
-                <div class="mdl-card__supporting-text">
-                    <div class="mdl-grid">
-                        {% for fieldname, value in search.data if value != '' %}
-                            {% set field = attribute(form.children, fieldname) %}
-                            {% set type = field.vars.block_prefixes.1 %}
-                            
-                            <div class="mdl-cell--4-col-desktop mdl-cell--6-col-tablet mdl-cell--12-col-phone">
-                                <div class="mdl-textfield mdl-js-textfield">
-                                    <div class="fake-label">{{ attribute(form.children, fieldname).vars.label }}</div>
-                                    <div class="fake-input">
+            <section>
+                {% for fieldname, value in search.data if value != '' %}
+                    {% set field = attribute(form.children, fieldname) %}
+                    {% set type = field.vars.block_prefixes.1 %}
 
-                                        {% if type == 'date' %}
-                                            {{ value|date('d/m/Y') }}
-                                        {% elseif type == 'choice' %}
-                                            {% if field.vars.choices[field.vars.value] is defined %}
-                                                {{ field.vars.choices[field.vars.value].label }}
-                                            {% else %}
-                                                {% for item in field.vars.choices %}
-                                                    {% if item.value == field.vars.value %}
-                                                        {{ item.label }}
-                                                    {% endif %}
-                                                {% endfor %}
-                                            {% endif %}
-                                        {% elseif type == 'text' and attribute(field.vars, 'attr') is defined and attribute(field.vars.attr, 'label') is defined %}
-                                            {{ attribute(value, field.vars.attr.label) }}
-                                        {% elseif type == 'text' %}
-                                            {{ value }}
-                                        {% endif %} 
-                                        
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
+                    <span class="mdl-chip">
+                        <span class="mdl-chip__text">
+                            <b>{{ attribute(form.children, fieldname).vars.label }}: </b>
+
+                            {% if type == 'date' %}
+                                {{ value|date('d/m/Y') }}
+                            {% elseif type == 'choice' %}
+                                {% if field.vars.choices[field.vars.value] is defined %}
+                                    {{ field.vars.choices[field.vars.value].label }}
+                                {% else %}
+                                    {% for item in field.vars.choices %}
+                                        {% if item.value == field.vars.value %}
+                                            {{ item.label }}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            {% elseif type == 'text' and attribute(field.vars, 'attr') is defined and attribute(field.vars.attr, 'label') is defined %}
+                                {{ attribute(value, field.vars.attr.label) }}
+                            {% elseif type == 'text' %}
+                                {{ value }}
+                            {% endif %}
+                        </span>
+                    </span>
+                {% endfor %}
+            </section>
         </div>
     {% endif %}
 
+    {% set count = 0 %}
     {% for row in result %}
         {% set index = loop.index %}
+        {% set count = count + 1 %}
         
         <div class="mdl-cell mdl-cell--4-col mdl-cell--12-col-phone">
             <div id="search-card-{{ row.id }}" data-id="{{ row.id }}" class="search-card mdl-card mdl-shadow--2dp">
@@ -122,7 +114,7 @@
                                     {% set action_command = path(action.route_name, action.arguments) %}
                                 {% endif %}
 
-                                <a id="list-action-{{ index }}-{{ loop.index }}" href="{{ action_command }}" class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect mdl-color-text--pink-600"><i class="material-icons">{{ action.icon }}</i></a>
+                                <a id="list-action-{{ index }}-{{ loop.index }}" href="{{ action_command }}" class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect mdl-color-text--grey-800"><i class="material-icons">{{ action.icon }}</i></a>
 
                                 <div class="mdl-tooltip" for="list-action-{{ index }}-{{ loop.index }}">{{ action.label }}</div>
                             {% endfor %}
@@ -177,7 +169,7 @@
                         {% endif %}
                         
                     {% if loop.first %}
-                        </h2></div>
+                        </div>
                         <div class="mdl-card__supporting-text">
                     {% endif %}    
                 {% endfor %}
@@ -190,28 +182,6 @@
             Nenhum resultado encontrado.
         </div>
     {% endfor %}
-
-    {# {% if search.totalizer is defined and result|length > 0 %}
-        <tfoot>
-            <tr>
-                {% for column in search.columns %}
-                    <td class="{% if column['align'] is defined %} text-{{ column.align }}{% endif %}">
-                        {% if attribute(search.totalizer, column.name) is defined %}
-                            {% set value = attribute(search.totalizer, column.name) %}
-
-                            {% if column.type == 'currency' %}
-                                {{ value|number_format(2, ',', '.') }}
-                            {% else %}
-                                {{ value }}
-                            {% endif %}
-                        {% else %}
-                            &nbsp;
-                        {% endif %}
-                    </td>
-                {% endfor %}
-            </tr>
-        </tfoot>
-    {% endif %} #}
 
     {% if form is defined %}
         <div id="search-overlay" class="btw-overlay">
@@ -229,10 +199,8 @@
                     {% endfor %}
                 </div>
 
-                <div class="mdl-grid">
-                    <div class="mdl-cell mdl-cell--12-col">
-                        <center>{{ form_widget(form.submit, {'attr' : {'class' : 'mdl-button mdl-js-button mdl-button--raised mdl-color--pink-600 mdl-js-ripple-effect mdl-button--accent'}}) }}</center>
-                    </div>
+                <div style="display: none">
+                    {{ form_widget(form.submit, {'attr' : {'class' : 'mdl-button mdl-js-button mdl-button--raised mdl-color--grey-800 mdl-js-ripple-effect mdl-button--accent'}}) }}
                 </div>
             {{ form_end(form) }}
         </div>

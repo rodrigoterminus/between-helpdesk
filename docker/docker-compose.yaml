@@ -1,10 +1,10 @@
 version: '3'
 
 services:
-  database:
+  mysql:
     container_name: mysql
     build:
-      context: ./database
+      context: ./mysql
     environment:
       - MYSQL_PASSWORD=secret
       - MYSQL_ROOT_PASSWORD=docker
@@ -30,6 +30,8 @@ services:
     container_name: php
     build:
       context: ./php
+      args:
+        - APP_ENV=dev
     volumes:
       - ../:/var/www
       - ./php/php.ini:/usr/local/etc/php/conf.d/custom.ini

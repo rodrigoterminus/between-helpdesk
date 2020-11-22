@@ -46,3 +46,12 @@ services:
         
     app.mailer:
         class: AppBundle\Utils\Mailer
+
+    app.customer:
+        class: AppBundle\Services\CustomerService
+
+    app.project:
+        class: AppBundle\Services\ProjectService
+
+    app.user:
+        class: AppBundle\Services\UserService

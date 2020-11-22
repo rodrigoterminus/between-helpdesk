@@ -11,6 +11,11 @@ class Search {
      */
     private $result;
 
+    /**
+     * @var int
+     */
+    private $maxResults = 200;
+
     public function __construct() {
         $this->buttons = array();
         $this->columns = array();
@@ -103,4 +108,23 @@ class Search {
         
         return $this;
     }
+
+    /**
+     * @return int
+     */
+    public function getMaxResults(): int
+    {
+        return $this->maxResults;
+    }
+
+    /**
+     * @param int $maxResults
+     * @return Search
+     */
+    public function setMaxResults(int $maxResults): Search
+    {
+        $this->maxResults = $maxResults;
+        return $this;
+    }
+
 }

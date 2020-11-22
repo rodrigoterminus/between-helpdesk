@@ -1,15 +1,10 @@
 var search = {
     init: function () {
-        // $('.demo-content').masonry({
-        //   itemSelector: '.mdl-cell'
-        // });
-        
         $('.btn-export').on('click', function() {
             exporter.get($(this).data('format'));
         });
         
         $('#form-search').on('submit', function (event) {
-            // event.preventDefault();
             var $submit = $(this).find('button[type="submit"]');
 
             $submit
@@ -18,33 +13,36 @@ var search = {
         });
     },
     toggleSearch: function () {
-        var $overlay = $("#search-overlay");
-        var $button = $('#btn-search');
-        var $fab = $('#fab');
-        var $title = $('.mdl-layout__header').find('.mdl-layout-title');
+        const $overlay = $("#search-overlay");
+        const $button = $('#btn-search');
+        const $fab = $('#fab');
+        const $title = $('.mdl-layout__header').find('.mdl-layout-title');
+        const $headerActions = $('#header-actions')
 
-        if ($title.attr('data-title') == undefined) {
+        if (!$title.attr('data-title')) {
             $title.attr('data-title', $title.text());
         }
 
-        if ($overlay.css('display') == 'none') {
+        if ($overlay.css('display') === 'none') {
             $overlay.stop().slideDown('fast');
             $fab.fadeOut('fast');
-            $button.find('.material-icons').text('close');
-            $title.text('Pesquisar');
+            $button.find('.material-icons').text('check');
+            $title.text('Filtrar');
+            $headerActions.find('.mdl-button:not(#btn-search):visible').attr('data-search', 'hidden')
         } else {
             $overlay.stop().slideUp('fast');
             $fab.fadeIn('fast');
-            $button.find('.material-icons').text('search');
+            $button.find('.material-icons').text('filter_alt');
             $title.text($title.data('title'));
+            $headerActions.find('.mdl-button[data-search]').removeAttr('data-search')
+            $('#form-search').submit()
         }
     },
-    toggleSearchInScreen: function () {
+    toggleSearchOnScreen: function () {
         var $header = $('header.mdl-layout__header');
         var $headerRow = $header.find('.mdl-layout__header-row');
-        // var $button = $('.mdl-layout__drawer-button');
 
-        if ($header.hasClass('search-on-screen') == true) {
+        if ($header.hasClass('search-on-screen')) {
             $header.removeClass('search-on-screen');
             $headerRow.find('input').remove();
             $header.find('.back-button').remove();
@@ -56,9 +54,9 @@ var search = {
                 .prependTo($headerRow)
                 .on('keyup', function (event) {
                     if (event.keyCode == 27) {
-                        search.toggleSearchInScreen();
+                        search.toggleSearchOnScreen();
                     } else {
-                        search.findInScreen($(this).val());
+                        search.findOnScreen($(this).val());
                     }
                 })
                 .focus();
@@ -66,7 +64,7 @@ var search = {
             var $backButton = $('<div/>')
                 .addClass('mdl-layout__drawer-button back-button')
                 .on('click.back', function () {
-                    search.toggleSearchInScreen();
+                    search.toggleSearchOnScreen();
                 })
                 .html('<i class="material-icons">arrow_back</i>');
 
@@ -75,7 +73,7 @@ var search = {
                 .hide();
         }
     },
-    findInScreen: function (term) {
+    findOnScreen: function (term) {
         var $exceptions = $('.btw-card-criteria');
         var $items = $('.demo-content > .mdl-cell');
 

@@ -3,7 +3,11 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Utils\Search;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -27,9 +31,15 @@ class ProjectController extends Controller
      */
     private $search;
 
-    public function __construct(Search $search)
+    /**
+     * @var EntityManagerInterface
+     */
+    private $em;
+
+    public function __construct(Search $search, EntityManagerInterface $em)
     {
         $this->search = $search;
+        $this->em = $em;
     }
 
     /**
@@ -41,18 +51,11 @@ class ProjectController extends Controller
      */
     public function indexAction()
     {
-        // $em = $this->getDoctrine()->getManager();
-
-        // $entities = $em->getRepository('AppBundle:Project')->findAll();
-
-        // return array(
-        //     'entities' => $entities,
-        // );
-
         $repository = $this->getDoctrine()
             ->getRepository('AppBundle:Project');
         
         // Query
+        /* @var QueryBuilder */
         $qb = $repository->createQueryBuilder('p');
         $query = $qb
             ->select(array(
@@ -62,7 +65,11 @@ class ProjectController extends Controller
                 )
             )
             ->join('AppBundle:Customer', 'c', 'WITH', 'c.id = p.customer')
-            ->addOrderBy('c.name, p.name', 'ASC');
+            ->addOrderBy('c.name, p.name', 'ASC')
+            ->andWhere($qb->expr()->eq('p.deleted', ':deleted'))
+            ->setParameters([
+                ':deleted' => false
+            ]);
 
         $search = $this->search
             ->addButton(array(
@@ -119,13 +126,13 @@ class ProjectController extends Controller
     /**
      * Creates a form to create a Project entity.
      *
-     * @param Project $entity The entity
+     * @param Project $project The entity
      *
-     * @return \Symfony\Component\Form\Form The form
+     * @return FormInterface The form
      */
-    private function createCreateForm(Project $entity)
+    private function createCreateForm(Project $project)
     {
-        $form = $this->createForm(ProjectType::class, $entity, array(
+        $form = $this->createForm(ProjectType::class, $project, array(
             'action' => $this->generateUrl('project_create'),
             'method' => 'POST',
         ));
@@ -155,53 +162,22 @@ class ProjectController extends Controller
     }
 
     /**
-     * Finds and displays a Project entity.
-     *
-     * @Route("/{id}", name="project_show")
-     * @Method("GET")
-     * @Template()
-     */
-    // public function showAction($id)
-    // {
-    //     $em = $this->getDoctrine()->getManager();
-
-    //     $entity = $em->getRepository('AppBundle:Project')->find($id);
-
-    //     if (!$entity) {
-    //         throw $this->createNotFoundException('Unable to find Project entity.');
-    //     }
-
-    //     $deleteForm = $this->createDeleteForm($id);
-
-    //     return array(
-    //         'entity'      => $entity,
-    //         'delete_form' => $deleteForm->createView(),
-    //     );
-    // }
-
-    /**
      * Displays a form to edit an existing Project entity.
      *
      * @Route("/{id}/edit", name="project_edit")
      * @Method("GET")
      * @Template("AppBundle:Core:form-basic.html.twig")
+     * @param Project $project
+     * @return array
      */
-    public function editAction($id)
+    public function editAction(Project $project)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('AppBundle:Project')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Project entity.');
-        }
-
-        $editForm = $this->createEditForm($entity);
-        $deleteForm = $this->createDeleteForm($id);
+        $editForm = $this->createEditForm($project);
+        $deleteForm = $this->createDeleteForm($project->getId());
 
         return array(
             'title'       => 'Editar projeto',
-            'entity'      => $entity,
+            'entity'      => $project,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         );
@@ -210,14 +186,14 @@ class ProjectController extends Controller
     /**
     * Creates a form to edit a Project entity.
     *
-    * @param Project $entity The entity
+    * @param Project $project The entity
     *
-    * @return \Symfony\Component\Form\Form The form
+    * @return FormInterface The form
     */
-    private function createEditForm(Project $entity)
+    private function createEditForm(Project $project)
     {
-        $form = $this->createForm(ProjectType::class, $entity, array(
-            'action' => $this->generateUrl('project_update', array('id' => $entity->getId())),
+        $form = $this->createForm(ProjectType::class, $project, array(
+            'action' => $this->generateUrl('project_update', array('id' => $project->getId())),
             'method' => 'PUT',
         ));
 
@@ -225,60 +201,52 @@ class ProjectController extends Controller
 
         return $form;
     }
+
     /**
      * Edits an existing Project entity.
      *
      * @Route("/{id}", name="project_update")
      * @Method("PUT")
      * @Template("AppBundle:Project:edit.html.twig")
+     * @param Project $project
+     * @param Request $request
+     * @return array|RedirectResponse
      */
-    public function updateAction(Request $request, $id)
+    public function updateAction(Project $project, Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('AppBundle:Project')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Project entity.');
-        }
-
-        $deleteForm = $this->createDeleteForm($id);
-        $editForm = $this->createEditForm($entity);
+        $deleteForm = $this->createDeleteForm($project->getId());
+        $editForm = $this->createEditForm($project);
         $editForm->handleRequest($request);
 
         if ($editForm->isValid()) {
-            $em->flush();
-
-            return $this->redirect($this->generateUrl('project_edit', array('id' => $id)));
+            $this->em->flush();
+            return $this->redirect($this->generateUrl('project_edit', array('id' => $project->getId())));
         }
 
         return array(
-            'entity'      => $entity,
+            'entity'      => $project,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         );
     }
+
     /**
      * Deletes a Project entity.
      *
      * @Route("/{id}", name="project_delete")
      * @Method("DELETE")
+     * @param Project $project
+     * @param Request $request
+     * @return RedirectResponse
      */
-    public function deleteAction(Request $request, $id)
+    public function deleteAction(Project $project, Request $request)
     {
-        $form = $this->createDeleteForm($id);
+        $form = $this->createDeleteForm($project->getId());
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('AppBundle:Project')->find($id);
-
-            if (!$entity) {
-                throw $this->createNotFoundException('Unable to find Project entity.');
-            }
-
-            $em->remove($entity);
-            $em->flush();
+            $this->em->remove($project);
+            $$this->em->flush();
         }
 
         return $this->redirect($this->generateUrl('project'));
@@ -289,7 +257,7 @@ class ProjectController extends Controller
      *
      * @param mixed $id The entity id
      *
-     * @return \Symfony\Component\Form\Form The form
+     * @return FormInterface The form
      */
     private function createDeleteForm($id)
     {
@@ -303,7 +271,8 @@ class ProjectController extends Controller
 
     /**
      * @Route("/json", name="project_json", options={"expose"=true})
-     * @Template()
+     * @param Request $request
+     * @return JsonResponse
      */
     public function jsonAction(Request $request){
         $response = array();
@@ -326,15 +295,11 @@ class ProjectController extends Controller
                 );
             }
 
-            // $projects = $qb->where(
-            //     $qb->expr()->eq('p.deleted', 0),
-            //     $qb->expr()->eq('p.enabled', 1)
-            // );
+             $projects = $qb->where(
+                 $qb->expr()->eq('p.deleted', 0),
+                 $qb->expr()->eq('p.enabled', 1)
+             );
         }
-        
-        // if (array_key_exists('page_limit', $_GET))
-        //     $projects = $projects->setMaxResults((int)$_GET['page_limit']);
-
         $projects = $projects
             ->getQuery()
             ->getResult();

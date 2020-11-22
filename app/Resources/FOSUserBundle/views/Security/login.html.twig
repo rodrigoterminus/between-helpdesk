@@ -3,7 +3,7 @@
 {% block fos_user_content %}
   <div class="mdl-card mdl-shadow--4dp" style="width: 330px;">
     <form action="{{ path("fos_user_security_check") }}" method="post">
-      <div class="mdl-card__title mdl-color--indigo-900">
+      <div class="mdl-card__title">
         <h2 class="mdl-card__title-text mdl-color-text--white">
           <img src="{{ asset('assets/images/logo.png') }}" alt="Between" width="48" height="48" style="vertical-align:middle; margin-right: 10px;">
           <span style="line-height: 48px">Between</span>
@@ -33,13 +33,11 @@
             <input type="checkbox" id="remember_me" name="_remember_me" value="on" />
             <label for="remember_me">Mantenha-me conectado</label>
           </div> #}
-
-          
       </div>
 
-      <div class="mdl-card__actions mdl-card--border">
+      <div class="mdl-card__actions">
         <a href="{{ path('fos_user_resetting_request') }}" class="mdl-button mdl-js-button mdl-button--primary mdl-color-text--indigo-900">Esqueci minha senha</a>
-        <input type="submit" id="_submit" name="_submit" value="Entrar" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-color--indigo-900" style="float: right;" />
+        <input type="submit" id="_submit" name="_submit" value="Entrar" class="mdl-button mdl-js-button" style="float: right;" />
       </div>
     </form>
   </div>

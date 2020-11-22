@@ -33,12 +33,15 @@ AppBundle\Entity\User:
             length: null
             fixed: false
             comment: ''
+        deleted:
+            type: boolean
+            nullable: false
     manyToOne:
         customer:
             targetEntity: Customer
             cascade: {  }
             mappedBy: null
-            inversedBy: null
+            inversedBy: users
             joinColumns:
                 customer_id:
                     referencedColumnName: id

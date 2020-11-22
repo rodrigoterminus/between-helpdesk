@@ -2,6 +2,9 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Category;
+use AppBundle\Entity\Customer;
+use AppBundle\Entity\Project;
 use AppBundle\Utils\Between;
 use AppBundle\Utils\Notifier;
 use AppBundle\Utils\Search;
@@ -63,6 +66,8 @@ class TicketController extends Controller {
         $repository = $this->getDoctrine()
             ->getRepository('AppBundle:Ticket');
 
+        $this->search->setMaxResults(200);
+
         // Query
         $qb = $repository->createQueryBuilder('t');
         $query = $qb
@@ -90,9 +95,10 @@ class TicketController extends Controller {
             ->leftJoin('AppBundle:Project', 'p', 'WITH', 'p.id = t.project')
             ->leftJoin('AppBundle:User', 'att', 'WITH', 'att.id = t.attendant')
             ->leftJoin('AppBundle:Rating', 'r', 'WITH', 'r.ticket = t.id')
-            ->addOrderBy('t.id', 'DESC');
+            ->addOrderBy('t.id', 'DESC')
+            ->setMaxResults($this->search->getMaxResults());
         
-        if ($user->isAdmin() === false) {
+        if (!$user->isAdmin()) {
             $query = $qb
                 ->where($qb->expr()->eq('cm.id', ':customer'))
                 ->setParameter('customer', $user->getCustomer()->getId());
@@ -112,11 +118,8 @@ class TicketController extends Controller {
             ->addColumn(array('name' => 'subject', 'label' => 'Assunto', 'type' => 'string', 'width' => '20%', 'non_numeric' => true))
             ->addColumn(array('name' => 'status', 'label' => 'Status', 'type' => 'string', 'width' => '10%', 'non_numeric' => true, 'translated' => true))
             ->addColumn(array('name' => 'priority', 'label' => 'Prioridade', 'type' => 'string', 'width' => '10%', 'non_numeric' => true, 'translated' => true))
-            // ->addColumn(array('name' => 'project', 'label' => 'Projeto', 'type' => 'string', 'width' => '10%', 'non_numeric' => true))
-            // ->addColumn(array('name' => 'createdBy', 'label' => 'Usuário', 'type' => 'string', 'width' => '10%', 'non_numeric' => true))
             ->addColumn(array('name' => 'attendant', 'label' => 'Atendente', 'type' => 'string', 'width' => '10%', 'non_numeric' => true))
             ->addColumn(array('name' => 'createdAt', 'label' => 'Criado em', 'type' => 'datetime', 'width' => '10%', 'non_numeric' => true))
-            // ->addColumn(array('name' => 'modifiedAt', 'label' => 'Modificação', 'type' => 'datetime', 'width' => '10%', 'non_numeric' => true))
             ->addColumn(array('name' => 'actions', 'label' => 'Ações', 'type' => 'actions', 'width' => '3%', 'actions' => array(
                     array('icon' => 'visibility', 'label' => 'Visualizar', 'type' => 'route', 'route_name' => 'ticket_edit', 'arguments' => array('number' => ':number')),
                 )
@@ -135,11 +138,9 @@ class TicketController extends Controller {
                     'label' => 'Cliente',
                     'class' => 'AppBundle:Customer',
                     'query_builder' => function(EntityRepository $er) {
-                        $return = $er->createQueryBuilder('p')
-                            // ->where("p.deleted = 0")
+                        return $er->createQueryBuilder('p')
+                             ->where("p.deleted = 0")
                             ->orderBy('p.name', 'ASC');
-
-                        return $return;
                     },
                     'choice_label' => 'name',
                     'placeholder' => 'Selecione uma opção',
@@ -162,7 +163,7 @@ class TicketController extends Controller {
                     'required' => false,
                     'attr' => array('data-col' => 'mdl-cell--6-col-desktop mdl-cell--6-col-phone')
                     )
-            );
+                );
         }
 
         $form
@@ -177,10 +178,8 @@ class TicketController extends Controller {
                 'label' => 'Categoria',
                 'class' => 'AppBundle:Category',
                 'query_builder' => function(EntityRepository $er) {
-                    $return = $er->createQueryBuilder('c')
+                    return $er->createQueryBuilder('c')
                         ->orderBy('c.name', 'ASC');
-
-                    return $return;
                 },
                 'choice_label' => 'name',
                 'placeholder' => 'Selecione uma opção',
@@ -192,12 +191,9 @@ class TicketController extends Controller {
                 'label' => 'Projeto',
                 'class' => 'AppBundle:Project',
                 'query_builder' => function(EntityRepository $er) use ($user) {
-                    // var_dump($user); die;
-                    $return = $er->createQueryBuilder('p')
-                        // ->where("p.deleted = 0")
+                    return $er->createQueryBuilder('p')
+                         ->where("p.deleted = 0")
                         ->orderBy('p.name', 'ASC');
-
-                    return $return;
                 },
                 'choice_label' => 'name',
                 'placeholder' => 'Selecione uma opção',
@@ -360,34 +356,19 @@ class TicketController extends Controller {
                     )
                     ->setParameter('rate_max', $data['rate_max']);
             }
-
-            $result = $query->getQuery()->getResult();            
-            $search->totalizer($result);
-
-            $this->get('session')->getFlashBag()
-                ->add('success', count($result) . ' resultados encontrados.');
-        } else {
-            $query = $qb
-                ->andWhere(
-                    $qb->expr()->orX(
-                        $qb->expr()->neq('t.status', ':status'),
-                        $qb->expr()->between('t.finishedAt', ':from', ':to')
-                ))
-                ->setParameter(':from', new \Datetime('-1 day'))
-                ->setParameter(':to', new \Datetime('now'))
-                ->setParameter(':status', 'finished');
-//            dump($query->getQuery()->getDql()); die;
-            $result = $query->getQuery()->getResult();
         }
 
-//        $result = $query->getQuery()->getResult();        
+        $result = $query->getQuery()->getResult();
         $search->setResult($result);
 
+        $this->get('session')->getFlashBag()
+            ->add('success', count($result) . ' resultados encontrados.');
+
         return $this->render('AppBundle:Core:search.html.twig', array(
-                'title' => 'Tickets',
-                'search' => $search,
-                'result' => $result,
-                'form' => $form->createView(),
+            'title' => 'Tickets',
+            'search' => $search,
+            'result' => $result,
+            'form' => $form->createView(),
         ));
     }
 
@@ -529,7 +510,7 @@ class TicketController extends Controller {
             ))
             ->add('category', EntityType::class, array(
                 'label' => 'Categoria',
-                'class' => 'AppBundle:Category',
+                'class' => Category::class,
                 'query_builder' => function(EntityRepository $er) {
                     return $er->createQueryBuilder('c')
                         ->orderBy("c.name", 'ASC');
@@ -542,17 +523,30 @@ class TicketController extends Controller {
         if ($user->isAdmin()) {
             $form->add('customer', EntityType::class, array(
                     'label' => 'Cliente',
-                    'class' => 'AppBundle:Customer',
+                    'class' => Customer::class,
                     'query_builder' => function(EntityRepository $er) {
-                        return $er->createQueryBuilder('c')
-                            ->where("c.activated = 1");
+                        $qb = $er->createQueryBuilder('c');
+                        $qb
+                            ->where($qb->expr()->eq('c.activated', ':activated'))
+                            ->andWhere($qb->expr()->eq('c.deleted', ':deleted'))
+                            ->orderBy('c.name')
+                            ->setParameters([
+                                ':activated' => true,
+                                ':deleted' => false,
+                            ]);
+                        return $qb;
                     },
                     'choice_label' => 'name',
                     'placeholder' => 'Selecione',
                 ))
                 ->add('project', EntityType::class, array(
                     'label' => 'Projeto',
-                    'class' => 'AppBundle:Project',
+                    'class' => Project::class,
+                    'query_builder' => function(EntityRepository $er) {
+                        return $er->createQueryBuilder('p')
+                            ->where('p.deleted = 0')
+                            ->orderBy('p.name');
+                    },
                     'choice_label' => 'name',
                     'placeholder' => 'Selecione',
                     'required' => false,
@@ -566,7 +560,7 @@ class TicketController extends Controller {
 
             $form->add('project', EntityType::class, array(
                 'label' => 'Projeto',
-                'class' => 'AppBundle:Project',
+                'class' => Project::class,
                 'query_builder' => $projectQuery,
                 'choice_label' => 'name',
                 'placeholder' => 'Selecione',

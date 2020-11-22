@@ -23,7 +23,7 @@ class CustomerType extends AbstractType
             )
             ->add('activated', CheckboxType::class, array(
                     'label' => 'Ativado',
-                    'required'=> false
+                    'required'=> false,
                 )
             )
         ;

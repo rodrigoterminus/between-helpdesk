@@ -106,7 +106,7 @@ AppBundle\Entity\Ticket:
             targetEntity: Project
             cascade: {  }
             mappedBy: null
-            inversedBy: null
+            inversedBy: tickets
             joinColumns:
                 project_id:
                     referencedColumnName: id
@@ -115,7 +115,7 @@ AppBundle\Entity\Ticket:
             targetEntity: Customer
             cascade: {  }
             mappedBy: null
-            inversedBy: null
+            inversedBy: tickets
             joinColumns:
                 customer_id:
                     referencedColumnName: id

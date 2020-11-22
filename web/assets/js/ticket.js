@@ -159,17 +159,17 @@ var ticket = {
                 var $watchers = $('#ticket-watchers');
                 var watcher = {};
                 
-                if (response.subscribed === true) {
-                    watcher.icon = 'visibility_off';
+                if (response.subscribed) {
+                    watcher.icon = 'notifications_off';
                     watcher.label = 'Deixar de acompanhar';
                     $watchers.append('<span class="ticket-watcher" data-id="'+ response.user.id +'">'+ response.user.name +'</span>');
-                    notifier.notify({message: 'Você está assistindo este ticket.'}, true);
+                    notifier.notify({message: 'Notificações ativadas'}, true);
                 }
                 else {
-                    watcher.icon = 'visibility';
+                    watcher.icon = 'notifications';
                     watcher.label = 'Acompanhar este ticket';
                     $watchers.find('.ticket-watcher[data-id='+ response.user.id +']').remove();
-                    notifier.notify({message: 'Você deixou de assistir este ticket.'}, true);
+                    notifier.notify({message: 'Você não receberá mais notificações sobre este tícket'}, true);
                 }
                 
                 if ($watchers.find('.ticket-watcher').length === 0 && $watchers.is(':visible')) {
@@ -180,7 +180,7 @@ var ticket = {
                 }
                 
                 $button.find('i').text(watcher.icon);
-                $('#floating-actions').find('.mdl-tooltip[for="btn-watcher"]').text(watcher.label);
+                $('#floating-actions').find('#btn-watcher span').text(watcher.label);
             })
             .fail(function() {
                 notifier.notify({message: 'Não foi possível te inscrever neste ticket.'}, true);
@@ -261,7 +261,7 @@ var ticket = {
                 if (ticket.status === 'created') {
                     $card.addClass('mdl-color--yellow-100');
                     $card.find('.mdl-button')
-                        .removeClass('mdl-color-text--pink-600')
+                        .removeClass('mdl-color-text--blue-800')
                         .addClass('mdl-color-text--yellow-600')
                     $bar.addClass('mdl-color--yellow-200');
                 }

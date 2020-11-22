@@ -26,12 +26,12 @@
     "mocha": "",
     "chai": ""
   },
-  "version": "0.4.4",
-  "_release": "0.4.4",
+  "version": "0.4.10",
+  "_release": "0.4.10",
   "_resolution": {
     "type": "version",
-    "tag": "0.4.4",
-    "commit": "35ea2a3cc5d72acd299d24a07f291fd99728c7eb"
+    "tag": "0.4.10",
+    "commit": "0686827cae451b2bc614cbb41e8cc94bc929d279"
   },
   "_source": "https://github.com/GoogleChrome/dialog-polyfill.git",
   "_target": "~0.4.3",

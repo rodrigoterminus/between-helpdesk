@@ -2,14 +2,9 @@
     {% if buttons is defined %}
         <ul class="mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect" for="fab">
             {% for button in buttons %}
+                {% set id = (button.id is defined) ? button.id : loop.index %}
                 <li>
-                    <a 
-                        {% if button.id is defined %}
-                            id="{{ button.id }}" 
-                        {% else %}
-                            id="fab-{{ loop.index }}" 
-                        {% endif %}
-
+                    <a id="{{ id }}"
                         {% if button.action is defined %}
                             {% if button.action_type == 'route' %}
                                 href="{{ path(button.action) }}"
@@ -17,28 +12,17 @@
                                 href="javascript: {{ button.action }}"  
                             {% endif %}
                         {% endif %}					
-
-                        class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab"><i class="material-icons">{{ button.icon }}</i></a>  
+                    >
+                        <span>{{ button.label }}</span>
+                        <i class="material-icons">{{ button.icon }}</i>
+                    </a>
                 </li>	
             {% endfor %}
         </ul>
-
-        {% for button in buttons %}
-            {% if button.label is defined %}
-                <div class="mdl-tooltip" 
-                    {% if button.id is defined %}
-                        for="{{ button.id }}" 
-                    {% else %}
-                        for="fab-{{ loop.index }}" 
-                    {% endif %}
-                     >
-                    {{ button.label }}
-                </div>
-            {% endif %}
-        {% endfor %}
     {% endif %}
 
     <a id="fab"
+       class="mdl-button mdl-js-button mdl-button--fab  mdl-button--mini-fab mdl-js-ripple-effect mdl-color--grey-800 mdl-color-text--white"
 
        {% if fab.action is defined %}
            {% if fab.action_type == 'javascript' %}
@@ -47,8 +31,7 @@
                href="{{ path(fab.action) }}"
            {% endif %}
        {% endif %}
-
-       class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-color--pink-600 mdl-color-text--white">
+       >
         <i class="material-icons">{{ fab.icon }}</i>
     </a>
 

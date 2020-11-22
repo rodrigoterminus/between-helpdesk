@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -24,6 +25,32 @@ class Customer
      */
     private $activated;
 
+    /**
+     * @var bool
+     */
+    private $deleted = false;
+
+    /**
+     * @var ArrayCollection
+     */
+    private $projects;
+
+    /**
+     * @var ArrayCollection
+     */
+    private $tickets;
+
+    /**
+     * @var ArrayCollection
+     */
+    private $users;
+
+    public function __construct()
+    {
+        $this->tickets = new ArrayCollection();
+        $this->users = new ArrayCollection();
+        $this->projects = new ArrayCollection();
+    }
 
     /**
      * Get id
@@ -79,5 +106,41 @@ class Customer
     public function getActivated()
     {
         return $this->activated;
+    }
+
+    public function getTickets()
+    {
+        return $this->tickets;
+    }
+
+    public function getUsers()
+    {
+        return $this->users;
+    }
+
+    /**
+     * @return
+     */
+    public function getProjects()
+    {
+        return $this->projects;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getDeleted(): bool
+    {
+        return $this->deleted;
+    }
+
+    /**
+     * @param bool $deleted
+     * @return Customer
+     */
+    public function setDeleted(bool $deleted)
+    {
+        $this->deleted = $deleted;
+        return $this;
     }
 }

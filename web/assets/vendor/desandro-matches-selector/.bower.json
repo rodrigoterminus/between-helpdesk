@@ -29,12 +29,12 @@
     "tests.*",
     "package.json"
   ],
-  "version": "2.0.1",
-  "_release": "2.0.1",
+  "version": "2.0.2",
+  "_release": "2.0.2",
   "_resolution": {
     "type": "version",
-    "tag": "v2.0.1",
-    "commit": "96bc8d60f8e67026fd467a0d55742663ca9b7c30"
+    "tag": "v2.0.2",
+    "commit": "1e7d535ee374ff0823f7232ca1fe2b4ac8e56ae9"
   },
   "_source": "https://github.com/desandro/matches-selector.git",
   "_target": "~2.0.0",

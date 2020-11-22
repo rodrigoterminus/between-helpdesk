@@ -17,10 +17,13 @@ class User extends BaseUser
 
     private $role;
 
+    /**
+     * @var bool
+     */
+    private $deleted = false;
+
     public function __construct() {
         parent::__construct();
-
-
     }
 
     /**
@@ -254,5 +257,23 @@ class User extends BaseUser
         } else {
             return json_decode($this->notifications, true);
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDeleted(): bool
+    {
+        return $this->deleted;
+    }
+
+    /**
+     * @param bool $deleted
+     * @return User
+     */
+    public function setDeleted(bool $deleted): User
+    {
+        $this->deleted = $deleted;
+        return $this;
     }
 }

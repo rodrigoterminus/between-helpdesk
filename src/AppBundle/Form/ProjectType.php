@@ -2,6 +2,7 @@
 
 namespace AppBundle\Form;
 
+use AppBundle\Entity\Customer;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -9,6 +10,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Doctrine\ORM\EntityRepository;
+use function Doctrine\ORM\QueryBuilder;
 
 class ProjectType extends AbstractType
 {
@@ -22,11 +24,20 @@ class ProjectType extends AbstractType
             ->add('name', TextType::class, array('label' => 'Nome'))
             ->add('customer', EntityType::class, array(
                     'label' => 'Cliente',
-                    'class' => 'AppBundle:Customer',
+                    'class' => Customer::class,
                     'query_builder' => function(EntityRepository $er) {
-                        return $er->createQueryBuilder('c')
-                            ->where("c.activated = 1");
-                        },
+                        $qb = $er->createQueryBuilder('c');
+                        $qb
+                            ->where($qb->expr()->eq('c.activated', ':activated'))
+                            ->andWhere($qb->expr()->eq('c.deleted', ':deleted'))
+                            ->orderBy('c.name')
+                            ->setParameters([
+                                ':activated' => true,
+                                ':deleted' => false,
+                            ]);
+
+                        return $qb;
+                    },
                     'choice_label' => 'name',
                     'placeholder' => 'Selecione',
                     'required' => false,

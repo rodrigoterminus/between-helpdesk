@@ -44,7 +44,7 @@
 {% endblock %}
 
 {% block fab_action %}
-	{% set fab = { 'icon': 'save', 'action_type': 'javascript', 'action': 'between.formSubmit()' } %}
+	{% set fab = { 'icon': 'save', 'action_type': 'javascript', 'action': 'between.submitForm()' } %}
 
 	{% include 'AppBundle:Core:fab.html.twig' with { 'fab': fab } %}
 {% endblock %}

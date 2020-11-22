@@ -1,6 +1,7 @@
 AppBundle\Entity\Customer:
     type: entity
     table: customer
+    repositoryClass: AppBundle\Repositories\CustomerRepository
     id:
         id:
             type: integer
@@ -21,4 +22,19 @@ AppBundle\Entity\Customer:
             type: boolean
             nullable: false
             comment: ''
+        deleted:
+            type: boolean
+            nullable: false
+    oneToMany:
+        projects:
+            targetEntity: Project
+            mappedBy: customer
+            orphanRemoval: true
+        tickets:
+            targetEntity: Ticket
+            mappedBy: customer
+        users:
+            targetEntity: User
+            mappedBy: customer
+            orphanRemoval: true
     lifecycleCallbacks: {  }
