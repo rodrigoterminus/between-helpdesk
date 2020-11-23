@@ -61,10 +61,7 @@ class CategoryController extends Controller
                 )
             )
             ->addColumn(array('name' => 'name', 'label' => 'Nome', 'type' => 'string', 'width' => '97%', 'non_numeric' => true))
-            ->addColumn(array('name' => 'actions', 'label' => 'Ações', 'type' => 'actions', 'width' => '3%', 'actions' => array(
-                    array('icon' => 'edit', 'label' => 'Editar', 'type' => 'route', 'route_name' => 'category_edit', 'arguments' => array('id' => ':id')),
-                )
-            ))
+            ->setRoute('category_edit')
             ->setTranslatePrefix('category');
 
         $result = $query->getQuery()->getResult();

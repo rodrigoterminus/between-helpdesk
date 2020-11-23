@@ -166,16 +166,33 @@ header.mdl-layout__header {
     display: none;
 }
 
-.mdl-data-table { width: 100%; }
+.mdl-data-table {
+    width: 100%;
+}
+.mdl-data-table tr {
+    cursor: pointer;
+}
 
 .mdl-layout--fixed-drawer>.mdl-layout__header .mdl-layout__header-row { padding-left: 52px; }
 
-.demo-layout .demo-navigation .mdl-navigation__link:hover { background-color: #E0E0E0; }
-/*.demo-layout .mdl-layout__header .mdl-layout__drawer-button { color: white; }*/
+.mdl-layout__drawer .mdl-navigation {
+    padding: 8px 0 0 0;
+}
+.mdl-layout__drawer .mdl-navigation__link .material-icons {
+    margin-right: 16px;
+}
+.mdl-layout__drawer .mdl-navigation__link:hover {
+    background-color: #E0E0E0;
+}
+.mdl-layout__header .mdl-layout__drawer-button {
+    color: #424242;
+}
+/*.btw-layout .mdl-layout__header .mdl-layout__drawer-button { color: white; }*/
 
-/*.demo-drawer-header { background: url('../images/menu-cover.png') left top no-repeat transparent; }*/
-
-/*.demo-content { position: relative; }*/
+.btw-content {
+    position: relative;
+    overflow: auto;
+}
 
 .menu-header { padding: 16px 40px; }
 

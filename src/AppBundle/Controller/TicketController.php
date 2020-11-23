@@ -8,6 +8,7 @@ use AppBundle\Entity\Project;
 use AppBundle\Utils\Between;
 use AppBundle\Utils\Notifier;
 use AppBundle\Utils\Search;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -25,6 +26,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Common\Collections\Criteria;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Ticket controller.
@@ -117,13 +119,8 @@ class TicketController extends Controller {
             ->addColumn(array('name' => 'customer', 'label' => 'Cliente', 'type' => 'string', 'width' => '20%', 'non_numeric' => true))
             ->addColumn(array('name' => 'subject', 'label' => 'Assunto', 'type' => 'string', 'width' => '20%', 'non_numeric' => true))
             ->addColumn(array('name' => 'status', 'label' => 'Status', 'type' => 'string', 'width' => '10%', 'non_numeric' => true, 'translated' => true))
-            ->addColumn(array('name' => 'priority', 'label' => 'Prioridade', 'type' => 'string', 'width' => '10%', 'non_numeric' => true, 'translated' => true))
-            ->addColumn(array('name' => 'attendant', 'label' => 'Atendente', 'type' => 'string', 'width' => '10%', 'non_numeric' => true))
             ->addColumn(array('name' => 'createdAt', 'label' => 'Criado em', 'type' => 'datetime', 'width' => '10%', 'non_numeric' => true))
-            ->addColumn(array('name' => 'actions', 'label' => 'Ações', 'type' => 'actions', 'width' => '3%', 'actions' => array(
-                    array('icon' => 'visibility', 'label' => 'Visualizar', 'type' => 'route', 'route_name' => 'ticket_edit', 'arguments' => array('number' => ':number')),
-                )
-            ))
+            ->setRoute('ticket_edit')
             ->setTranslatePrefix('ticket');
 
         // Form
@@ -620,17 +617,16 @@ class TicketController extends Controller {
     /**
      * Displays a form to edit an existing Ticket entity.
      *
-     * @Route("/{number}", name="ticket_edit", options={"expose": true})
+     * @Route("/{id}", name="ticket_edit", options={"expose": true})
      * @Method("GET")
      * @Template()
+     * @param int $number
+     * @return array|RedirectResponse
      */
-    public function editAction($number) {
+    public function editAction(Ticket $ticket) {
         $em = $this->getDoctrine()->getManager();
-        $ticket = $em->getRepository('AppBundle:Ticket')->findOneBy(array('number' => $number));
-        
-        if (!$ticket) {
-            throw $this->createNotFoundException('Unable to find Ticket entity.');
-        } elseif (!$this->isAllowed($ticket)) {
+
+        if (!$this->isAllowed($ticket)) {
             return $this->redirect($this->generateUrl('ticket'));
         }
         
@@ -642,7 +638,6 @@ class TicketController extends Controller {
 
         $qb = $em->getRepository('AppBundle:User')->createQueryBuilder('user');
         $queryUsers = $qb->select()
-//            ->where("user.id != " . $this->getUser()->getId())
             ->andWhere("user.roles LIKE '%_ADMIN%'")
             ->andWhere("user.enabled = 1")
             ->orderBy('user.name', 'ASC');

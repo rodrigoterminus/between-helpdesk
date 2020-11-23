@@ -99,10 +99,7 @@ class CustomerController extends Controller
             )
             ->addColumn(array('name' => 'name', 'label' => 'Nome', 'type' => 'string', 'width' => '87%', 'non_numeric' => true))
             ->addColumn(array('name' => 'activated', 'label' => 'Ativo', 'type' => 'string', 'width' => '10%', 'non_numeric' => true, 'translated' => true))
-            ->addColumn(array('name' => 'actions', 'label' => 'Ações', 'type' => 'actions', 'width' => '3%', 'actions' => array(
-                    array('icon' => 'edit', 'label' => 'Editar', 'type' => 'route', 'route_name' => 'customer_edit', 'arguments' => array('id' => ':id')),
-                )
-            ))
+            ->setRoute('customer_edit')
             ->setTranslatePrefix('customer');
 
         $result = $query->getQuery()->getResult();

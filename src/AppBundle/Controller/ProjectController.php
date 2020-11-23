@@ -82,10 +82,7 @@ class ProjectController extends Controller
             )
             ->addColumn(array('name' => 'name', 'label' => 'Nome', 'type' => 'string', 'width' => '57%', 'non_numeric' => true))
             ->addColumn(array('name' => 'customer', 'label' => 'Cliente', 'type' => 'string', 'width' => '40%', 'non_numeric' => true))
-            ->addColumn(array('name' => 'actions', 'label' => 'Ações', 'type' => 'actions', 'width' => '3%', 'actions' => array(
-                    array('icon' => 'edit', 'label' => 'Editar', 'type' => 'route', 'route_name' => 'project_edit', 'arguments' => array('id' => ':id')),
-                )
-            ))
+            ->setRoute('project_edit')
             ->setTranslatePrefix('project');
 
         $result = $query->getQuery()->getResult();
@@ -155,9 +152,9 @@ class ProjectController extends Controller
         $form   = $this->createCreateForm($entity);
 
         return array(
-            'title'       => 'Novo projeto',
+            'title' => 'Novo projeto',
             'entity' => $entity,
-            'form'   => $form->createView(),
+            'form' => $form->createView(),
         );
     }
 

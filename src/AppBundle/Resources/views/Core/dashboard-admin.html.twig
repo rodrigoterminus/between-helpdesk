@@ -338,7 +338,7 @@
                     {% set index = 0 %}
                     
                     {% for ticket in running|reverse if index < 5 %}                        
-                        <a href="{{ path('ticket_edit', {number: ticket.number}) }}" class="mdl-card__supporting-text">
+                        <a href="{{ path('ticket_edit', {id: ticket.id}) }}" class="mdl-card__supporting-text">
                             <h6 class="vertical-align-middle npt"><i class="material-icons">receipt</i>{{ ticket.number }}</h6>
                             <ul class="mdl-color-text--grey-500">
                                 <li class="vertical-align-middle"><i class="material-icons">subject</i>{{ ticket.subject }}</li>

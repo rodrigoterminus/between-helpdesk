@@ -5,6 +5,11 @@ namespace AppBundle\Utils;
 class Search {
 
     public $buttons, $columns, $data, $totalizer, $translate_prefix;
+
+    /**
+     * @var string
+     */
+    private $route;
     
     /**
      * @var array 
@@ -36,6 +41,13 @@ class Search {
         return $this;
     }
 
+    public function onResultClick(string $routeName): array
+    {
+        return [
+            'routeName' => $routeName
+        ];
+    }
+
     public function setFormData(Array $data) {
         $this->data = $data;
         return $this;
@@ -46,36 +58,13 @@ class Search {
         return $this;
     }
 
-    public function totalizer($result) {
-        $totals = array();
-
-        // Create array and prepare the keys to be added up
-        foreach ($this->columns as $column) {
-            if (array_key_exists('add_up', $column) && $column['add_up'] == true) {
-                $totals[$column['name']] = 0;
-            }
-        }
-
-        foreach ($result as $row) {
-            foreach ($row as $column => $value) {
-                if (array_key_exists($column, $totals)) {
-                    $totals[$column] += $value;
-                }
-            }
-        }
-
-        $this->totalizer = $totals;
-
-        return $this;
-    }
-    
     /**
-     * 
+     *
      * @return string
      */
     public function toJSON() {
         $data = [];
-        
+
         if ($this->result !== null) {
             foreach ($this->result as $row) {
                 $entry = [];
@@ -85,14 +74,14 @@ class Search {
                         $value = $value->getTimestamp();
                     } elseif ($value instanceof \DateTime) {
                         $value = $value->getTimestamp();
-                    } 
-                    
+                    }
+
                     $entry[$column] = $value;
                 }
 
                 array_push($data, $entry);
             }
-        }        
+        }
 
         return json_encode($data);
     }
@@ -124,6 +113,24 @@ class Search {
     public function setMaxResults(int $maxResults): Search
     {
         $this->maxResults = $maxResults;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRoute()
+    {
+        return $this->route;
+    }
+
+    /**
+     * @param mixed $route
+     * @return Search
+     */
+    public function setRoute($route)
+    {
+        $this->route = $route;
         return $this;
     }
 

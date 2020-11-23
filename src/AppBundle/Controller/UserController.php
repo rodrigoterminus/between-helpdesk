@@ -95,10 +95,7 @@ class UserController extends Controller
             ->addColumn(array('name' => 'roles', 'label' => 'Nível', 'type' => 'array', 'width' => '33%', 'non_numeric' => true, 'translated' => true))
             ->addColumn(array('name' => 'enabled', 'label' => 'Ativo', 'type' => 'string', 'width' => '15%', 'non_numeric' => true, 'translated' => true))
             ->addColumn(array('name' => 'lastLogin', 'label' => 'Último acesso', 'type' => 'datetime', 'width' => '15%', 'non_numeric' => true))
-            ->addColumn(array('name' => 'actions', 'label' => 'Ações', 'type' => 'actions', 'width' => '3%', 'actions' => array(
-                    array('icon' => 'edit', 'label' => 'Editar', 'type' => 'route', 'route_name' => 'user_edit', 'arguments' => array('id' => ':id')),
-                )
-            ))
+            ->setRoute('user_edit')
             ->setTranslatePrefix('user');
 
         $result = $query->getQuery()->getResult();
