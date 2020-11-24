@@ -21,6 +21,9 @@ AppBundle\Entity\Category:
             length: 100
             fixed: false
             comment: ''
+        deleted:
+            type: boolean
+            nullable: false
     manyToOne:
         category:
             targetEntity: Category
@@ -31,4 +34,8 @@ AppBundle\Entity\Category:
                 category_id:
                     referencedColumnName: id
             orphanRemoval: false
+    oneToMany:
+        tickets:
+            targetEntity: Ticket
+            mappedBy: category
     lifecycleCallbacks: {  }

@@ -53,5 +53,8 @@ services:
     app.project:
         class: AppBundle\Services\ProjectService
 
+    app.category:
+        class: AppBundle\Services\CategoryService
+
     app.user:
         class: AppBundle\Services\UserService

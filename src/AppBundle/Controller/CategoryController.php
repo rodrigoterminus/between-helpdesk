@@ -2,8 +2,10 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Services\CategoryService;
 use AppBundle\Utils\Search;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -24,8 +26,14 @@ class CategoryController extends Controller
      */
     private $search;
 
-    public function __construct(Search $search)
+    /**
+     * @var CategoryService
+     */
+    private $service;
+
+    public function __construct(CategoryService $categoryService, Search $search)
     {
+        $this->service = $categoryService;
         $this->search = $search;
     }
 
@@ -49,7 +57,11 @@ class CategoryController extends Controller
                     'c.name',
                 )
             )
-            ->addOrderBy('c.name', 'ASC');
+            ->addOrderBy('c.name', 'ASC')
+            ->andWhere($qb->expr()->eq('c.deleted', ':deleted'))
+            ->setParameters([
+                ':deleted' => false
+            ]);
 
         $search = $this->search
             ->addButton(array(
@@ -186,6 +198,10 @@ class CategoryController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'before_remove' => 'category.showRemoveDialog("' . $deleteForm->getName() . '")',
+            'scripts' => [
+                'assets/js/lib/_dialog.js'
+            ],
         );
     }
 
@@ -246,21 +262,13 @@ class CategoryController extends Controller
      * @Route("/{id}", name="category_delete")
      * @Method("DELETE")
      */
-    public function deleteAction(Request $request, $id)
+    public function deleteAction(Category $category, Request $request)
     {
-        $form = $this->createDeleteForm($id);
+        $form = $this->createDeleteForm($category->getId());
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('AppBundle:Category')->find($id);
-
-            if (!$entity) {
-                throw $this->createNotFoundException('Unable to find Category entity.');
-            }
-
-            $em->remove($entity);
-            $em->flush();
+            $this->service->remove($category);
         }
 
         return $this->redirect($this->generateUrl('category'));
@@ -271,7 +279,7 @@ class CategoryController extends Controller
      *
      * @param mixed $id The entity id
      *
-     * @return \Symfony\Component\Form\Form The form
+     * @return FormInterface The form
      */
     private function createDeleteForm($id)
     {

@@ -8,6 +8,7 @@ use AppBundle\Entity\Project;
 use AppBundle\Utils\Between;
 use AppBundle\Utils\Notifier;
 use AppBundle\Utils\Search;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -510,6 +511,7 @@ class TicketController extends Controller {
                 'class' => Category::class,
                 'query_builder' => function(EntityRepository $er) {
                     return $er->createQueryBuilder('c')
+                        ->where('c.deleted = 0')
                         ->orderBy("c.name", 'ASC');
                 },
                 'choice_label' => 'name',
@@ -620,7 +622,7 @@ class TicketController extends Controller {
      * @Route("/{id}", name="ticket_edit", options={"expose": true})
      * @Method("GET")
      * @Template()
-     * @param int $number
+     * @param Ticket $ticket
      * @return array|RedirectResponse
      */
     public function editAction(Ticket $ticket) {
@@ -650,11 +652,8 @@ class TicketController extends Controller {
         
         // Statistics
         $statistics = [];
-        
-        
-        if ($ticket->getStatus() === 'waiting') {
-            
-        } else {
+
+        if ($ticket->getStatus() !== 'waiting') {
             $takeEntry = $ticket->getEntries()->matching(
                 Criteria::create()
                     ->where(Criteria::expr()->eq('action', 'take'))
@@ -707,7 +706,7 @@ class TicketController extends Controller {
      *
      * @param Ticket $ticket The entity
      *
-     * @return \Symfony\Component\Form\Form The form
+     * @return FormInterface The form
      */
     private function createEditForm(Ticket $ticket) {
         $user = $this->getUser();
@@ -718,12 +717,8 @@ class TicketController extends Controller {
         ));
 
         if ($user->isAdmin() && $ticket->getStatus() != 'finished') {
-            $projectRepository = $this->getDoctrine()
-                ->getRepository('AppBundle:Project');
-            $projectQuery = $projectRepository->createQueryBuilder('p')
-                ->where("p.customer = " . $ticket->getCustomer()->getId())
-                ->orderBy("p.name", 'ASC');
-
+            $category = $ticket->getCategory();
+            $project = $ticket->getProject();
             $form
                 ->add('subject', TextType::class, array('label' => 'Assunto'))
                 ->add('priority', ChoiceType::class, array(
@@ -737,18 +732,27 @@ class TicketController extends Controller {
                 ))
                 ->add('project', EntityType::class, array(
                     'label' => 'Projeto',
-                    'class' => 'AppBundle:Project',
-                    'query_builder' => $projectQuery,
+                    'class' => Project::class,
+                    'query_builder' => function(EntityRepository $er) use ($project) {
+                        return $er->createQueryBuilder('p')
+                            ->where('p.deleted = 0')
+                            ->orWhere('p.id = :project')
+                            ->orderBy("p.name", 'ASC')
+                            ->setParameters([':project' => $project]);
+                    },
                     'choice_label' => 'name',
                     'placeholder' => 'Selecione',
                     'required' => false,
                 ))
                 ->add('category', EntityType::class, array(
                     'label' => 'Categoria',
-                    'class' => 'AppBundle:Category',
-                    'query_builder' => function(EntityRepository $er) {
+                    'class' => Category::class,
+                    'query_builder' => function(EntityRepository $er) use ($category) {
                         return $er->createQueryBuilder('c')
-                            ->orderBy("c.name", 'ASC');
+                            ->where('c.deleted = 0')
+                            ->orWhere('c.id = :category')
+                            ->orderBy("c.name", 'ASC')
+                            ->setParameters([':category' => $category]);
                     },
                     'choice_label' => 'name',
                     'placeholder' => 'Selecione',
@@ -849,7 +853,7 @@ class TicketController extends Controller {
                     ->notify();
             }
 
-            return $this->redirect($this->generateUrl('ticket_edit', array('number' => $ticket->getNumber())));
+            return $this->redirect($this->generateUrl('ticket_edit', array('id' => $ticket->getId())));
         }
 
         $users = $em->getRepository('AppBundle:User')->findAll();
@@ -963,18 +967,18 @@ class TicketController extends Controller {
     /**
      * Transfer ticket to another user.
      *
-     * @Route("/{number}/transfer/{userId}", name="ticket_transfer", options={"expose":true})
+     * @Route("/{id}/transfer/{userId}", name="ticket_transfer", options={"expose":true})
      * @Method("GET")
+     * @param Ticket $ticket
+     * @param $userId
+     * @return RedirectResponse
+     * @throws \Exception
      */
-    public function transferAction(Request $request, $number, $userId) {
+    public function transferAction(Ticket $ticket, $userId) {
         $em = $this->getDoctrine()->getManager();
         $user = $this->getUser();
 
-        $ticket = $em->getRepository('AppBundle:Ticket')->findOneBy(array('number' => $number));
-
-        if (!$ticket) {
-            throw $this->createNotFoundException('Unable to find Ticket entity.');
-        } else if ($user->isAdmin() === false) {
+        if ($user->isAdmin() === false) {
             throw $this->createAccessDeniedException('You don\'t have permission to do this.');
         } else {
             $attendant = $em->getRepository('AppBundle:User')->find($userId);
@@ -1001,7 +1005,7 @@ class TicketController extends Controller {
                 ->setTicket($ticket)
                 ->notify();
 
-            return $this->redirect($this->generateUrl('ticket_edit', array('number' => $ticket->getNumber())));
+            return $this->redirect($this->generateUrl('ticket_edit', array('id' => $ticket->getId())));
         }
     }
 
@@ -1123,7 +1127,7 @@ class TicketController extends Controller {
      *
      * @param mixed $id The entity id
      *
-     * @return \Symfony\Component\Form\Form The form
+     * @return FormInterface The form
      */
     private function createDeleteForm($id) {
         return $this->createFormBuilder()

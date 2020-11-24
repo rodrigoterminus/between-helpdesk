@@ -124,7 +124,7 @@ AppBundle\Entity\Ticket:
             targetEntity: Category
             cascade: {  }
             mappedBy: null
-            inversedBy: null
+            inversedBy: tickets
             joinColumns:
                 category_id:
                     referencedColumnName: id

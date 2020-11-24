@@ -93,19 +93,20 @@ var between = {
             }, 500);
         });
     },
-    showConfirmationDialog: function(message, confirmAction) {
+    showConfirmationDialog: function(options) {
         const $dialog = _dialog.create(
-            _dialog.title('Atenção!'),
-            _dialog.content(message),
+            options.title ? _dialog.title(options.title) : null,
+            options.message ? _dialog.content(options.message) : null,
             _dialog.actions([
                 {
                     cssClass: 'close',
                     label: 'Cancelar',
+                    onClick: options.onClose ? options.onClose : null,
                 },
                 {
                     cssClass: 'mdl-button--colored',
                     label: 'Confirmar',
-                    onClick: confirmAction,
+                    onClick: options.onConfirm ? options.onConfirm : null,
                 },
             ])
         );

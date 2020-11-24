@@ -115,6 +115,10 @@ header.mdl-layout__header {
 .mdl-card__title-icon-fab > .mdl-button--fab { margin-right: 12px; }
 .mdl-card__title-icon-fab > .mdl-card__title-text { line-height: 40px; }
 .mdl-card__supporting-text { width: auto; }
+.mdl-card__actions {
+    display: flex;
+    justify-content: flex-end;
+}
 
 #floating-actions {
   position: fixed;
@@ -209,7 +213,11 @@ header.mdl-layout__header {
 .fake-field { padding: 4px 0; display: inline-block;; }
 
 /* Cards */
-.mdl-card { width: 100%; min-height: 0; }
+.mdl-card {
+    width: 100%;
+    min-height: 0;
+    border-radius: 4px !important;
+}
 .mdl-card__supporting-text hr { margin: 1em -16px; border-bottom: 0; }
 
 .icon-text-content { margin-top: 0; }
@@ -233,7 +241,7 @@ header.mdl-layout__header {
 .comment-content { display: inline-block; text-align: justify; }
 .comment-header { margin: 5px 0 12px 0; }
 
-.mdl-badge[data-badge]:after { background-color: #d81b60; }
+.mdl-badge[data-badge]:after { background-color: #424242; }
 
 /* FOSUser */
 body.fosuser { background: url('../images/gplaypattern.png') left top repeat transparent; position: relative; }
@@ -283,6 +291,9 @@ body.fosuser .mdl-card { position: absolute; top: 50%; left: 50%; transform: tra
 }
 
 /* Dialog */
+.mdl-dialog {
+    border-radius: 4px;
+}
 .mdl-dialog__title { font-size: 1.5rem !important; }
 .mdl-dialog__content > .mdl-grid { margin: 0 !important; padding: 0 !important; }
 

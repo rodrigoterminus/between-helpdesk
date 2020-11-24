@@ -215,7 +215,7 @@ class UserController extends Controller
             'entity'      => $user,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-            'before_remove' => 'between.showConfirmationDialog("Confirma a exclusão deste usuário?", () => between.submitForm("' . $deleteForm->getName() . '"))',
+            'before_remove' => 'user.showRemoveDialog("' . $deleteForm->getName() . '")',
             'scripts' => [
                 'assets/js/lib/_dialog.js'
             ],

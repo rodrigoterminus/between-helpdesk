@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Services\ProjectService;
 use AppBundle\Utils\Search;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -36,8 +37,14 @@ class ProjectController extends Controller
      */
     private $em;
 
-    public function __construct(Search $search, EntityManagerInterface $em)
+    /**
+     * @var ProjectService
+     */
+    private $service;
+
+    public function __construct(ProjectService $projectService, Search $search, EntityManagerInterface $em)
     {
+        $this->service = $projectService;
         $this->search = $search;
         $this->em = $em;
     }
@@ -177,6 +184,10 @@ class ProjectController extends Controller
             'entity'      => $project,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'before_remove' => 'project.showRemoveDialog("' . $deleteForm->getName() . '")',
+            'scripts' => [
+                'assets/js/lib/_dialog.js'
+            ],
         );
     }
 
@@ -242,8 +253,7 @@ class ProjectController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $this->em->remove($project);
-            $$this->em->flush();
+            $this->service->remove($project);
         }
 
         return $this->redirect($this->generateUrl('project'));

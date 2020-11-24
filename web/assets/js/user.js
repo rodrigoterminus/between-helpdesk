@@ -35,5 +35,14 @@ var user = {
             .fail(function() {
                 notifier.notify({message: 'Não foi possível salvar suas preferências.'}, true);
             });
+    },
+    showRemoveDialog: function(formName) {
+        between.showConfirmationDialog({
+            title: 'Atenção',
+            message: 'Confirma a exclusão deste usuário?',
+            onConfirm: function() {
+                between.submitForm(formName)
+            }
+        })
     }
 }

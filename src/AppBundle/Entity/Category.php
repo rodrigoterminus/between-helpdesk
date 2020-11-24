@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -24,6 +25,20 @@ class Category
      */
     private $category;
 
+    /**
+     * @var ArrayCollection
+     */
+    private $tickets;
+
+    /**
+     * @var bool
+     */
+    private $deleted = false;
+
+    public function __construct()
+    {
+        $this->tickets = new ArrayCollection();
+    }
 
     /**
      * Get id
@@ -80,4 +95,31 @@ class Category
     {
         return $this->category;
     }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getTickets()
+    {
+        return $this->tickets;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDeleted(): bool
+    {
+        return $this->deleted;
+    }
+
+    /**
+     * @param bool $deleted
+     * @return Category
+     */
+    public function setDeleted(bool $deleted): Category
+    {
+        $this->deleted = $deleted;
+        return $this;
+    }
+
 }

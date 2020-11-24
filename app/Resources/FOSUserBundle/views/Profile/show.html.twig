@@ -8,12 +8,10 @@
         <div class="mdl-card mdl-shadow--4dp">
             <div class="mdl-card__supporting-text">
                 <p><b>Nome</b><br>{{ user.name }}</p>
-                <hr>
                 <p><b>Email</b><br>{{ user.email }}</p>
-                <hr>
                 <b>Último acesso</b><br>{{ user.lastLogin.date|date('d/m/Y H:i:s') }}</p>
             </div>
-            <div class="mdl-card__actions mdl-card--border">
+            <div class="mdl-card__actions">
                 <a href="{{ path('fos_user_change_password') }}" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Alterar minha senha</a>
             </div>
         </div>
@@ -24,7 +22,7 @@
 
         <div class="mdl-card mdl-shadow--4dp">
             <div class="mdl-card__title">
-                <h2 class="mdl-card__title-text">Notificações por email</h2>
+                <span>Notificações por email</span>
             </div>
             <div id="notifications" class="mdl-card__supporting-text">
                 {% set preferences = user.getPreferencesObject() %}
@@ -67,7 +65,7 @@
                     <span class="mdl-checkbox__label">Reabertura dos meus tickets</span>
                 </label>
             </div>
-            <div class="mdl-card__actions mdl-card--border">
+            <div class="mdl-card__actions">
                 <a href="javascript: user.preferences()" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">Salvar</a>
             </div>
         </div>

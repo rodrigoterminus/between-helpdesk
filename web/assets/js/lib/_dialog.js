@@ -32,6 +32,10 @@ var _dialog = {
             $cell.append($button)
         }
 
+        setTimeout(function() {
+            $cell.find('.mdl-button').last().focus()
+        }, 100)
+
         return $container;
     }
 }

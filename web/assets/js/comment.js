@@ -36,5 +36,5 @@ var comment = {
     check: function() {
         
     },
-    model: $('<div class="mdl-card__supporting-text mdl-card--border npv"><div class="mdl-grid"><div class="mdl-cell mdl-cell--12-col"><div class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab icon-text-content"><i class="material-icons">person</i></div><div class="comment-content"><div class="comment-header"><b class="comment-creator"></b><br><i class="comment-datetime"></i></div><div class="comment-text"></div></div></div></div></div>')
+    model: $('<div class="mdl-card__supporting-text npv"><div class="ticket-entries"><div class="ticket-entry-icon"><i class="material-icons">person</i></div><div class="comment-content"><div class="comment-header"><b class="comment-creator"></b><br><i class="comment-datetime"></i></div><div class="comment-text"></div></div></div></div>')
 };

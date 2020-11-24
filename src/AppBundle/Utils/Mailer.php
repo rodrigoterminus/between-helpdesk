@@ -62,7 +62,7 @@ class Mailer
                                 'subject' => 'Chamado #' . $this->ticket->getNumber() . ' assumido',
                                 'content' => 'Olá, ' . $user->getName() . '.<br><br>' .
                                 'O usuário <b>' . $this->currentUser->getName() . '</b> assumiu o chamado <b>#' . $this->ticket->getNumber() . '</b>. ' .
-                                'Para acessá-lo, <a href="' . $this->router->generate('ticket_edit', ['number' => $this->ticket->getNumber()], true) . '">clique aqui</a>.',
+                                'Para acessá-lo, <a href="' . $this->router->generate('ticket_edit', ['id' => $this->ticket->getId()], true) . '">clique aqui</a>.',
                             ];
                         }                           
                     }
@@ -80,7 +80,7 @@ class Mailer
                                     'subject' => 'Chamado #'. $this->ticket->getNumber() .' transferido para você',
                                     'content' => 'Olá, ' . $user->getName() . '.<br><br>' .
                                         'O usuário <b>' . $this->currentUser->getName() . '</b> transferiu o chamado <b>#' . $this->ticket->getNumber() . '</b> para você. ' .
-                                        'Para acessá-lo, <a href="' . $this->router->generate('ticket_edit', ['number' => $this->ticket->getNumber()], true) . '">clique aqui</a>.',
+                                        'Para acessá-lo, <a href="' . $this->router->generate('ticket_edit', ['id' => $this->ticket->getId()], true) . '">clique aqui</a>.',
                                 ];
                             }
                         } else {
@@ -94,7 +94,7 @@ class Mailer
                                     'subject' => 'Chamado #' . $this->ticket->getNumber() . ' transferido',
                                     'content' => 'Olá, ' . $user->getName() . '.<br><br>' .
                                     'O usuário <b>' . $this->currentUser->getName() . '</b> transferiu o chamado <b>#' . $this->ticket->getNumber() . '</b> para o usuário <b>' . $this->ticket->getAttendant()->getName() . '</b>. ' .
-                                    'Para acessá-lo, <a href="' . $this->router->generate('ticket_edit', ['number' => $this->ticket->getNumber()], true) . '">clique aqui</a>.',
+                                    'Para acessá-lo, <a href="' . $this->router->generate('ticket_edit', ['id' => $this->ticket->getId()], true) . '">clique aqui</a>.',
                                 ];
                             }
                         }                           
@@ -107,7 +107,7 @@ class Mailer
                         'subject' => 'Novo comentário no chamado #'. $this->ticket->getNumber(),
                         'content' => 'Olá, %s.<br><br>' .
                             'O usuário <b>' . $this->currentUser->getName() . '</b> inseriu um novo comentário no chamado <b>#' . $this->ticket->getNumber() . '</b>. ' .
-                            'Para acessá-lo, <a href="' . $this->router->generate('ticket_edit', ['number' => $this->ticket->getNumber()], true) . '">clique aqui</a>.',
+                            'Para acessá-lo, <a href="' . $this->router->generate('ticket_edit', ['id' => $this->ticket->getId()], true) . '">clique aqui</a>.',
                     ];
                     
                     foreach ($this->users as $user) {
@@ -138,7 +138,7 @@ class Mailer
                         'subject' => 'Chamado #' . $this->ticket->getNumber() . ' %s',
                         'content' => 'Olá, %s.<br><br>' .
                             'O usuário <b>' . $this->currentUser->getName() . '</b> %s o chamado <b>#' . $this->ticket->getNumber() . '</b>. ' .
-                            'Para acessá-lo, <a href="' . $this->router->generate('ticket_edit', ['number' => $this->ticket->getNumber()], true) . '">clique aqui</a>.',
+                            'Para acessá-lo, <a href="' . $this->router->generate('ticket_edit', ['id' => $this->ticket->getId()], true) . '">clique aqui</a>.',
                     ];
                     
                     switch ($this->event) {
@@ -183,7 +183,7 @@ class Mailer
                         'subject' => 'Nova interação de chamado',
                         'content' => 'Olá, %1$s.<br><br>' .
                             'O usuário <b>' . $this->currentUser->getName() . '</b> atualizou o chamado <b>#' . $this->ticket->getNumber() . '</b>. ' .
-                            'Para acessá-lo, <a href="' . $this->router->generate('ticket_edit', ['number' => $this->ticket->getNumber()], true) . '">clique aqui</a>.',
+                            'Para acessá-lo, <a href="' . $this->router->generate('ticket_edit', ['id' => $this->ticket->getId()], true) . '">clique aqui</a>.',
                     ];
                     
                     foreach ($this->users as $user) {

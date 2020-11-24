@@ -4,9 +4,6 @@ var customer = {
 
 		})
 	},
-	remove: function() {
-
-	},
 	showRemoveDialog: function(customerId, formName) {
 		const $dialog = _dialog.create(
 			_dialog.title('Atenção!'),
@@ -23,8 +20,7 @@ var customer = {
 				{
 					cssClass: 'mdl-button--colored',
 					label: 'Excluir',
-					onClick: () => {
-						console.log({formName})
+					onClick: function() {
 						between.submitForm(formName)
 					},
 				},
