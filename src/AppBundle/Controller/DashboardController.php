@@ -16,6 +16,8 @@ class DashboardController extends Controller
      */
     public function adminAction()
     {
+        return $this->redirectToRoute('ticket');
+
         $user = $this->getUser();
 
         if ($user->isAdmin()) {
@@ -87,6 +89,8 @@ class DashboardController extends Controller
      */
     public function customerAction()
     {
+        return $this->redirectToRoute('ticket');
+
         $user = $this->getUser();
         $ticketRepository = $this->getDoctrine()->getRepository('AppBundle:Ticket');
 

@@ -15,12 +15,6 @@ class CoreController extends Controller
      */
     public function indexAction()
     {
-        $user = $this->getUser();
-
-        if ($user->isAdmin()) {
-            return $this->redirectToRoute('dashboard_admin');
-        } else {
-            return $this->redirectToRoute('dashboard_customer');
-        }
+        return $this->redirectToRoute('ticket');
     }
 }

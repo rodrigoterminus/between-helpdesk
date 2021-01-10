@@ -3,6 +3,10 @@ form { width: 100%; }
 select { height: 27px; }
 body { overflow: hidden; background-color: #f5f5f5 !important; }
 
+.btw-drawer .logo {
+    margin-left: -4px;
+}
+
 header.mdl-layout__header {
   transition: background-color 0.3s ease-in;
   -ms-transition: background-color 0.3s ease-in;
